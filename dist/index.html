@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#163d45">
+  <meta name="description" content="سامانه یکپارچه پایش درمان ارتودنسی برای پزشک و بیمار">
+  <title>DANTO | پایش هوشمند ارتودنسی</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23163d45'/%3E%3Cpath d='M19 16c7-5 19-5 26 0 5 4 3 13 0 20-4 10-6 14-10 8l-3-8-3 8c-4 6-6 2-10-8-3-7-5-16 0-20Z' fill='%23f5c96a'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <section class="login-screen" id="login-screen">
+    <div class="login-art" aria-hidden="true">
+      <div class="login-brand"><span class="brand-mark">D</span><span><b>DANTO</b><small>Monitoring</small></span></div>
+      <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+      <div class="tooth-mark">⌄</div>
+      <div class="login-quote"><span>«</span><p>درمان بهتر، با ارتباط پیوسته میان پزشک و بیمار.</p></div>
+    </div>
+    <div class="login-panel"><div class="login-box">
+      <div class="mobile-brand"><span class="brand-mark">D</span><b>DANTO</b></div>
+      <p class="eyebrow">ورود به سامانه پایش درمان</p><h1>خوش آمدید</h1>
+      <p class="login-copy">نوع حساب خود را انتخاب کنید تا وارد نسخه نمایشی شوید.</p>
+      <div class="role-grid">
+        <button class="role-card selected" data-role="doctor"><span class="role-icon">✦</span><b>پزشک هستم</b><small>مدیریت بیماران و روند درمان</small><i>✓</i></button>
+        <button class="role-card" data-role="patient"><span class="role-icon">☺</span><b>بیمار هستم</b><small>پیگیری درمان و ارسال اسکن</small><i>✓</i></button>
+      </div>
+      <label class="field-label" for="login-id">ایمیل یا شماره موبایل</label>
+      <div class="field"><span>＠</span><input id="login-id" value="doctor@danto.ir" autocomplete="username"></div>
+      <label class="field-label" for="login-pass">رمز عبور</label>
+      <div class="field"><span>●</span><input id="login-pass" value="12345678" type="password" autocomplete="current-password"><button id="toggle-pass" aria-label="نمایش رمز">◉</button></div>
+      <div class="login-options"><label><input type="checkbox" checked> مرا به خاطر بسپار</label><button class="link-btn">رمز را فراموش کرده‌ام</button></div>
+      <button class="login-submit" id="login-submit">ورود به داشبورد <span>←</span></button>
+      <p class="demo-note">این نسخه برای بررسی تجربه کاربری است و اطلاعات نمایش‌داده‌شده آزمایشی هستند.</p>
+    </div></div>
+  </section>
+
+  <div id="doctor-app" class="app-shell" hidden>
+    <aside class="sidebar" aria-label="منوی اصلی پزشک">
+      <div class="brand"><span class="brand-mark">D</span><span><b>DANTO</b><small>Monitoring</small></span></div>
+      <nav>
+        <button class="nav-item active" data-doctor-view="patients"><span class="ico">◉</span>بیماران</button>
+        <button class="nav-item" data-doctor-view="tasks"><span class="ico">✓</span>فهرست وظایف <em>۶</em></button>
+        <button class="nav-item" data-doctor-view="messages"><span class="ico">◌</span>پیام‌ها <em>۳</em></button>
+        <button class="nav-item" data-doctor-view="insights"><span class="ico">↗</span>بینش‌ها</button>
+        <button class="nav-item" data-doctor-view="settings"><span class="ico">⚙</span>تنظیمات</button>
+      </nav>
+      <div class="sidebar-foot"><div class="doctor-avatar">م‌ن</div><div><b>دکتر مریم نادری</b><small>متخصص ارتودنسی</small></div><button class="logout" data-logout title="خروج">↪</button></div>
+    </aside>
+    <main class="shell">
+      <header class="topbar"><button class="mobile-menu" aria-label="باز کردن منو">☰</button><div><p class="eyebrow">دوشنبه، ۳۰ شهریور ۱۴۰۵</p><h1 id="doctor-title">صبح بخیر، دکتر نادری</h1></div><div class="top-actions"><button class="round" id="doctor-notifications" aria-label="اعلان‌ها">♢<span></span></button><button class="primary" id="add-patient">+ افزودن بیمار</button></div></header>
+      <div id="doctor-content"></div>
+    </main>
+  </div>
+
+  <section id="patient-detail" class="detail-page" hidden>
+    <header class="detail-top"><button class="back-button" id="detail-back">→ بازگشت به بیماران</button><div class="detail-actions"><button class="outline" id="detail-message">ارسال پیام</button><button class="primary" id="detail-action">ثبت اقدام جدید</button></div></header>
+    <div class="detail-hero"><div class="detail-avatar" id="detail-avatar">س‌م</div><div><p class="eyebrow" id="detail-code">DT-2048</p><h1 id="detail-name">سارا محمدی</h1><p id="detail-meta">۲۶ سال · الاینر شفاف · شروع درمان: ۱۲ فروردین ۱۴۰۵</p></div><div class="detail-score"><span>همکاری بیمار</span><strong id="detail-score">۹۶٪</strong></div></div>
+    <nav class="tabs" id="detail-tabs" aria-label="بخش‌های پرونده">
+      <button class="active" data-detail-tab="overview">خلاصه</button><button data-detail-tab="monitoring">مانیتورینگ</button><button data-detail-tab="plan">برنامه درمان</button><button data-detail-tab="timeline">خط زمانی</button><button data-detail-tab="files">فایل‌ها</button><button data-detail-tab="compare">قبل / بعد</button><button data-detail-tab="ai">مشاهدات هوش مصنوعی</button><button data-detail-tab="goals">اهداف</button><button data-detail-tab="communication">ارتباط</button>
+    </nav>
+    <main class="detail-content" id="detail-content"></main>
+  </section>
+
+  <section id="patient-app" class="patient-app" hidden>
+    <aside class="patient-rail"><div class="brand dark"><span class="brand-mark">D</span><span><b>DANTO</b><small>برای بیمار</small></span></div><nav><button class="active" data-patient-view="home">⌂ <span>خانه</span></button><button data-patient-view="roadmap">◎ <span>مسیر درمان</span></button><button data-patient-view="scans">▣ <span>اسکن‌ها</span></button><button data-patient-view="messages">◌ <span>پیام‌ها</span><em>۲</em></button><button data-patient-view="profile">♙ <span>حساب من</span></button></nav><button class="patient-logout" data-logout>خروج از حساب</button></aside>
+    <main class="patient-main"><header class="patient-top"><div><p class="eyebrow">دوشنبه، ۳۰ شهریور</p><h1 id="patient-page-title">سلام سارا!</h1></div><div class="patient-top-actions"><button class="round">♢<span></span></button><div class="patient-avatar">س‌م</div></div></header><div id="patient-content"></div></main>
+    <nav class="bottom-nav" aria-label="منوی بیمار"><button class="active" data-patient-view="home">⌂<span>خانه</span></button><button data-patient-view="roadmap">◎<span>مسیر</span></button><button class="scan-nav" data-patient-view="scans">＋</button><button data-patient-view="messages">◌<span>پیام</span></button><button data-patient-view="profile">♙<span>حساب</span></button></nav>
+  </section>
+
+  <div class="modal-layer" id="modal-layer" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-head"><h2 id="modal-title"></h2><button id="modal-close" aria-label="بستن">×</button></div><div class="modal-body" id="modal-body"></div></div></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
