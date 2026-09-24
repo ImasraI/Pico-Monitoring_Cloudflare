@@ -5,6 +5,7 @@ type Account = { id: string; email: string; name: string; role: "doctor" | "pati
 type DbRow = Record<string, unknown>;
 const COOKIE = "danto_session";
 const WEEK = 7 * 24 * 60 * 60 * 1000;
+const PASSWORD_ITERATIONS = 100000;
 const encoder = new TextEncoder();
 
 function db(): D1Database { if (!env.DB) throw new Error("DB binding missing"); return env.DB; }
@@ -16,7 +17,7 @@ function all<T = DbRow>(query: string, ...values: unknown[]) { return db().prepa
 function exec(query: string, ...values: unknown[]) { return db().prepare(query).bind(...values).run(); }
 function token() { const b = new Uint8Array(32); crypto.getRandomValues(b); return Array.from(b, x => x.toString(16).padStart(2, "0")).join(""); }
 async function hash(value: string) { const digest = await crypto.subtle.digest("SHA-256", encoder.encode(value)); return Array.from(new Uint8Array(digest), x => x.toString(16).padStart(2, "0")).join(""); }
-async function passwordHash(password: string, salt: string) { const key = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveBits"]); const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: encoder.encode(salt), iterations: 210000, hash: "SHA-256" }, key, 256); return Array.from(new Uint8Array(bits), x => x.toString(16).padStart(2, "0")).join(""); }
+async function passwordHash(password: string, salt: string) { const key = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveBits"]); const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: encoder.encode(salt), iterations: PASSWORD_ITERATIONS, hash: "SHA-256" }, key, 256); return Array.from(new Uint8Array(bits), x => x.toString(16).padStart(2, "0")).join(""); }
 function equal(a: string, b: string) { if (a.length !== b.length) return false; let diff = 0; for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i); return diff === 0; }
 function normalizedEmail(v: unknown) { return typeof v === "string" ? v.trim().toLowerCase() : ""; }
 function safeName(v: unknown) { return typeof v === "string" ? v.trim().slice(0, 100) : ""; }
