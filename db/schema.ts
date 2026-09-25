@@ -11,6 +11,33 @@ export const users = sqliteTable("users", {
   createdAt: integer("created_at").notNull(),
 }, table => [uniqueIndex("users_email_unique").on(table.email), index("users_doctor_id_idx").on(table.doctorId)]);
 
+export const patientProfiles = sqliteTable("patient_profiles", {
+  userId: text("user_id").primaryKey(),
+  birthDate: text("birth_date"),
+  phone: text("phone").notNull().default(""),
+  gender: text("gender").notNull().default(""),
+  treatmentType: text("treatment_type").notNull().default(""),
+  alignerCount: integer("aligner_count"),
+  doctorNote: text("doctor_note").notNull().default(""),
+  planNote: text("plan_note").notNull().default(""),
+  nextScanAt: integer("next_scan_at"),
+  nextVisitAt: integer("next_visit_at"),
+  activatedAt: integer("activated_at"),
+});
+
+export const patientFiles = sqliteTable("patient_files", {
+  id: text("id").primaryKey(),
+  patientId: text("patient_id").notNull(),
+  doctorId: text("doctor_id").notNull(),
+  category: text("category").notNull(),
+  name: text("name").notNull(),
+  size: integer("size").notNull(),
+  mime: text("mime").notNull(),
+  description: text("description").notNull().default(""),
+  objectKey: text("object_key").notNull(),
+  createdAt: integer("created_at").notNull(),
+}, table => [index("patient_files_patient_created_idx").on(table.patientId, table.createdAt)]);
+
 export const sessions = sqliteTable("sessions", {
   tokenHash: text("token_hash").primaryKey(),
   userId: text("user_id").notNull(),

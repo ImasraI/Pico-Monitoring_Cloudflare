@@ -193,3 +193,77 @@
   .patient-stats .patient-stat { padding: 9px; }
   .patient-stat small { font-size: .67rem; }
 }
+
+/* Add-patient flow and the persistent clinical record. */
+.wizard-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; background: #fff; border: 1px solid #e0e9e7; border-radius: 16px; padding: 22px 25px; }
+.wizard-head .eyebrow { margin: 0; color: #a77830; }
+.wizard-head h2 { margin: 3px 0 6px; font-size: 1.5rem; }
+.wizard-head p:last-child { margin: 0; color: #698286; }
+.wizard-stepper { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin: 15px 0; }
+.wizard-stepper span { display: flex; align-items: center; gap: 9px; background: #fff; border: 1px solid #e0e9e7; border-radius: 11px; padding: 11px; color: #698084; font-weight: 700; white-space: nowrap; }
+.wizard-stepper span.active { border-color: #d9b371; background: #fff7e7; color: #634919; }
+.wizard-stepper i { display: grid; place-items: center; width: 25px; height: 25px; flex: 0 0 auto; border-radius: 50%; background: #e9f0ee; color: #245259; font-style: normal; font-size: .78rem; }
+.wizard-stepper .active i { background: #e7bd6f; color: #422e0d; }
+.wizard-panel { background: #fff; border: 1px solid #e0e9e7; border-radius: 16px; padding: 26px; min-height: 310px; }
+.wizard-panel h3 { margin: 0 0 18px; font-size: 1.2rem; }
+.wizard-panel h4 { margin: 22px 0 10px; font-size: 1rem; }
+.wizard-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; }
+.wizard-fields label, .record-file-form label { display: grid; gap: 6px; color: #385b60; font-size: .86rem; font-weight: 700; }
+.wizard-fields label.full { grid-column: 1 / -1; }
+.wizard-fields label small { display: inline; color: #8e9d9e; font-weight: 400; }
+.wizard-fields input, .wizard-fields select, .wizard-fields textarea, .record-upload-slot input, .record-file-form input, .record-file-form select, .record-file-form textarea { width: 100%; border: 1px solid #d8e4e1; border-radius: 10px; background: #fff; color: #1f464a; padding: 10px 12px; font: inherit; }
+.wizard-fields textarea, .record-file-form textarea { resize: vertical; }
+.wizard-fields input:focus, .wizard-fields select:focus, .wizard-fields textarea:focus, .record-upload-slot input:focus { outline: 2px solid #9ac8c0; outline-offset: 1px; }
+.wizard-fields input[dir=ltr] { text-align: left; }
+.wizard-foot { display: flex; align-items: center; gap: 12px; justify-content: flex-end; padding: 18px 3px; }
+.wizard-foot > span { margin-left: auto; color: #829597; font-size: .82rem; }
+.record-upload-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+.record-upload-slot { border: 1px dashed #b8d0cc; border-radius: 13px; background: #f8fbfa; padding: 15px; display: grid; gap: 9px; align-content: start; }
+.record-upload-slot b, .record-upload-slot small { display: block; }
+.record-upload-slot small { color: #85979a; font-size: .78rem; margin-top: 3px; }
+.record-file-pick { display: inline-flex; align-items: center; justify-content: center; width: max-content; border-radius: 9px; padding: 8px 12px; background: #e9f3f0; color: #205d57; cursor: pointer; font-size: .8rem; font-weight: 700; }
+.record-file-pick input { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+.record-file-pick:focus-within { outline: 2px solid #2c796e; }
+.selected-files { color: #6c8487; font-size: .76rem; overflow-wrap: anywhere; }
+.record-upload-slot input:not([type=file]) { font-size: .8rem; }
+.wizard-review { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
+.wizard-review > div { display: flex; justify-content: space-between; gap: 10px; padding: 13px; border: 1px solid #e7eeeb; border-radius: 10px; }
+.wizard-review span { color: #849699; }
+.wizard-review b { color: #265257; }
+.record-layout { display: grid; grid-template-columns: minmax(320px, 1.2fr) minmax(280px, .8fr); gap: 15px; }
+.activation-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #fff8e9; border: 1px solid #efd9a5; color: #6d501c; border-radius: 13px; padding: 14px 18px; margin-bottom: 14px; }
+.activation-banner p { margin: 4px 0 0; font-size: .82rem; }
+.record-layout .panel { min-width: 0; }
+.record-layout .info-row { margin-top: 9px; }
+.record-layout h3 { margin: 22px 0 8px; font-size: .97rem; }
+.record-note { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.8; background: #f5f9f7; border-radius: 10px; padding: 12px; color: #46676b; margin: 0; }
+.initial-clinical-photo { display: block; width: 100%; max-height: 190px; object-fit: cover; border-radius: 10px; margin-top: 12px; }
+.record-file-form { display: grid; gap: 13px; }
+.record-file-form button { justify-self: start; }
+.record-files-section { margin-top: 15px; }
+.record-file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; margin-top: 13px; }
+.record-file-card { min-width: 0; border: 1px solid #e1eae7; border-radius: 13px; overflow: hidden; background: #fafcfb; }
+.record-file-card > img, .record-file-icon { width: 100%; height: 150px; object-fit: cover; display: grid; place-items: center; background: #e8f0ee; color: #568078; font-size: 3rem; }
+.record-file-card > div:not(.record-file-actions) { padding: 11px; }
+.record-file-card small, .record-file-card b, .record-file-card span { display: block; }
+.record-file-card small, .record-file-card span { color: #8b9a9c; font-size: .74rem; }
+.record-file-card b { margin: 4px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.record-file-card p { margin: 9px 0 0; font-size: .82rem; color: #607b7e; overflow-wrap: anywhere; }
+.record-file-actions { display: flex; gap: 7px; padding: 0 11px 11px; }
+.record-file-actions a { text-decoration: none; }
+.modal:has(#patient-profile-form) { width: min(760px, 100%); }
+.modal #patient-profile-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.modal #patient-profile-form .full { grid-column: 1 / -1; }
+
+@media (max-width: 760px) {
+  .wizard-head { padding: 17px; }
+  .wizard-stepper { overflow-x: auto; display: flex; }
+  .wizard-stepper span { min-width: max-content; }
+  .wizard-panel { padding: 17px; }
+  .wizard-fields, .record-upload-grid, .record-layout, .wizard-review { grid-template-columns: 1fr; }
+  .wizard-fields label.full { grid-column: auto; }
+  .wizard-foot { flex-wrap: wrap; }
+  .wizard-foot > span { flex: 1 0 100%; order: -1; }
+  .modal #patient-profile-form { grid-template-columns: 1fr; }
+  .modal #patient-profile-form .full { grid-column: auto; }
+}
