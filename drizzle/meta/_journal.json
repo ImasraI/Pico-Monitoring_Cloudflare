@@ -22,6 +22,13 @@
       "when": 1790974903265,
       "tag": "0002_lazy_quasimodo",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1790978180889,
+      "tag": "0003_dark_frog_thor",
+      "breakpoints": true
     }
   ]
 }

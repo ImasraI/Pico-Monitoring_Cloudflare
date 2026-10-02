@@ -238,3 +238,27 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
 @media(max-width:800px){#doctor-app .sidebar{padding:14px 14px 0;grid-template-columns:1fr auto}.sidebar-foot small{display:none}#doctor-app .sidebar > .brand,#doctor-app .sidebar-foot{padding:12px}#doctor-app .sidebar nav{gap:2px}#doctor-app .nav-item{font-size:.8rem;padding:9px 10px;flex:none}#doctor-app .shell{padding:0 14px 40px}.doctor-page-head{flex-wrap:wrap;padding:16px;gap:14px;margin:18px 0 14px}.doctor-summary-chips{order:1;width:100%}.summary-chip{flex:1}.page-title-block{min-width:160px}.page-actions{margin-right:auto}.page-actions button{font-size:.875rem;padding:10px}.patient-filter-panel{grid-template-columns:1fr}.prow{grid-template-columns:minmax(0,1fr) 95px}.p-info{padding:14px}.p-avatar{width:60px;min-height:78px}.p-observation{grid-column:1/-1;border-top:1px solid #172a3a0a}.p-actions{grid-column:1/-1;flex-direction:row;border-top:1px solid #172a3a0a}.p-comm{border-right:0}.detail-sitebar{padding:12px 16px;flex-wrap:wrap;gap:10px}.detail-sitebar nav{width:100%;margin:0}.detail-sitebar nav button{font-size:.875rem;padding:9px}.detail-top{padding:8px 16px;height:auto;gap:8px;flex-wrap:wrap}.detail-actions button{font-size:.8rem;padding:8px}.detail-hero{margin:8px 16px 16px;max-width:none;padding:18px;gap:12px;flex-wrap:wrap}.detail-hero-facts{width:100%;margin:0;gap:10px;justify-content:space-between}.detail-hero-facts>div{min-width:0;padding:0 8px}.detail-hero-facts b{font-size:.8rem}.detail-content{padding:0 16px 40px}.detail-overview-grid{grid-template-columns:1fr;gap:16px}.detail-info-column{grid-template-columns:1fr 1fr;gap:12px}.detail-info-column .panel{padding:16px}.detail-info-column details:first-child{grid-column:1/-1}.detail-points{align-self:start}.detail-chat-column{grid-column:auto}.detail-monitor-column{min-width:0}.detail-center-tabs{position:sticky;top:0;z-index:5;background:#fff9f0}.wizard-panel .planner-grid{grid-template-columns:1fr}.doctor-toolbar{flex-wrap:wrap}.doctor-toolbar .search{min-width:100%}.doctor-toolbar select{width:100%}}
 @media(max-width:450px){.page-actions{width:100%}.page-actions button{flex:1}.record-file-grid{grid-template-columns:1fr}.detail-info-column{grid-template-columns:1fr}.detail-info-column details:first-child{grid-column:auto}.detail-points{display:none}.calendar-panel{padding:12px}.calendar-week{font-size:.68rem}.plan-day{min-height:65px}.calendar-event{font-size:.65rem}.jalali-fields select{font-size:.8rem;padding:5px}.wizard-fields{grid-template-columns:1fr}.event-row{gap:8px}.event-row>button{padding:6px;font-size:.75rem}}
 @media(max-width:800px){.doctor-toolbar{display:flex;flex-direction:column;align-items:stretch}.doctor-toolbar .search{width:100%}.p-name-row b{white-space:normal;overflow-wrap:anywhere}}
+/* Patient registration and intake use the same surfaces as the reference. */
+.initial-patient-form {max-width:880px;margin:0 auto 32px}
+.initial-patient-form .wizard-panel {padding:28px}
+.account-explainer {background:var(--mint-soft,#e7f6f2);border:1px solid #b8e1d6;border-radius:14px;padding:18px;margin-top:24px}
+.account-explainer p {font-size:14px;line-height:1.9;margin:6px 0;color:#3f5b62}
+.intake-progress,.intake-callout {display:flex;align-items:center;justify-content:space-between;gap:14px}
+.intake-progress p,.intake-callout p {line-height:1.9;font-size:13px;color:#62777d;margin:5px 0}
+.intake-callout {border:1px solid #b8e1d6;border-radius:16px;background:#e7f6f2;padding:18px;margin-bottom:18px}
+.intake-files {margin-top:18px}
+.intake-files form>.primary {margin-top:20px}
+.clinical-record {margin-top:20px}
+.record-workflow-actions {display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.patient-main button,.patient-main input,.patient-main textarea {scroll-margin-block:100px}
+.clinical-record>.outline {margin-top:16px}
+.credential-receipt {display:grid;gap:16px;margin:22px 0;padding:18px;background:#eef7f4;border-radius:14px}
+.credential-receipt label {display:grid;gap:8px;font-size:13px;color:#3f5b62}
+.credential-receipt input {width:100%;padding:12px;border:1px solid #b8d7d0;border-radius:10px;font-family:inherit;font-size:19px;background:white}
+.completion-note {color:#25806a;font-size:13px}
+.patient-main #patient-personal-form {grid-template-columns:1fr}
+.patient-main .record-upload-grid,.patient-main .record-file-grid {grid-template-columns:1fr}
+.patient-main .panel+.panel {margin-top:18px}
+.patient-main .form-grid label {min-width:0}
+.record-note {white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:650px) {.intake-progress,.intake-callout {align-items:flex-start;flex-direction:column}.initial-patient-form .wizard-panel {padding:18px}.credential-receipt input {font-size:17px}}

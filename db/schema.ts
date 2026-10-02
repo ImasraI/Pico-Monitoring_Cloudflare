@@ -2,20 +2,28 @@ import { integer, sqliteTable, text, index, uniqueIndex } from "drizzle-orm/sqli
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
-  email: text("email").notNull(),
+  email: text("email"),
+  username: text("username"),
   name: text("name").notNull(),
   role: text("role", { enum: ["doctor", "patient"] }).notNull(),
   doctorId: text("doctor_id"),
   passwordHash: text("password_hash").notNull(),
   passwordSalt: text("password_salt").notNull(),
   createdAt: integer("created_at").notNull(),
-}, table => [uniqueIndex("users_email_unique").on(table.email), index("users_doctor_id_idx").on(table.doctorId)]);
+}, table => [uniqueIndex("users_email_unique").on(table.email), uniqueIndex("users_username_unique").on(table.username), index("users_doctor_id_idx").on(table.doctorId)]);
 
 export const patientProfiles = sqliteTable("patient_profiles", {
   userId: text("user_id").primaryKey(),
   birthDate: text("birth_date"),
   phone: text("phone").notNull().default(""),
+  nationalId: text("national_id"),
   gender: text("gender").notNull().default(""),
+  address: text("address").notNull().default(""),
+  emergencyPhone: text("emergency_phone").notNull().default(""),
+  healthHistory: text("health_history").notNull().default(""),
+  allergies: text("allergies").notNull().default(""),
+  medications: text("medications").notNull().default(""),
+  personalCompletedAt: integer("personal_completed_at"),
   treatmentType: text("treatment_type").notNull().default(""),
   alignerCount: integer("aligner_count"),
   doctorNote: text("doctor_note").notNull().default(""),
@@ -35,6 +43,7 @@ export const patientFiles = sqliteTable("patient_files", {
   mime: text("mime").notNull(),
   description: text("description").notNull().default(""),
   objectKey: text("object_key").notNull(),
+  uploadedBy: text("uploaded_by"),
   createdAt: integer("created_at").notNull(),
 }, table => [index("patient_files_patient_created_idx").on(table.patientId, table.createdAt)]);
 
