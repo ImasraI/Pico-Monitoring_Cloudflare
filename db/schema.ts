@@ -94,8 +94,19 @@ export const steps = sqliteTable("steps", {
   completedAt: integer("completed_at"),
   pointsAwarded: integer("points_awarded").notNull().default(0),
   position: integer("position").notNull(),
+  eventType: text("event_type").notNull().default("custom"),
+  seriesId: text("series_id"),
+  alignerNo: integer("aligner_no"),
   createdAt: integer("created_at").notNull(),
 }, table => [index("steps_patient_position_idx").on(table.patientId, table.position)]);
+
+export const patientNotes = sqliteTable("patient_notes", {
+  id: text("id").primaryKey(),
+  patientId: text("patient_id").notNull(),
+  doctorId: text("doctor_id").notNull(),
+  body: text("body").notNull(),
+  createdAt: integer("created_at").notNull(),
+}, table => [index("patient_notes_patient_created_idx").on(table.patientId, table.createdAt)]);
 
 export const notificationSettings = sqliteTable("notification_settings", {
   userId: text("user_id").primaryKey(),
