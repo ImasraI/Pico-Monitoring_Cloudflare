@@ -81,6 +81,8 @@ export const scans = sqliteTable("scans", {
   createdAt: integer("created_at").notNull(),
   status: text("status", { enum: ["new", "reviewed"] }).notNull(),
   doctorNote: text("doctor_note"),
+  stepId: text("step_id"),
+  reviewResult: text("review_result").notNull().default("pending"),
 }, table => [index("scans_patient_created_idx").on(table.patientId, table.createdAt)]);
 
 export const scanImages = sqliteTable("scan_images", {
@@ -107,7 +109,37 @@ export const steps = sqliteTable("steps", {
   seriesId: text("series_id"),
   alignerNo: integer("aligner_no"),
   createdAt: integer("created_at").notNull(),
+  opensAt: integer("opens_at"),
+  pausedAt: integer("paused_at"),
+  firstAttemptAt: integer("first_attempt_at"),
+  attemptPoints: integer("attempt_points"),
+  onTime: integer("on_time"),
+  rewardPoints: integer("reward_points"),
 }, table => [index("steps_patient_position_idx").on(table.patientId, table.position)]);
+
+export const rewardSettings = sqliteTable("reward_settings", {
+  patientId: text("patient_id").primaryKey(),
+  alignerPoints: integer("aligner_points").notNull().default(10),
+  scanPoints: integer("scan_points").notNull().default(20),
+  latePoints: integer("late_points").notNull().default(5),
+  bonusPoints: integer("bonus_points").notNull().default(10),
+});
+export const rewardPreferences = sqliteTable("reward_preferences", {
+  patientId: text("patient_id").primaryKey(),
+  mode: text("mode").notNull().default("auto"),
+  target: integer("target").notNull().default(100),
+  color: text("color").notNull().default("mint"),
+  accessory: text("accessory").notNull().default("none"),
+});
+export const rewardLedger = sqliteTable("reward_ledger", {
+  id: text("id").primaryKey(),
+  patientId: text("patient_id").notNull(),
+  kind: text("kind").notNull(),
+  points: integer("points").notNull(),
+  reason: text("reason").notNull(),
+  createdBy: text("created_by").notNull(),
+  createdAt: integer("created_at").notNull(),
+}, table => [index("reward_ledger_patient_idx").on(table.patientId, table.createdAt)]);
 
 export const patientNotes = sqliteTable("patient_notes", {
   id: text("id").primaryKey(),

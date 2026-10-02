@@ -29,6 +29,13 @@
       "when": 1790978180889,
       "tag": "0003_dark_frog_thor",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1790983977731,
+      "tag": "0004_chilly_rictor",
+      "breakpoints": true
     }
   ]
 }
