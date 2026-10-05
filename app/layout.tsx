@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "@/components/marketing/styles/tokens.css";
+import "@/components/marketing/styles/site.css";
 
 export const metadata: Metadata = {
-  title: "DANTO | پایش درمان ارتودنسی",
+  title: "Pico Monitoring | پایش درمان ارتودنسی",
   description: "ارتباط پزشک و بیمار در مسیر درمان ارتودنسی",
   other: {
     "codex-preview": "development",
   },
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: "/assets/favicon.svg",
+    shortcut: "/assets/favicon.svg",
   },
 };
 

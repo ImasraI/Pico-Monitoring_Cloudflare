@@ -1,0 +1,24 @@
+[
+  {
+    "id": "hygiene",
+    "title": "پایش دیجیتال و بهداشت دهان در درمان ارتودنسی",
+    "source": "European Journal of Orthodontics؛ مطالعه آینده‌نگر",
+    "year": 2021,
+    "category": "شواهد بالینی",
+    "metric": "مطالعه آینده‌نگر",
+    "summary": "این مطالعه نقش پایش دیجیتال در پیگیری بهداشت دهان بیماران ارتودنسی را بررسی می‌کند. طراحی، گروه مقایسه و محدودیت‌های مطالعه باید در تفسیر نتایج لحاظ شوند.",
+    "reference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8422366/",
+    "attribution": "پژوهش خارجی؛ سامانه DentalMonitoring. این نتایج، داده یا تأیید عملکرد PM نیستند."
+  },
+  {
+    "id": "retention",
+    "title": "امکان‌سنجی پایش از راه دور در دوره نگهداری",
+    "source": "Dental Press Journal of Orthodontics؛ مطالعه امکان‌سنجی",
+    "year": 2022,
+    "category": "تجربه بیمار",
+    "metric": "۲۷ شرکت‌کننده",
+    "summary": "مطالعه‌ای کوچک درباره امکان استفاده از پایش از راه دور در دوره نگهداری پس از درمان. حجم نمونه محدود، تعمیم نتایج را محدود می‌کند.",
+    "reference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8964474/",
+    "attribution": "پژوهش خارجی با استفاده از DentalMonitoring؛ شواهد اختصاصی PM محسوب نمی‌شود."
+  }
+]
