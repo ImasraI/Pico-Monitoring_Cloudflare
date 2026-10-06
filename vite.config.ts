@@ -61,7 +61,10 @@ export default defineConfig(async () => {
       cloudflare({
         viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
         inspectorPort: false,
-        config: localBindingConfig,
+        configPath: "wrangler.json",
+        config: process.env.DANTO_CLOUDFLARE_DEPLOY === "1" ? undefined : (config) => {
+          Object.assign(config, localBindingConfig);
+        },
       }),
     ],
   };

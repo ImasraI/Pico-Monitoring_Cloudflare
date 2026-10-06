@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "pico-monitoring",
+  "main": "vinext/server/fetch-handler",
+  "compatibility_date": "2026-05-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "d1_databases": [{ "binding": "DB", "database_name": "pico-monitoring-db", "database_id": "a8c9ec22-ce65-46d5-81f5-9cff642123ca", "migrations_dir": "drizzle" }],
+  "r2_buckets": [{ "binding": "BUCKET", "bucket_name": "pico-monitoring-files" }],
+  "observability": { "enabled": true }
+}
