@@ -25,7 +25,7 @@ const localBindingConfig = {
         },
       ]
     : [],
-  r2_buckets: r2
+  r2_buckets: r2 && process.env.DANTO_USE_R2 === "1"
     ? [
         {
           binding: r2,

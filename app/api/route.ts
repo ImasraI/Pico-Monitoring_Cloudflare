@@ -1,4 +1,5 @@
 import { env } from "cloudflare:workers";
+import { d1Files } from "./file-storage";
 import { RewardError, windowStart, getStep, ensureReady, score, awardBonuses, summary as rewardSummary, action as rewardAction } from "./rewards";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +11,7 @@ const PASSWORD_ITERATIONS = 100000;
 const encoder = new TextEncoder();
 
 function db(): D1Database { if (!env.DB) throw new Error("DB binding missing"); return env.DB; }
-function bucket(): R2Bucket { if (!env.BUCKET) throw new Error("BUCKET binding missing"); return env.BUCKET; }
+function bucket() { return env.BUCKET ?? d1Files(db()); }
 function json(data: unknown, status = 200, headers: HeadersInit = {}) { return Response.json(data, { status, headers: { "Cache-Control": "no-store", ...headers } }); }
 function fail(message: string, status = 400) { return json({ error: message }, status); }
 function sql<T = DbRow>(query: string, ...values: unknown[]) { return db().prepare(query).bind(...values).first<T>(); }

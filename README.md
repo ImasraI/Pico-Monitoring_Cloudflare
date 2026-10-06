@@ -1,6 +1,6 @@
 # Pico Monitoring
 
-Cloudflare-only deployment: follow [CLOUDFLARE_DEPLOYMENT.md](CLOUDFLARE_DEPLOYMENT.md). Set the Workers build command to `npm run build:cloudflare` and deployment command to `npm run deploy:cloudflare`. Production resource bindings are in root `wrangler.json`. The public marketing site remains at `/`; the DANTO patient/doctor application remains at `/danto.html`. The deployment applies pending D1 migrations before publishing.
+Cloudflare Free deployment (no card or R2): follow [CLOUDFLARE_DEPLOYMENT.md](CLOUDFLARE_DEPLOYMENT.md). Set the Workers build command to `npm run build:cloudflare` and deployment command to `npm run deploy:cloudflare`. Production D1 bindings are in root `wrangler.json`. The public marketing site remains at `/`; the DANTO patient/doctor application remains at `/danto.html`. Private uploads share D1 storage, with a 400 MB payload cap inside the 500 MB database limit. The deployment applies pending migrations before publishing. Storage tests: `npm run test:free-storage`.
 
 وب‌اپ پایش درمان ارتودنسی با حساب‌های جداگانهٔ پزشک و بیمار و وب‌سایت عمومی Pico Monitoring. نام فعلی در پنل‌های درمان DANTO است.
 
