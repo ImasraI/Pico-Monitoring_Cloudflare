@@ -16,7 +16,7 @@ The public marketing website remains at `/`. The patient/doctor application rema
 
 The deploy command checks the database ID, applies unapplied D1 migrations, then publishes the Worker. It stops if migrations fail. It does not create a database or bucket automatically. Configured bindings come from the root `wrangler.json`; adding bindings only in the dashboard is insufficient for reproducible Git deployments.
 
-Local validation completed: all five migrations applied to emulated D1, all 104 existing API integration checks passed with local Cloudflare D1/R2, frontend and health endpoints returned HTTP 200, and Wrangler's deployment dry run succeeded. No remote resources were created or deployed. Your real database UUID and account setup are still required.
+Validation: the full marketing-site/application build and Wrangler deployment dry run passed. All five migrations applied to local D1. The standalone API previously passed 104 integration checks; the newer full-framework deployment still requires live login, file upload and public-page verification. The real D1 database has been created and configured, but no Worker has been published yet.
 
 ## 1. Start from Cloudflare's home page
 
