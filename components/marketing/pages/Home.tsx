@@ -17,7 +17,7 @@ import { Icon } from "../components/Icon";
 
 export function Home({ page }: { page: Page }) {
   return (
-    <>
+    <div className="enhanced-home">
       <Hero page={page} />
       <section className="intro-strip" id="discover">
         <div className="container">
@@ -78,6 +78,7 @@ export function Home({ page }: { page: Page }) {
           </div>
         </div>
       </section>
+      <section className="care-preview section"><div className="container care-preview-grid"><div><span className="eyebrow">از آگاهی تا همراهی</span><h2>قدم بعدی درمان،<br />همیشه پیش چشم شما.</h2><p>تصاویر، برنامه درمان و گفت‌وگو با پزشک، در یک فضای یکپارچه برای پیگیری روزمره.</p><a className="button" href="/danto.html">ورود به سامانه <Icon name="arrow" size={19} /></a></div><div className="care-preview-card"><div className="care-preview-heading"><span className="care-pulse" /> نمایی از مسیر مراقبت <span className="preview-label">پیش‌نمایش</span></div><div className="care-preview-row"><span className="care-step">۰۱</span><div><strong>ثبت تصاویر</strong><p>تصاویر خود را طبق راهنمای پزشک ارسال کنید.</p></div><Icon name="camera" size={24} /></div><div className="care-preview-row"><span className="care-step">۰۲</span><div><strong>بررسی توسط پزشک</strong><p>تصمیم درمانی با ارتودنتیست شماست.</p></div><Icon name="eye" size={24} /></div><div className="care-preview-row"><span className="care-step">۰۳</span><div><strong>همراهی در ادامه مسیر</strong><p>برنامه و پیام‌های پزشک را دنبال کنید.</p></div><Icon name="message" size={24} /></div></div></div></section>
       <Workflow />
       <section className="section scanbox-showcase">
         <div className="container split-grid">
@@ -214,6 +215,6 @@ export function Home({ page }: { page: Page }) {
       </section>
       <FAQBlock categories={page.faqCategories} limit={2} />
       <CTA title={page.cta} />
-    </>
+    </div>
   );
 }
