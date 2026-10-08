@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, useId } from "react";
-import { Link, NavLink } from "../navigation";
+import { Link, NavLink, useLocation } from "../navigation";
 import { config } from "../config";
 import { navigation } from "../content/navigation";
 import { Icon } from "./Icon";
+import { ThemeToggle } from "./Motion";
 
 export function Logo() {
   return (
@@ -49,6 +50,14 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
+  const header = useRef<HTMLElement>(null);
+  const location = useLocation();
+  useEffect(() => {
+    setOpen(false);
+    header.current
+      ?.querySelectorAll("details[open]")
+      .forEach((el) => el.removeAttribute("open"));
+  }, [location.pathname]);
   useEffect(() => {
     if (open) {
       dialog.current?.showModal();
@@ -69,7 +78,7 @@ export function Header() {
       <a className="skip-link" href="#main">
         رفتن به محتوای اصلی
       </a>
-      <header className="site-header">
+      <header className="site-header" ref={header}>
         <div className="header-inner">
           <Logo />
           <nav className="desktop-nav" aria-label="ناوبری اصلی">
@@ -107,7 +116,8 @@ export function Header() {
           </nav>
           <div className="header-actions">
             <LoginButton />
-            <Link className="button small" to="/contact">
+            <ThemeToggle />
+            <Link className="button small" to="/contact" data-magnetic>
               درخواست دمو <Icon name="arrow" size={17} />
             </Link>
             <button
@@ -126,7 +136,6 @@ export function Header() {
       <dialog
         ref={dialog}
         id="mobile-navigation"
-        aria-label="فهرست صفحات پیکو مانیتورینگ"
         className="mobile-dialog"
         onCancel={(e) => {
           e.preventDefault();
@@ -139,6 +148,7 @@ export function Header() {
         <div className="mobile-panel">
           <div className="mobile-top">
             <Logo />
+            <ThemeToggle />
             <button
               onClick={close}
               className="icon-button"
@@ -183,8 +193,8 @@ export function Header() {
 export function Footer() {
   return (
     <footer className="site-footer">
-      <div className="container footer-grid">
-        <div className="footer-brand">
+      <div className="container footer-grid" data-reveal-group="70">
+        <div className="footer-brand" data-reveal="up">
           <Logo />
           <p>
             پایش ارتودنسی از راه دور،
@@ -195,28 +205,28 @@ export function Footer() {
             شروع همکاری <Icon name="arrow" size={19} />
           </Link>
         </div>
-        <div>
+        <div data-reveal="up">
           <h2>راهکارها</h2>
           <Link to="/monitoring">پایش ارتودنسی</Link>
           <Link to="/aligners">الاینر</Link>
           <Link to="/braces">براکت</Link>
           <Link to="/scanbox">PM ScanBox</Link>
         </div>
-        <div>
+        <div data-reveal="up">
           <h2>برای شما</h2>
           <Link to="/orthodontists">ارتودنتیست‌ها</Link>
           <Link to="/clinics">کلینیک‌ها و مطب‌ها</Link>
           <Link to="/patients">بیماران و خانواده‌ها</Link>
           <LoginButton />
         </div>
-        <div>
+        <div data-reveal="up">
           <h2>بیشتر بدانید</h2>
           <Link to="/evidence">شواهد و پژوهش</Link>
           <Link to="/resources">منابع</Link>
           <Link to="/articles">مقالات و راهنماها</Link>
           <Link to="/faq">پرسش‌های متداول</Link>
         </div>
-        <div>
+        <div data-reveal="up">
           <h2>در ارتباط باشیم</h2>
           <Link to="/contact">تماس و درخواست دمو</Link>
           {config.phones.map((phone) => (

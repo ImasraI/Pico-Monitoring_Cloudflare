@@ -10,7 +10,7 @@ const routes = [...pages.map(p => ({path: p.slug, title: p.metaTitle})), ...arti
 const known = new Set([...routes.map(r => r.path), '/danto.html']);
 const rendered = new Map();
 const links = [];
-const origin = 'https://danto-monitoring.m-mehrafzoon.chatgpt.site';
+const origin = 'https://picomonitoring.ir';
 let checks = 0;
 for (const route of routes) {
   const response = await fetch(base + route.path);

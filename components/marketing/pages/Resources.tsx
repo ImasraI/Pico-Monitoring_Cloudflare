@@ -34,7 +34,7 @@ export function ResourceListing({ page }: { page: Page }) {
       <Hero page={page} />
       {page.slug === "/resources" && (
         <section className="section resource-shortcuts">
-          <div className="container shortcut-grid">
+          <div className="container shortcut-grid" data-reveal-group="110">
             {[
               {
                 to: "/articles",
@@ -55,7 +55,12 @@ export function ResourceListing({ page }: { page: Page }) {
                 body: "پاسخ‌های کوتاه برای شروع شناخت",
               },
             ].map((item) => (
-              <Link key={item.to} to={item.to}>
+              <Link
+                key={item.to}
+                to={item.to}
+                data-reveal="up"
+                data-spotlight
+              >
                 <Icon name={item.icon} size={30} />
                 <h2>{item.title}</h2>
                 <p>{item.body}</p>
@@ -67,8 +72,8 @@ export function ResourceListing({ page }: { page: Page }) {
       )}
       <section className="section featured-section">
         <div className="container featured-article">
-          <Visual assetId={featured.featuredImage} />
-          <div>
+          <Visual assetId={featured.featuredImage} reveal="mask" />
+          <div data-reveal="up">
             <span className="eyebrow">راهنمای پیشنهادی</span>
             <h2>{featured.title}</h2>
             <p>{featured.excerpt}</p>
@@ -112,7 +117,7 @@ export function ResourceListing({ page }: { page: Page }) {
             {persianNumber(result.length)} مقاله
           </p>
           {result.length ? (
-            <div className="resources-grid">
+            <div className="resources-grid" data-reveal-group="120">
               {result.map((a) => (
                 <ResourceCard key={a.slug} article={a} />
               ))}
@@ -164,7 +169,7 @@ export function ArticleDetail({ article }: { article: Article }) {
           <span className="eyebrow">{article.category}</span>
           <h1>{article.title}</h1>
           <p>{article.excerpt}</p>
-          <div className="article-meta">
+          <div className="article-meta" data-reveal="up">
             <span>{article.author}</span>
             <time dateTime={article.date}>
               {new Date(`${article.date}T12:00:00+03:30`).toLocaleDateString(
@@ -191,14 +196,14 @@ export function ArticleDetail({ article }: { article: Article }) {
         <div className="article-content">
           <Visual assetId={article.featuredImage} />
           {article.body.map((s, i) => (
-            <section id={`article-section-${i}`} key={s.title}>
+            <section id={`article-section-${i}`} key={s.title} data-reveal="up">
               <h2>{s.title}</h2>
               {s.paragraphs.map((p) => (
                 <p key={p}>{p}</p>
               ))}
             </section>
           ))}
-          <aside className="article-note">
+          <aside className="article-note" data-reveal="up">
             <Icon name="eye" />
             <p>
               این مطلب برای آشنایی با مسیر پایش تهیه شده است. برنامه و تصمیم
@@ -206,7 +211,7 @@ export function ArticleDetail({ article }: { article: Article }) {
             </p>
           </aside>
         </div>
-        <aside className="article-toc">
+        <aside className="article-toc" data-scrollspy>
           <h2>در این راهنما</h2>
           {article.body.map((s, i) => (
             <a href={`#article-section-${i}`} key={s.title}>
@@ -221,7 +226,7 @@ export function ArticleDetail({ article }: { article: Article }) {
       <section className="section wash">
         <div className="container">
           <SectionHeading eyebrow="ادامه مطالعه" title="راهنماهای مرتبط" />
-          <div className="resources-grid">
+          <div className="resources-grid" data-reveal-group="120">
             {related.map((a) => (
               <ResourceCard key={a.slug} article={a} />
             ))}

@@ -62,16 +62,21 @@ export function Contact({ page }: { page: Page }) {
       <Hero page={page} />
       <section className="section contact-section">
         <div className="container contact-grid">
-          <div className="contact-info">
+          <div className="contact-info" data-reveal="up">
             <span className="eyebrow">گفت‌وگو درباره نیاز شما</span>
             <h2>از مطب شما شروع می‌کنیم.</h2>
             <p>
               درباره مسیر پایش، PM ScanBox و امکان اجرای راهکار در مطب یا کلینیک
               شما گفت‌وگو می‌کنیم.
             </p>
-            <div className="phone-links">
+            <div className="phone-links" data-reveal-group="120">
               {config.phones.map((phone, i) => (
-                <a href={`tel:${phone}`} key={phone}>
+                <a
+                  href={`tel:${phone}`}
+                  key={phone}
+                  data-reveal="up"
+                  data-spotlight
+                >
                   <span>
                     <small>
                       تماس با تیم PM · {i === 0 ? "شماره اول" : "شماره دوم"}
@@ -98,7 +103,7 @@ export function Contact({ page }: { page: Page }) {
               بپرسید.
             </p>
           </div>
-          <div className="contact-form-panel">
+          <div className="contact-form-panel" data-reveal="up" data-glow>
             <h2>درخواست خود را آماده کنید.</h2>
             <p className="form-intro">
               این فرم متن درخواست شما را آماده می‌کند. ارسال آنلاین هنوز فعال
@@ -179,7 +184,7 @@ export function Contact({ page }: { page: Page }) {
                 <Icon name="lock" size={16} /> اطلاعات در این فرم به سرور ارسال
                 یا در مرورگر ذخیره نمی‌شود. اطلاعات بیمار وارد نکنید.
               </p>
-              <button className="button" type="submit">
+              <button className="button" type="submit" data-magnetic>
                 آماده‌سازی درخواست <Icon name="arrow" size={19} />
               </button>
             </form>

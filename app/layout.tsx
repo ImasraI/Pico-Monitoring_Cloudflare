@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "@/components/marketing/styles/tokens.css";
 import "@/components/marketing/styles/site.css";
+import "@/components/marketing/styles/enhance.css";
 
 export const metadata: Metadata = {
   title: "Pico Monitoring | پایش درمان ارتودنسی",

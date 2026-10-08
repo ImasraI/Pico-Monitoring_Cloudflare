@@ -1,6 +1,6 @@
 import { Link } from "../navigation";
 import { useState } from "react";
-import { faqs, persianNumber, dateLabel } from "../content";
+import { categories, faqs, persianNumber, dateLabel } from "../content";
 import type {
   Page,
   Feature,
@@ -20,10 +20,63 @@ export function ButtonLink({
   secondary?: boolean;
 }) {
   return (
-    <Link to={to} className={`button ${secondary ? "secondary" : ""}`}>
+    <Link
+      to={to}
+      className={`button ${secondary ? "secondary" : ""}`}
+      data-magnetic
+    >
       {children}
       <Icon name="arrow" size={19} />
     </Link>
+  );
+}
+/* Decorative light field behind the hero. Purely presentational. */
+export function Aurora() {
+  return (
+    <div className="pm-aurora" aria-hidden="true">
+      <span className="pm-a1" />
+      <span className="pm-a2" />
+      <span className="pm-a3" />
+      <span className="pm-grain" />
+    </div>
+  );
+}
+/* A slow band of the site's real subject categories. */
+export function CapabilityMarquee() {
+  const items = [...categories];
+  return (
+    <div className="pm-marquee">
+      <div className="pm-marquee-track" aria-hidden="true">
+        {[...items, ...items].map((item, index) => (
+          <span className="pm-chip" key={`${item}-${index}`}>
+            <i />
+            {item}
+          </span>
+        ))}
+      </div>
+      <p className="sr-only">
+        حوزه‌های محتوای پیکو مانیتورینگ: {items.join("، ")}
+      </p>
+    </div>
+  );
+}
+/* Counts read from the content files, so no number is decorative. */
+export function Stats({
+  items,
+}: {
+  items: { value: number; label: string }[];
+}) {
+  return (
+    <div className="pm-stats" data-reveal-group="110">
+      {items.map((item) => (
+        <div className="pm-stat" key={item.label} data-reveal="up" data-glow>
+          <b data-counter={item.value} data-reveal="fade">
+            {item.value.toLocaleString("fa-IR", { useGrouping: false })}
+          </b>
+          <span>{item.label}</span>
+        </div>
+      ))}
+    </div>
   );
 }
 export function Hero({ page }: { page: Page }) {
@@ -33,6 +86,7 @@ export function Hero({ page }: { page: Page }) {
     <section
       className={`hero ${home ? "home-hero" : ""} ${simple ? "simple-hero" : ""}`}
     >
+      <Aurora />
       <div className={`container ${simple ? "" : "hero-grid"}`}>
         <div className="hero-copy">
           <span className="eyebrow">
@@ -76,7 +130,7 @@ export function Hero({ page }: { page: Page }) {
           )}
         </div>
         {!simple && (
-          <div className="hero-visual">
+          <div className="hero-visual" data-parallax="0.05">
             <span className="visual-kicker" dir="ltr">
               {page.slug === "/scanbox"
                 ? "PM SCANBOX"
@@ -123,7 +177,10 @@ export function SectionHeading({
   center?: boolean;
 }) {
   return (
-    <div className={`section-heading ${center ? "center" : ""}`}>
+    <div
+      className={`section-heading ${center ? "center" : ""}`}
+      data-reveal="up"
+    >
       <span className="eyebrow">{eyebrow}</span>
       <h2>{title}</h2>
       {body && <p>{body}</p>}
@@ -132,9 +189,14 @@ export function SectionHeading({
 }
 export function FeatureGrid({ features }: { features: Feature[] }) {
   return (
-    <div className="feature-grid">
+    <div className="feature-grid" data-reveal-group="110">
       {features.map((feature) => (
-        <div className="feature" key={feature.title}>
+        <div
+          className="feature"
+          key={feature.title}
+          data-reveal="up"
+          data-spotlight
+        >
           <span className="feature-icon">
             <Icon name={feature.icon} size={28} />
           </span>
@@ -157,7 +219,7 @@ export function SplitSection({
       className={`section split-section ${index % 2 ? "wash reverse" : ""}`}
     >
       <div className="container split-grid">
-        <div>
+        <div data-reveal="up">
           <SectionHeading
             eyebrow={section.eyebrow}
             title={section.title}
@@ -175,7 +237,7 @@ export function SplitSection({
             ))}
           </div>
         </div>
-        <Visual assetId={section.asset} />
+        <Visual assetId={section.asset} reveal="mask" />
       </div>
     </section>
   );
@@ -189,8 +251,8 @@ export function CTA({
 }) {
   return (
     <section className="cta-section">
-      <div className="container cta-inner">
-        <div>
+      <div className="container cta-inner" data-reveal-group="120">
+        <div data-reveal="up">
           <span className="eyebrow">
             {patient ? "قدم بعدی" : "همکاری با پیکو مانیتورینگ"}
           </span>
@@ -201,9 +263,11 @@ export function CTA({
               : "یک گفت‌وگو درباره نیازهای شما، مسیر اجرای پایش و نقش PM ScanBox."}
           </p>
         </div>
-        <ButtonLink to="/contact">
-          {patient ? "آشنایی بیشتر با PM" : "درخواست دمو"}
-        </ButtonLink>
+        <span data-reveal="zoom">
+          <ButtonLink to="/contact">
+            {patient ? "آشنایی بیشتر با PM" : "درخواست دمو"}
+          </ButtonLink>
+        </span>
       </div>
     </section>
   );
@@ -317,9 +381,15 @@ export function Workflow({
           body="یک مسیر روشن که با راهنمایی ارتودنتیست شروع می‌شود و با تصمیم او ادامه پیدا می‌کند."
           center
         />
-        <ol className={`workflow-grid ${scanbox ? "six" : ""}`}>
+        <div className="pm-rail" data-rail aria-hidden="true">
+          <span />
+        </div>
+        <ol
+          className={`workflow-grid ${scanbox ? "six" : ""}`}
+          data-reveal-group="100"
+        >
           {steps.map((step, i) => (
-            <li key={step.title}>
+            <li key={step.title} data-step data-reveal="up">
               <span className="step-number">
                 {persianNumber(i + 1).padStart(2, "۰")}
               </span>
@@ -378,9 +448,9 @@ export function FAQBlock({
               ))}
             </div>
           )}
-          <div className="faq-list">
+          <div className="faq-list" data-reveal-group="70">
             {visible.map((f) => (
-              <details key={f.id}>
+              <details key={f.id} data-reveal="fade">
                 <summary>
                   {f.question}
                   <Icon name="plus" size={20} />
@@ -401,7 +471,12 @@ export function FAQBlock({
 }
 export function ResourceCard({ article }: { article: Article }) {
   return (
-    <article className="resource-card">
+    <article
+      className="resource-card"
+      data-reveal="up"
+      data-spotlight
+      data-glow
+    >
       <Link
         to={`/articles/${article.slug}`}
         className="resource-image"

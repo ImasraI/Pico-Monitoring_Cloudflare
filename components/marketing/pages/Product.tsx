@@ -29,7 +29,7 @@ export function Product({ page }: { page: Page }) {
                 title="جزئیات محصول، با تصاویر واقعی."
                 body="این جایگاه‌ها برای تصاویر تأییدشده PM ScanBox آماده‌اند. مشخصات فنی، اجزا و بسته‌بندی پس از تأیید تیم محصول منتشر می‌شوند."
               />
-              <div className="asset-gallery">
+              <div className="asset-gallery" data-reveal-group="80">
                 {[
                   "PM-SCANBOX-PHONE-01",
                   "PM-PATIENT-USAGE-01",
@@ -37,7 +37,7 @@ export function Product({ page }: { page: Page }) {
                   "PM-SCANBOX-PARTS-01",
                   "PM-SCANBOX-INSTRUCTION-01",
                 ].map((id) => (
-                  <AssetPlaceholder key={id} assetId={id} />
+                  <AssetPlaceholder key={id} assetId={id} reveal="zoom" />
                 ))}
               </div>
             </div>

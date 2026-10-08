@@ -13,7 +13,7 @@ export function EvidencePage({ page }: { page: Page }) {
       <Hero page={page} />
       <section className="section">
         <div className="container">
-          <div className="evidence-disclosure">
+          <div className="evidence-disclosure" data-reveal="up">
             <Icon name="research" size={28} />
             <div>
               <h2>مطالعات خارجی، با منبع مشخص</h2>
@@ -44,9 +44,16 @@ export function EvidencePage({ page }: { page: Page }) {
             {filtered.length.toLocaleString("fa-IR")} منبع
           </p>
           {filtered.length ? (
-            <div className="evidence-grid">
+            <div className="evidence-grid" data-reveal-group="120">
               {filtered.map((e) => (
-                <article className="evidence-card" key={e.id}>
+                <article
+                  className="evidence-card"
+                  key={e.id}
+                  data-reveal="up"
+                  data-tilt
+                  data-glow
+                  data-spotlight
+                >
                   <span className="evidence-tag">
                     شواهد خارجی · {e.category}
                   </span>
@@ -82,7 +89,7 @@ export function EvidencePage({ page }: { page: Page }) {
               </p>
             </div>
           )}
-          <div className="pm-evidence">
+          <div className="pm-evidence" data-reveal="up">
             <SectionHeading
               eyebrow="ارزیابی اختصاصی PM"
               title="یک مسیر مستقل برای شواهد PM."
