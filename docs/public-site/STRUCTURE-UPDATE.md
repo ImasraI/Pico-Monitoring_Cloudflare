@@ -10,7 +10,7 @@ Solutions have a single ordered definition in `components/marketing/content/navi
 
 New independent pages: `/dashboard`, `/app`, `/kids`, `/privacy`. They use the existing Hero, headings, feature grid, workflow, buttons and CTA components, with the same Vazirmatn font, palette, spacing, radius and breakpoints. Existing clinical, audience, contact and FAQ routes remain. Decorative workflow counters are removed; real research dates/counts remain.
 
-The Resources and article-index landings are removed from navigation, content, internal links and sitemap. Legacy `/resources` permanently redirects to `/privacy`; `/articles` redirects to `/evidence`. The six legitimate editorial article detail routes remain, including references and related-article navigation. Their breadcrumbs lead to Evidence. Evidence's 16-study dataset and presentation remain intact.
+The Resources and article-index landings are removed from navigation, content, internal links and sitemap. Legacy `/resources` permanently redirects to `/privacy`; `/articles` redirects to `/evidence`. The five legitimate editorial article detail routes remain, including references and related-article navigation. Their breadcrumbs lead to Evidence. Evidence's 16-study dataset and presentation remain intact.
 
 All public copy, FAQ labels, metadata and alt text referring to the physical product use **PM ScanBoxᴾʳᵒ**. Internal component names, paths and asset identifiers retain stable technical names.
 
