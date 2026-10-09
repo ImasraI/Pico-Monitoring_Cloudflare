@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, useId } from "react";
-import { Link, NavLink } from "../navigation";
+import { useEffect, useRef, useState, useId, useContext } from "react";
+import { Link, NavLink, PublicPathContext } from "../navigation";
+import { scanboxProductName } from "../content/scanbox";
 import { config } from "../config";
 import { navigation } from "../content/navigation";
 import { Icon } from "./Icon";
@@ -46,6 +47,7 @@ export function LoginButton() {
   );
 }
 export function Header() {
+  const onScanboxPage = useContext(PublicPathContext) === "/scanbox";
   const [open, setOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
@@ -100,7 +102,7 @@ export function Header() {
                 </details>
               ) : (
                 <NavLink key={item.to} to={item.to!}>
-                  {item.label}
+                  {onScanboxPage && item.to === "/scanbox" ? scanboxProductName : item.label}
                 </NavLink>
               ),
             )}
@@ -163,7 +165,7 @@ export function Header() {
                 </details>
               ) : (
                 <NavLink key={item.to} to={item.to!}>
-                  {item.label}
+                  {onScanboxPage && item.to === "/scanbox" ? scanboxProductName : item.label}
                 </NavLink>
               ),
             )}
@@ -181,6 +183,7 @@ export function Header() {
   );
 }
 export function Footer() {
+  const onScanboxPage = useContext(PublicPathContext) === "/scanbox";
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
@@ -200,7 +203,7 @@ export function Footer() {
           <Link to="/monitoring">پایش ارتودنسی</Link>
           <Link to="/aligners">الاینر</Link>
           <Link to="/braces">براکت</Link>
-          <Link to="/scanbox">PM ScanBox</Link>
+          <Link to="/scanbox">{onScanboxPage ? scanboxProductName : "PM ScanBox"}</Link>
         </div>
         <div>
           <h2>برای شما</h2>

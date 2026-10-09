@@ -1,0 +1,114 @@
+/* Page-scoped additions use the existing Pico typography and theme tokens. */
+.scanbox-page .scanbox-copy {
+  display: grid;
+  gap: 20px;
+  font-size: 16px;
+  max-width: 960px;
+}
+.scanbox-page .split-grid > * { min-width: 0; }
+.scanbox-page .scanbox-product-image img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.scanbox-page .scanbox-product-image figcaption,
+.scanbox-page .scanbox-image-note {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.85;
+  margin-top: 16px;
+}
+.scanbox-page .scanbox-clinical-gallery {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 28px;
+}
+.scanbox-page .scanbox-clinical-gallery figure {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+.scanbox-page .scanbox-clinical-gallery img { width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; }
+.scanbox-page .scanbox-clinical-gallery figcaption { padding: 14px; font-size: 14px; text-align: center; }
+.scanbox-page .scanbox-workflow {
+  grid-template-areas: "first second third" "sixth fifth fourth";
+}
+.scanbox-page .scanbox-workflow li:nth-child(1) { grid-area: first; }
+.scanbox-page .scanbox-workflow li:nth-child(2) { grid-area: second; }
+.scanbox-page .scanbox-workflow li:nth-child(3) { grid-area: third; }
+.scanbox-page .scanbox-workflow li:nth-child(4) { grid-area: fourth; }
+.scanbox-page .scanbox-workflow li:nth-child(5) { grid-area: fifth; }
+.scanbox-page .scanbox-workflow li:nth-child(6) { grid-area: sixth; }
+.scanbox-page .scanbox-workflow li {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  padding: 28px 24px;
+}
+.scanbox-page .scanbox-workflow .step-number { top: -13px; right: 24px; padding-inline: 10px; background: var(--white); }
+.scanbox-page .scanbox-workflow li.scanbox-ai-step {
+  border-color: var(--teal-dark);
+  background: var(--mint);
+  box-shadow: var(--shadow);
+}
+.scanbox-page .scanbox-ai-step .step-number { background: var(--mint); }
+.scanbox-page .scanbox-ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--teal-dark);
+  border-radius: var(--radius);
+  color: var(--teal-dark);
+  padding: 3px 9px;
+  font-size: 12px;
+  margin-inline-start: 12px;
+  vertical-align: top;
+}
+.scanbox-page .scanbox-step-connector {
+  position: absolute;
+  inset-inline-end: -35px;
+  top: 32px;
+  color: var(--teal-dark);
+  display: flex;
+}
+.scanbox-page .scanbox-workflow li:nth-child(3) .scanbox-step-connector {
+  top: auto; bottom: -38px; inset-inline-end: 50%; transform: translateX(-50%) rotate(-90deg);
+}
+.scanbox-page .scanbox-workflow li:nth-child(4) .scanbox-step-connector,
+.scanbox-page .scanbox-workflow li:nth-child(5) .scanbox-step-connector {
+  inset-inline-end: auto; inset-inline-start: -35px; transform: rotate(180deg);
+}
+@media (min-width: 701px) and (max-width: 1000px) {
+  .scanbox-page .scanbox-workflow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "first second" "fourth third" "fifth sixth";
+  }
+  .scanbox-page .scanbox-workflow li:nth-child(2) .scanbox-step-connector,
+  .scanbox-page .scanbox-workflow li:nth-child(4) .scanbox-step-connector {
+    top: auto; bottom: -38px; inset-inline-start: auto; inset-inline-end: 50%; transform: translateX(-50%) rotate(-90deg);
+  }
+  .scanbox-page .scanbox-workflow li:nth-child(3) .scanbox-step-connector {
+    top: 32px; bottom: auto; inset-inline-end: auto; inset-inline-start: -35px; transform: rotate(180deg);
+  }
+  .scanbox-page .scanbox-workflow li:nth-child(5) .scanbox-step-connector {
+    inset-inline-start: auto; inset-inline-end: -35px; transform: none;
+  }
+  .scanbox-page .scanbox-clinical-gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .scanbox-page .scanbox-copy { gap: 16px; font-size: 14px; }
+  .scanbox-page .scanbox-clinical-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .scanbox-page .scanbox-clinical-gallery figcaption { padding: 10px; font-size: 12px; }
+  .scanbox-page .scanbox-workflow { grid-template-columns: minmax(0, 1fr); grid-template-areas: none; gap: 45px; }
+  .scanbox-page .scanbox-workflow li:nth-child(n) { grid-area: auto; }
+  .scanbox-page .scanbox-workflow li:nth-child(n) .scanbox-step-connector {
+    top: auto; bottom: -34px; inset-inline-start: auto; inset-inline-end: 50%; transform: translateX(-50%) rotate(-90deg);
+  }
+  .scanbox-page .hero-footnote { align-items: flex-start; line-height: 1.85; }
+  .scanbox-page .hero-footnote .small-dot { margin-top: 7px; flex-shrink: 0; }
+}

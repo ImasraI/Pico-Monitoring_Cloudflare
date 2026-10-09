@@ -6,6 +6,7 @@ import type {
   Feature,
   Section as SectionModel,
   Article,
+  FAQ,
 } from "../content/types";
 import { Visual } from "./Visual";
 import { Icon } from "./Icon";
@@ -337,15 +338,19 @@ export function FAQBlock({
   categories,
   limit,
   title = "پاسخ به چند پرسش مهم.",
+  body = "برای جزئیات اجرای پایش، با تیم PM گفت‌وگو کنید.",
+  items = faqs,
   filter = false,
 }: {
   categories?: string[];
   limit?: number;
   title?: string;
+  body?: string;
+  items?: FAQ[];
   filter?: boolean;
 }) {
   const [category, setCategory] = useState("همه");
-  const all = faqs.filter(
+  const all = items.filter(
     (f) => !categories?.length || categories.includes(f.category),
   );
   const visible = all
@@ -358,7 +363,7 @@ export function FAQBlock({
           <SectionHeading
             eyebrow="پرسش‌های متداول"
             title={title}
-            body="برای جزئیات اجرای پایش، با تیم PM گفت‌وگو کنید."
+            body={body}
           />
           <Link className="text-link" to="/contact">
             در ارتباط باشیم <Icon name="arrow" size={19} />
