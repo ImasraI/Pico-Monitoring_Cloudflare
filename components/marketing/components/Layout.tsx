@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState, useId, useContext } from "react";
 import { Link, NavLink, PublicPathContext } from "../navigation";
-import { scanboxProductName } from "../content/scanbox";
 import { config } from "../config";
-import { navigation } from "../content/navigation";
+import { navigation, solutions } from "../content/navigation";
 import { Icon } from "./Icon";
 
 export function Logo() {
@@ -46,9 +45,45 @@ export function LoginButton() {
     </span>
   );
 }
+function DesktopNavGroup({ item }: { item: { label: string; hover?: boolean; items: { label: string; to: string; note: string }[] } }) {
+  const group = useRef<HTMLDetailsElement>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clearTimer = () => { if (timer.current) clearTimeout(timer.current); };
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+  return <details ref={group} className="nav-group"
+    onPointerEnter={e => {
+      if (!item.hover || e.pointerType !== "mouse") return;
+      clearTimer();
+      timer.current = setTimeout(() => { if (group.current) group.current.open = true; }, 100);
+    }}
+    onPointerLeave={e => {
+      if (!item.hover || e.pointerType !== "mouse") return;
+      clearTimer();
+      timer.current = setTimeout(() => {
+        if (group.current && !group.current.matches(":hover") && !group.current.querySelector(":focus-visible")) group.current.open = false;
+      }, 180);
+    }}
+    onBlur={e => {
+      if (!e.currentTarget.contains(e.relatedTarget as Node | null) && !(item.hover && e.currentTarget.matches(":hover"))) {
+        clearTimer(); e.currentTarget.open = false;
+      }
+    }}
+    onKeyDown={e => {
+      if (e.key === "Escape") {
+        e.preventDefault(); clearTimer(); e.currentTarget.open = false;
+        e.currentTarget.querySelector("summary")?.focus();
+      }
+    }}>
+    <summary>{item.label}<Icon name="chevron" size={13}/></summary>
+    <div className="nav-dropdown" onPointerEnter={e => {
+      if (item.hover && e.pointerType === "mouse") clearTimer();
+    }}>{item.items.map(sub=><NavLink key={sub.to} to={sub.to}>
+      {sub.label}<small>{sub.note}</small>
+    </NavLink>)}</div>
+  </details>;
+}
 export function Header() {
   const publicPath = useContext(PublicPathContext);
-  const onScanboxPage = publicPath === "/scanbox";
   const contactLabel = publicPath === "/evidence" ? "تماس با تیم تخصصی PM" : "درخواست دمو";
   const [open, setOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -79,32 +114,10 @@ export function Header() {
           <nav className="desktop-nav" aria-label="ناوبری اصلی">
             {navigation.map((item) =>
               item.items ? (
-                <details
-                  className="nav-group"
-                  key={item.label}
-                  onKeyDown={(e) => {
-                    if (e.key === "Escape") {
-                      e.currentTarget.open = false;
-                      e.currentTarget.querySelector("summary")?.focus();
-                    }
-                  }}
-                >
-                  <summary>
-                    {item.label}
-                    <Icon name="chevron" size={13} />
-                  </summary>
-                  <div className="nav-dropdown">
-                    {item.items.map((sub) => (
-                      <NavLink key={sub.to} to={sub.to}>
-                        {sub.label}
-                        <small>{sub.note}</small>
-                      </NavLink>
-                    ))}
-                  </div>
-                </details>
+                <DesktopNavGroup key={item.label} item={item}/>
               ) : (
                 <NavLink key={item.to} to={item.to!}>
-                  {onScanboxPage && item.to === "/scanbox" ? scanboxProductName : item.label}
+                  {item.label}
                 </NavLink>
               ),
             )}
@@ -167,7 +180,7 @@ export function Header() {
                 </details>
               ) : (
                 <NavLink key={item.to} to={item.to!}>
-                  {onScanboxPage && item.to === "/scanbox" ? scanboxProductName : item.label}
+                  {item.label}
                 </NavLink>
               ),
             )}
@@ -186,7 +199,6 @@ export function Header() {
 }
 export function Footer() {
   const publicPath = useContext(PublicPathContext);
-  const onScanboxPage = publicPath === "/scanbox";
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
@@ -202,11 +214,8 @@ export function Footer() {
           </Link>
         </div>
         <div>
-          <h2>راهکارها</h2>
-          <Link to="/monitoring">پایش ارتودنسی</Link>
-          <Link to="/aligners">الاینر</Link>
-          <Link to="/braces">براکت</Link>
-          <Link to="/scanbox">{onScanboxPage ? scanboxProductName : "PM ScanBox"}</Link>
+          <h2>راهکارهای ما</h2>
+          {solutions.map(s=><Link key={s.to} to={s.to}>{s.label}</Link>)}
         </div>
         <div>
           <h2>برای شما</h2>
@@ -217,9 +226,8 @@ export function Footer() {
         </div>
         <div>
           <h2>بیشتر بدانید</h2>
-          <Link to="/evidence">شواهد و پژوهش</Link>
-          <Link to="/resources">منابع</Link>
-          <Link to="/articles">مقالات و راهنماها</Link>
+          <Link to="/evidence">شواهد و پژوهش‌ها</Link>
+          <Link to="/privacy">امنیت و حریم خصوصی</Link>
           <Link to="/faq">پرسش‌های متداول</Link>
         </div>
         <div>

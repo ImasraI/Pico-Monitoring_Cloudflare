@@ -27,9 +27,9 @@ export function ButtonLink({
     </Link>
   );
 }
-export function Hero({ page, contactLabel }: { page: Page; contactLabel?: string }) {
+export function Hero({ page, contactLabel, visual, visualKicker }: { page: Page; contactLabel?: string; visual?: React.ReactNode; visualKicker?: string }) {
   const home = page.slug === "/";
-  const simple = !page.hero.asset;
+  const simple = !page.hero.asset && !visual;
   return (
     <section
       className={`hero ${home ? "home-hero" : ""} ${simple ? "simple-hero" : ""}`}
@@ -64,8 +64,8 @@ export function Hero({ page, contactLabel }: { page: Page; contactLabel?: string
                 {home
                   ? "با PM آشنا شوید"
                   : page.slug === "/scanbox"
-                    ? "ScanBox چگونه کار می‌کند؟"
-                    : "آشنایی با PM ScanBox"}
+                    ? "PM ScanBoxᴾʳᵒ چگونه کار می‌کند؟"
+                    : "آشنایی با PM ScanBoxᴾʳᵒ"}
                 <Icon name="arrow" size={20} />
               </Link>
             </div>
@@ -79,11 +79,11 @@ export function Hero({ page, contactLabel }: { page: Page; contactLabel?: string
         {!simple && (
           <div className="hero-visual">
             <span className="visual-kicker" dir="ltr">
-              {page.slug === "/scanbox"
-                ? "PM SCANBOX"
-                : "CONNECTED ORTHODONTIC CARE"}
+              {visualKicker ?? (page.slug === "/scanbox"
+                ? "PM ScanBoxᴾʳᵒ"
+                : "CONNECTED ORTHODONTIC CARE")}
             </span>
-            <Visual assetId={page.hero.asset} />
+            {visual ?? <Visual assetId={page.hero.asset} />}
             <div className="hero-visual-bottom">
               <span>
                 بیمار <i /> تصویر <i /> ارتودنتیست
@@ -203,7 +203,7 @@ export function CTA({
           <p>
             {body ?? (patient
               ? "پایش درمان با هماهنگی مطب آغاز می‌شود. برای شناخت PM می‌توانید با تیم ما هم گفت‌وگو کنید."
-              : "یک گفت‌وگو درباره نیازهای شما، مسیر اجرای پایش و نقش PM ScanBox.")}
+              : "یک گفت‌وگو درباره نیازهای شما، مسیر اجرای پایش و نقش PM ScanBoxᴾʳᵒ.")}
           </p>
         </div>
         <ButtonLink to="/contact">
@@ -221,7 +221,7 @@ const defaultSteps = [
   },
   {
     title: "ثبت تصاویر",
-    body: "بیمار با آموزش مطب و PM ScanBox تصویر ثبت می‌کند.",
+    body: "بیمار با آموزش مطب و PM ScanBoxᴾʳᵒ تصویر ثبت می‌کند.",
     icon: "camera",
   },
   {
@@ -245,7 +245,7 @@ export function Workflow({
   const steps = scanbox
     ? [
         {
-          title: "دریافت ScanBox",
+          title: "دریافت PM ScanBoxᴾʳᵒ",
           body: "محصول و آموزش تأییدشده را از تیم مطب دریافت کنید.",
           icon: "phone",
         },
@@ -283,7 +283,7 @@ export function Workflow({
             icon: "eye",
           },
           {
-            title: "دریافت PM ScanBox",
+            title: "دریافت PM ScanBoxᴾʳᵒ",
             body: "محصول را همراه آموزش استفاده دریافت می‌کنید.",
             icon: "phone",
           },
@@ -314,7 +314,7 @@ export function Workflow({
           eyebrow="مسیر پایش"
           title={
             scanbox
-              ? "شش قدم، از ScanBox تا بررسی پزشک."
+              ? "شش قدم، از PM ScanBoxᴾʳᵒ تا بررسی پزشک."
               : patient
                 ? "پنج قدم، برای ارتباط با درمان."
                 : "از ثبت تصویر تا قدم بعدی درمان."
@@ -323,11 +323,8 @@ export function Workflow({
           center
         />
         <ol className={`workflow-grid ${scanbox ? "six" : ""}`}>
-          {steps.map((step, i) => (
+          {steps.map((step) => (
             <li key={step.title}>
-              <span className="step-number">
-                {persianNumber(i + 1).padStart(2, "۰")}
-              </span>
               <Icon name={step.icon} size={30} />
               <h3>{step.title}</h3>
               <p>{step.body}</p>

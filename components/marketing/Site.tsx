@@ -8,7 +8,9 @@ import { Reveal } from "./components/Reveal";
 import { Hero, FAQBlock } from "./components/Sections";
 import { Home } from "./pages/Home";
 import { Product } from "./pages/Product";
-import { ResourceListing, ArticleDetail } from "./pages/Resources";
+import { ArticleDetail } from "./pages/Articles";
+import { SolutionPage } from "./pages/Solutions";
+import { PrivacyPage } from "./pages/Privacy";
 import { EvidencePage } from "./pages/Evidence";
 import { Contact } from "./pages/Contact";
 
@@ -20,7 +22,7 @@ function PageContent({ pathname }: { pathname: string }) {
     <section className="section not-found container">
       <span className="eyebrow">۴۰۴</span>
       <h1>این صفحه پیدا نشد.</h1>
-      <p>از صفحه خانه یا مرکز منابع، مسیر خود را ادامه دهید.</p>
+      <p>از صفحه خانه یا شواهد و پژوهش‌ها، مسیر خود را ادامه دهید.</p>
       <Link className="button" to="/">بازگشت به خانه</Link>
     </section>
   );
@@ -28,7 +30,8 @@ function PageContent({ pathname }: { pathname: string }) {
   if (pathname === "/contact") return <Contact page={page} />;
   if (pathname === "/evidence") return <EvidencePage page={page} />;
   if (pathname === "/faq") return <><Hero page={page} /><FAQBlock filter title="از کجا شروع کنیم؟" /></>;
-  if (pathname === "/resources" || pathname === "/articles") return <ResourceListing page={page} />;
+  if (pathname === "/privacy") return <PrivacyPage page={page}/>;
+  if (["/dashboard", "/app", "/kids"].includes(pathname)) return <SolutionPage page={page}/>;
   return <Product page={page} />;
 }
 

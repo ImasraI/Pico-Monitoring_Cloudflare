@@ -50,13 +50,11 @@
   background: var(--white);
   padding: 28px 24px;
 }
-.scanbox-page .scanbox-workflow .step-number { top: -13px; right: 24px; padding-inline: 10px; background: var(--white); }
 .scanbox-page .scanbox-workflow li.scanbox-ai-step {
   border-color: var(--teal-dark);
   background: var(--mint);
   box-shadow: var(--shadow);
 }
-.scanbox-page .scanbox-ai-step .step-number { background: var(--mint); }
 .scanbox-page .scanbox-ai-badge {
   display: inline-flex;
   align-items: center;
@@ -112,3 +110,7 @@
   .scanbox-page .hero-footnote { align-items: flex-start; line-height: 1.85; }
   .scanbox-page .hero-footnote .small-dot { margin-top: 7px; flex-shrink: 0; }
 }
+
+.scanbox-concept-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+.scanbox-concept-gallery h3 { font-size: 20px; margin-top: 22px; }
+@media (max-width: 767px) { .scanbox-concept-gallery { grid-template-columns: minmax(0, 1fr); } }

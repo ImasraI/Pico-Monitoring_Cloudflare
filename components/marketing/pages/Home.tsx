@@ -1,5 +1,5 @@
 import { Link } from "../navigation";
-import { articles } from "../content";
+import { SolutionLinks } from "./Solutions";
 import type { Page } from "../content/types";
 import {
   Hero,
@@ -8,7 +8,6 @@ import {
   FeatureGrid,
   Workflow,
   CTA,
-  ResourceCard,
   FAQBlock,
   ButtonLink,
 } from "../components/Sections";
@@ -83,7 +82,7 @@ export function Home({ page }: { page: Page }) {
         <div className="container split-grid">
           <div>
             <span className="eyebrow light" dir="ltr">
-              MEET PM SCANBOX
+              PM ScanBoxᴾʳᵒ
             </span>
             <h2>
               از تلفن بیمار،
@@ -91,11 +90,11 @@ export function Home({ page }: { page: Page }) {
               تا نگاه بالینی شما.
             </h2>
             <p>
-              PM ScanBox به ثبت منظم‌تر تصاویر داخل دهان کمک می‌کند؛ نقطه شروعی
+              PM ScanBoxᴾʳᵒ به ثبت منظم‌تر تصاویر داخل دهان کمک می‌کند؛ نقطه شروعی
               برای پیگیری روشن‌تر درمان، از هر جایی که بیمار حضور دارد.
             </p>
             <ButtonLink to="/scanbox" secondary>
-              PM ScanBox را بشناسید
+              PM ScanBoxᴾʳᵒ را بشناسید
             </ButtonLink>
             <small>
               نحوه استفاده و سازگاری، طبق راهنمای تأییدشده محصول بررسی می‌شود.
@@ -179,7 +178,7 @@ export function Home({ page }: { page: Page }) {
             معرفی می‌کنیم. شواهد سامانه‌های دیگر، تأیید عملکرد PM نیستند.
           </p>
           <Link className="text-link" to="/evidence">
-            شواهد و پژوهش <Icon name="arrow" size={21} />
+            شواهد و پژوهش‌ها <Icon name="arrow" size={21} />
           </Link>
           <div className="trust-points">
             <span>
@@ -196,20 +195,8 @@ export function Home({ page }: { page: Page }) {
       </section>
       <section className="section">
         <div className="container">
-          <div className="section-header-row">
-            <SectionHeading
-              eyebrow="منابع و راهنماها"
-              title="برای پیگیری بهتر، بیشتر بدانید."
-            />
-            <Link className="text-link" to="/resources">
-              همه منابع <Icon name="arrow" size={19} />
-            </Link>
-          </div>
-          <div className="resources-grid">
-            {articles.slice(0, 3).map((a) => (
-              <ResourceCard key={a.slug} article={a} />
-            ))}
-          </div>
+          <SectionHeading eyebrow="راهکارهای ما" title="از ثبت تصویر تا همراهی در درمان." body="ابزار، محیط تیم درمان و تجربه بیمار، در یک اکوسیستم مرتبط قرار می‌گیرند."/>
+          <SolutionLinks/>
         </div>
       </section>
       <FAQBlock categories={page.faqCategories} limit={2} />

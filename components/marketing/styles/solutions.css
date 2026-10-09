@@ -1,0 +1,92 @@
+/* New pages reuse Pico's typography, palette, spacing and responsive breakpoints. */
+.solution-page .split-grid > *, .solution-page .hero-grid > * { min-width: 0; }
+.solution-visual { min-width: 0; }
+.solution-visual-frame {
+  display: flex; align-items: center; justify-content: center; padding: 7%;
+  background: var(--mint); border: 1px solid var(--line); border-radius: var(--radius);
+  overflow: hidden; width: 100%; color: var(--ink);
+}
+.solution-visual-frame > img { width: 100%; height: 100%; object-fit: contain; }
+.solution-visual-frame:has(> img) { padding: 0; }
+.solution-visual-stage { width: 540px; flex-shrink: 0; transform-origin: center; }
+.solution-visual figcaption { font-size: 12px; color: var(--muted); margin-top: 16px; line-height: 1.85; }
+.mock-dashboard { display: grid; grid-template-columns: 76px minmax(0, 1fr); width: 100%; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); font-size: 12px; text-align: start; }
+.mock-dashboard > aside { display: flex; flex-direction: column; gap: 22px; padding: 22px 12px; background: var(--pale); border-inline-end: 1px solid var(--line); }
+.mock-dashboard > aside b { font-size: 22px; color: var(--teal-dark); }
+.mock-dashboard > aside span { font-size: 10px; color: var(--body); }
+.mock-dashboard-content { padding: 24px; min-width: 0; }
+.mock-toolbar { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding-bottom: 22px; }
+.mock-toolbar strong { font-size: 15px; }
+.mock-overview { display: flex; gap: 8px; flex-wrap: wrap; padding-bottom: 22px; }
+.mock-overview span { border: 1px solid var(--line); background: var(--pale); padding: 8px; border-radius: var(--radius); color: var(--body); font-size: 10px; }
+.mock-patient-list > div { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 6px 12px; padding: 16px 0; border-top: 1px solid var(--line); align-items: center; }
+.mock-patient-avatar { border-radius: 50%; background: var(--mint); width: 28px; height: 28px; display: grid; place-items: center; color: var(--teal-dark); grid-row: span 2; }
+.mock-patient-list strong { font-size: 12px; }
+.mock-patient-list small { font-size: 10px; color: var(--muted); }
+.mock-message { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 16px; margin-top: 14px; background: var(--mint); color: var(--teal-dark); border-radius: var(--radius); font-size: 12px; }
+.mock-review-images { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.mock-review-images > div { display: flex; flex-direction: column; align-items: center; gap: 16px; background: var(--pale); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 8px; color: var(--teal-dark); }
+.mock-timeline { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 22px; margin-top: 24px; color: var(--body); }
+.mock-phone-stage { position: relative; display: flex; width: 100%; justify-content: center; }
+.mock-phone { width: 62%; max-width: 265px; background: var(--white); border: 7px solid var(--ink); border-radius: 30px; padding: 16px 14px; text-align: center; box-shadow: var(--shadow); }
+.mock-phone-speaker { width: 35%; height: 6px; margin: 0 auto 20px; background: var(--ink); border-radius: 6px; }
+.mock-phone-top { display: flex; justify-content: space-between; align-items: center; color: var(--teal-dark); font-size: 14px; padding-bottom: 16px; }
+.mock-phone > strong { display: block; font-size: 13px; margin: 14px 0; }
+.mock-capture { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 25px 12px; border: 1px solid var(--line); background: var(--pale); border-radius: var(--radius); color: var(--teal-dark); }
+.mock-capture span { font-size: 10px; }
+.mock-phone .mock-message { font-size: 10px; padding: 12px; }
+.mock-phone-bottom { border-top: 1px solid var(--line); margin-top: 20px; padding-top: 14px; display: flex; justify-content: space-around; color: var(--muted); }
+.mock-floating-note { position: absolute; top: 68%; inset-inline-end: -1%; display: flex; gap: 8px; align-items: center; padding: 14px; font-size: 11px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); color: var(--teal-dark); max-width: 50%; }
+.mock-activity-path { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; width: 100%; margin: 22px 0; }
+.mock-activity-path > div { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.mock-activity-path span { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); }
+.mock-activity-path .done { background: var(--mint); color: var(--teal-dark); }
+.mock-activity-path small { font-size: 9px; color: var(--muted); }
+.mock-action { display: block; padding: 11px; background: var(--teal-dark); color: var(--white); font-size: 11px; border-radius: var(--radius); }
+.mock-training { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 22px 10px; background: var(--pale); color: var(--teal-dark); }
+.mock-training strong { font-size: 12px; }.mock-training span { font-size: 9px; }
+.kids-avatar-art { width: 155px; max-width: 75%; height: auto; }
+.kids-detail { display: flex; flex-direction: column; gap: 22px; align-items: center; justify-content: center; width: 100%; text-align: center; }
+.kids-detail > strong { font-size: 18px; }.kids-detail > span, .kids-detail p { font-size: 13px; }
+.kids-detail .mock-activity-path { max-width: 360px; }
+.mock-swatches { display: flex; gap: 12px; }.mock-swatches i { width: 20px; height: 20px; border-radius: 50%; background: var(--teal-dark); }.mock-swatches i:nth-child(2) { background: var(--ink); }.mock-swatches i:nth-child(3) { background: var(--white); border: 1px solid var(--line); }
+.mock-reward-badge { display: grid; place-items: center; width: 100px; height: 100px; border: 1px solid var(--teal-dark); border-radius: 50%; background: var(--white); color: var(--teal-dark); }
+.mock-learning-cards { display: flex; gap: 18px; }.mock-learning-cards span { display: flex; flex-direction: column; align-items: center; gap: 12px; background: var(--white); padding: 18px; border-radius: var(--radius); font-size: 12px; color: var(--teal-dark); }
+.mock-family { display: flex; align-items: flex-end; gap: 14px; }.mock-family .kids-avatar-art:first-child { width: 180px; }.mock-family .kids-avatar-art:last-child { width: 120px; }
+.mock-privacy { display: flex; flex-direction: column; align-items: center; gap: 40px; text-align: center; color: var(--teal-dark); }
+.mock-privacy > div { display: flex; gap: 32px; padding: 28px; border: 1px solid var(--line); background: var(--white); border-radius: var(--radius); }.mock-privacy > span { font-size: 14px; }
+.solution-context { color: var(--body); font-size: 15px; margin-bottom: 34px; max-width: 850px; }
+.solution-workflow { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.solution-workflow li { padding: 28px 24px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); }
+.solution-workflow li > svg { color: var(--teal-dark); margin-bottom: 20px; }
+.solution-workflow h3 { font-size: 20px; }.solution-workflow p { font-size: 14px; margin-top: 12px; }
+.solution-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
+.solution-gallery article > h3 { margin: 22px 0 12px; }.solution-gallery article > p { font-size: 15px; }
+.solution-links { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.solution-links-related { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.solution-link-card { padding: 28px; border: 1px solid var(--line); border-radius: var(--radius); transition: border-color var(--duration); }
+.solution-link-card:hover { border-color: var(--teal-dark); }.solution-link-card > svg { color: var(--teal-dark); }
+.solution-link-card h3 { font-size: 20px; margin: 20px 0 12px; overflow-wrap: anywhere; }.solution-link-card p { font-size: 14px; }.solution-link-card .text-link { font-size: 13px; margin-top: 24px; }
+.privacy-principles { display: grid; gap: 28px; max-width: 880px; }.privacy-principles h3 { margin-bottom: 12px; }.privacy-principles p { font-size: 16px; }
+@media (max-width: 1023px) {
+  .solution-workflow, .solution-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mock-dashboard-content { padding: 18px; }
+}
+@media (max-width: 767px) {
+  .solution-workflow, .solution-links, .solution-gallery { grid-template-columns: minmax(0, 1fr); }
+  .solution-visual-frame { padding: 5%; }
+  .mock-dashboard { grid-template-columns: 48px minmax(0, 1fr); }.mock-dashboard > aside { padding: 16px 6px; gap: 18px; }
+  .mock-dashboard > aside span { font-size: 8px; }.mock-dashboard-content { padding: 14px; }
+  .mock-toolbar { padding-bottom: 14px; }.mock-toolbar strong { font-size: 12px; }
+  .mock-overview { gap: 5px; padding-bottom: 10px; }.mock-overview span { font-size: 8px; padding: 5px; }
+  .mock-patient-list > div { padding: 10px 0; gap: 3px 8px; }.mock-patient-list strong { font-size: 10px; }.mock-patient-list small { font-size: 9px; }
+  .mock-dashboard .mock-message { font-size: 9px; padding: 10px; }.mock-dashboard .mock-message svg { width: 16px; height: 16px; }
+  .mock-review-images { gap: 6px; }.mock-review-images > div { padding: 14px 4px; gap: 10px; }.mock-review-images svg { width: 38px; height: 38px; }
+  .mock-review-images small, .mock-timeline { font-size: 9px; }.mock-timeline { margin-top: 14px; padding-top: 14px; gap: 8px; }
+  .mock-phone { max-width: 215px; width: 76%; padding: 12px 10px; border-width: 5px; border-radius: 24px; }
+  .mock-phone-top { font-size: 12px; }.mock-phone-speaker { margin-bottom: 14px; }.mock-capture { padding: 18px 8px; }.mock-capture svg { width: 64px; height: 64px; }
+  .mock-phone > strong { font-size: 11px; }.mock-phone .mock-activity-path { margin: 14px 0; gap: 4px; }.mock-phone .mock-activity-path small { font-size: 8px; }.mock-phone .mock-activity-path span { width: 25px; height: 25px; }
+  .mock-phone-bottom { margin-top: 14px; padding-top: 10px; }.mock-floating-note { font-size: 9px; padding: 10px; max-width: 44%; }
+  .kids-detail { gap: 18px; }.kids-detail > strong { font-size: 16px; }.mock-learning-cards { gap: 8px; }.mock-learning-cards span { padding: 12px; font-size: 10px; }
+  .mock-privacy { gap: 24px; }.mock-privacy > div { gap: 22px; padding: 20px; }.mock-privacy > span { font-size: 12px; }
+}

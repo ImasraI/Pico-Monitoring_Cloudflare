@@ -331,6 +331,13 @@ summary::-webkit-details-marker {
   padding: 12px;
   font-size: 15px;
 }
+.nav-dropdown::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 100%;
+  height: 12px;
+}
 .nav-dropdown a:hover {
   background: var(--mint);
 }
@@ -1166,15 +1173,6 @@ summary::-webkit-details-marker {
   position: relative;
   border-top: 1px solid #bbd7d1;
   padding-top: 28px;
-}
-.step-number {
-  font-size: 12px;
-  position: absolute;
-  top: -14px;
-  right: 0;
-  background: #fff;
-  padding-left: 14px;
-  color: var(--teal-dark);
 }
 .workflow-grid li > svg {
   color: var(--teal-dark);

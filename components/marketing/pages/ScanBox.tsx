@@ -1,5 +1,4 @@
 import type { Page } from "../content/types";
-import { persianNumber } from "../content";
 import { Link } from "../navigation";
 import { ButtonLink, FAQBlock, SectionHeading } from "../components/Sections";
 import { Icon } from "../components/Icon";
@@ -84,7 +83,6 @@ export function ScanBox({ page }: { page: Page }) {
           <ol className="workflow-grid six scanbox-workflow">
             {scanboxSteps.map((step, i) => (
               <li key={step.title} className={step.ai ? "scanbox-ai-step" : undefined}>
-                <span className="step-number">{persianNumber(i + 1).padStart(2, "۰")}</span>
                 <Icon name={step.icon} size={30} />
                 {step.ai && <span className="scanbox-ai-badge"><b dir="ltr">AI</b> هوش مصنوعی</span>}
                 <h3>{step.title}</h3>
@@ -125,6 +123,18 @@ export function ScanBox({ page }: { page: Page }) {
         </div>
       </section>
 
+      <section className="section wash">
+        <div className="container">
+          <SectionHeading eyebrow="نگاهی به ابزار" title="از آماده‌سازی تا ثبت تصویر." body="جایگاه‌های مستقل برای تصاویر نهایی محصول و تجربه بیمار؛ این نماهای موقت، تصویر محصول یا بیمار واقعی و راهنمای تأییدشده استفاده نیستند."/>
+          <div className="scanbox-concept-gallery">
+            {[
+              {image:scanboxImages.use,title:"نمای مفهومی استفاده"},
+              {image:scanboxImages.components,title:"نمای مفهومی اجزا"},
+              {image:scanboxImages.patient,title:"نمای مفهومی تجربه بیمار"},
+            ].map(item=><article key={item.title}><ProductImage image={item.image}/><h3>{item.title}</h3></article>)}
+          </div>
+        </div>
+      </section>
       <FAQBlock items={scanboxFAQs} title="پرسش‌های متداول" body="برای جزئیات اجرای پایش، با تیم Pico Monitoring گفت‌وگو کنید." />
       <section className="cta-section">
         <div className="container cta-inner">

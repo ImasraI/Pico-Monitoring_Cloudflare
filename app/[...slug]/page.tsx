@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import PublicPage from "@/components/marketing/Page";
 import { metadataFor, publicPaths } from "@/components/marketing/metadata";
 
@@ -12,6 +12,8 @@ export async function generateMetadata({ params }: Props) {
 export default async function Page({ params }: Props) {
   const { slug } = await params;
   const pathname = `/${slug.join("/")}`;
+  if (pathname === "/resources") permanentRedirect("/privacy");
+  if (pathname === "/articles") permanentRedirect("/evidence");
   if (!publicPaths.includes(pathname)) notFound();
   return <PublicPage pathname={pathname} />;
 }

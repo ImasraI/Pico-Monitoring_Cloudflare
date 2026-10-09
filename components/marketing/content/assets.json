@@ -1,21 +1,26 @@
 [
   {
     "id": "PM-HOME-HERO-01",
-    "page": ["/"],
+    "page": [
+      "/"
+    ],
     "section": "hero",
     "purpose": "Introduce the connected monitoring experience",
-    "composition": "PM ScanBox and phone on a pale studio surface; negative space on right for RTL copy",
+    "composition": "PM ScanBoxᴾʳᵒ and phone on a pale studio surface; negative space on right for RTL copy",
     "ratio": "5:4",
     "dimensions": "1600 × 1280",
     "type": "photograph / product render",
     "mustProvide": true,
     "src": "",
-    "status": "Original schematic phone and ScanBox composition; labeled illustrative",
-    "alt": "نمای شماتیک تلفن و PM ScanBox؛ تصویر واقعی محصول نیست"
+    "status": "Original schematic phone and PM ScanBoxᴾʳᵒ composition; labeled illustrative",
+    "alt": "نمای شماتیک تلفن و PM ScanBoxᴾʳᵒ؛ تصویر واقعی محصول نیست"
   },
   {
     "id": "PM-SCANBOX-HERO-01",
-    "page": ["/scanbox", "/"],
+    "page": [
+      "/scanbox",
+      "/"
+    ],
     "section": "hero / showcase",
     "purpose": "Show actual PM hardware",
     "composition": "Three-quarter view with phone mounted; clean teal and white studio composition",
@@ -25,11 +30,13 @@
     "mustProvide": true,
     "src": "",
     "status": "Original labeled schematic",
-    "alt": "نمای شماتیک PM ScanBox همراه تلفن؛ طراحی واقعی محصول باید جایگزین شود"
+    "alt": "نمای شماتیک PM ScanBoxᴾʳᵒ همراه تلفن؛ طراحی واقعی محصول باید جایگزین شود"
   },
   {
     "id": "PM-SCANBOX-SIDE-01",
-    "page": ["/scanbox"],
+    "page": [
+      "/scanbox"
+    ],
     "section": "product detail",
     "purpose": "Show physical product profile",
     "composition": "Actual side view on pale teal background",
@@ -39,11 +46,13 @@
     "mustProvide": true,
     "src": "",
     "status": "Original labeled schematic",
-    "alt": "جایگاه تصویر نمای جانبی PM ScanBox"
+    "alt": "جایگاه تصویر نمای جانبی PM ScanBoxᴾʳᵒ"
   },
   {
     "id": "PM-SCANBOX-PHONE-01",
-    "page": ["/scanbox"],
+    "page": [
+      "/scanbox"
+    ],
     "section": "gallery",
     "purpose": "Show phone interaction",
     "composition": "Actual device with supported phone; mounting interaction visible",
@@ -53,11 +62,14 @@
     "mustProvide": true,
     "src": "",
     "status": "Labeled photographic placeholder",
-    "alt": "جایگاه تصویر PM ScanBox همراه تلفن"
+    "alt": "جایگاه تصویر PM ScanBoxᴾʳᵒ همراه تلفن"
   },
   {
     "id": "PM-PATIENT-USAGE-01",
-    "page": ["/patients", "/scanbox"],
+    "page": [
+      "/patients",
+      "/scanbox"
+    ],
     "section": "usage / gallery",
     "purpose": "Explain usability",
     "composition": "Consenting adult demonstrating approved device workflow in home setting",
@@ -67,11 +79,13 @@
     "mustProvide": true,
     "src": "",
     "status": "Original illustrative patient journey; no invented person",
-    "alt": "جایگاه تصویر بیمار در حال استفاده از PM ScanBox"
+    "alt": "جایگاه تصویر بیمار در حال استفاده از PM ScanBoxᴾʳᵒ"
   },
   {
     "id": "PM-SCANBOX-PACK-01",
-    "page": ["/scanbox"],
+    "page": [
+      "/scanbox"
+    ],
     "section": "gallery",
     "purpose": "Show delivered packaging",
     "composition": "Actual approved packaging on white surface; no invented contents",
@@ -81,11 +95,13 @@
     "mustProvide": true,
     "src": "",
     "status": "Labeled photographic placeholder",
-    "alt": "جایگاه تصویر بسته‌بندی واقعی PM ScanBox"
+    "alt": "جایگاه تصویر بسته‌بندی واقعی PM ScanBoxᴾʳᵒ"
   },
   {
     "id": "PM-SCANBOX-PARTS-01",
-    "page": ["/scanbox"],
+    "page": [
+      "/scanbox"
+    ],
     "section": "gallery",
     "purpose": "Identify actual components",
     "composition": "Top-down arrangement of supplied components with approved names",
@@ -95,11 +111,13 @@
     "mustProvide": true,
     "src": "",
     "status": "Labeled photographic placeholder",
-    "alt": "جایگاه تصویر اجزای واقعی PM ScanBox"
+    "alt": "جایگاه تصویر اجزای واقعی PM ScanBoxᴾʳᵒ"
   },
   {
     "id": "PM-SCANBOX-INSTRUCTION-01",
-    "page": ["/scanbox"],
+    "page": [
+      "/scanbox"
+    ],
     "section": "gallery",
     "purpose": "Explain approved use",
     "composition": "Approved sequential instructional photography without invented use instructions",
@@ -109,7 +127,7 @@
     "mustProvide": true,
     "src": "",
     "status": "Labeled photographic placeholder",
-    "alt": "جایگاه تصاویر آموزش تأییدشده استفاده از PM ScanBox"
+    "alt": "جایگاه تصاویر آموزش تأییدشده استفاده از PM ScanBoxᴾʳᵒ"
   },
   {
     "id": "PM-CLINICAL-UI-01",
@@ -134,7 +152,10 @@
   },
   {
     "id": "PM-PATIENT-UI-01",
-    "page": ["/patients", "/monitoring"],
+    "page": [
+      "/patients",
+      "/monitoring"
+    ],
     "section": "hero / experience",
     "purpose": "Show patient flow",
     "composition": "Phone frame with photo submission journey; actual app screenshot replaces schematic",
@@ -148,7 +169,10 @@
   },
   {
     "id": "PM-WORKFLOW-01",
-    "page": ["/orthodontists", "/clinics"],
+    "page": [
+      "/orthodontists",
+      "/clinics"
+    ],
     "section": "workflow",
     "purpose": "Describe image-to-review workflow",
     "composition": "Original RTL diagram: photo, review, clinical decision",
@@ -162,7 +186,10 @@
   },
   {
     "id": "PM-ALIGNER-01",
-    "page": ["/aligners", "/"],
+    "page": [
+      "/aligners",
+      "/"
+    ],
     "section": "hero / treatment",
     "purpose": "Show aligner monitoring",
     "composition": "Approved close-up of aligner with generous surrounding space",
@@ -176,7 +203,10 @@
   },
   {
     "id": "PM-BRACES-01",
-    "page": ["/braces", "/"],
+    "page": [
+      "/braces",
+      "/"
+    ],
     "section": "hero / treatment",
     "purpose": "Show fixed-appliance monitoring",
     "composition": "Approved close-up of braces; no before-and-after clinical claims",
@@ -190,7 +220,9 @@
   },
   {
     "id": "PM-TREATMENT-01",
-    "page": ["/monitoring"],
+    "page": [
+      "/monitoring"
+    ],
     "section": "treatment types",
     "purpose": "Compare treatment contexts",
     "composition": "Original dental-arch illustration; neutral clinical density",
@@ -204,7 +236,9 @@
   },
   {
     "id": "PM-RESEARCH-01",
-    "page": ["/evidence", "/resources", "/articles"],
+    "page": [
+      "/evidence"
+    ],
     "section": "hero / resources",
     "purpose": "Support an evidence-first message",
     "composition": "Original paper and clinical-review diagram; no fake charts or metrics",
@@ -218,7 +252,9 @@
   },
   {
     "id": "PM-RESOURCE-01",
-    "page": ["/resources", "/articles", "/"],
+    "page": [
+      "/"
+    ],
     "section": "hero / featured resource",
     "purpose": "Introduce educational resources",
     "composition": "Original image-to-review composition; restrained teal background",
@@ -232,7 +268,9 @@
   },
   {
     "id": "PM-LOGO-01",
-    "page": ["all"],
+    "page": [
+      "all"
+    ],
     "section": "header / footer",
     "purpose": "Replace provisional typographic mark",
     "composition": "Approved PM logo with clear-space guidelines",
@@ -246,7 +284,9 @@
   },
   {
     "id": "PM-TESTIMONIAL-01",
-    "page": ["future"],
+    "page": [
+      "future"
+    ],
     "section": "future trust block",
     "purpose": "Allow verified practitioner experience after consent",
     "composition": "Approved portrait, name, affiliation and approved quotation",
@@ -289,5 +329,181 @@
     "src": "",
     "status": "Original code-native illustration",
     "alt": "تصویر مفهومی فرایند مرور و پژوهش؛ بدون نمایش داده یا نتیجه واقعی"
+  },
+  {
+    "id": "PM-DASHBOARD-PREVIEW-01",
+    "page": [
+      "/dashboard"
+    ],
+    "section": "solution preview",
+    "purpose": "Replaceable concept visual",
+    "composition": "Original code-native mockup; synthetic UI and data only",
+    "ratio": "5:4",
+    "dimensions": "1200 × 960",
+    "type": "original UI illustration",
+    "mustProvide": false,
+    "src": "",
+    "status": "Concept mockup, replace with approved screenshot",
+    "alt": "ماکاپ مفهومی فهرست بیماران؛ داده‌ها نمایشی‌اند و تصویر واقعی محصول نیست"
+  },
+  {
+    "id": "PM-DASHBOARD-REVIEW-01",
+    "page": [
+      "/dashboard"
+    ],
+    "section": "solution preview",
+    "purpose": "Replaceable concept visual",
+    "composition": "Original code-native mockup; synthetic UI and data only",
+    "ratio": "16:10",
+    "dimensions": "1440 × 900",
+    "type": "original UI illustration",
+    "mustProvide": false,
+    "src": "",
+    "status": "Concept mockup, replace with approved screenshot",
+    "alt": "ماکاپ موقت مرور تصویر و خط زمانی یک پرونده ساختگی"
+  },
+  {
+    "id": "PM-APP-PREVIEW-01",
+    "page": [
+      "/app"
+    ],
+    "section": "solution preview",
+    "purpose": "Replaceable concept visual",
+    "composition": "Original code-native mockup; synthetic UI and data only",
+    "ratio": "5:4",
+    "dimensions": "1200 × 960",
+    "type": "original UI illustration",
+    "mustProvide": false,
+    "src": "",
+    "status": "Concept mockup, replace with approved screenshot",
+    "alt": "ماکاپ موقت گوشی بیمار و مسیر ثبت تصویر؛ تصویر واقعی محصول نیست"
+  },
+  {
+    "id": "PM-APP-GUIDANCE-01",
+    "page": [
+      "/app"
+    ],
+    "section": "solution preview",
+    "purpose": "Replaceable concept visual",
+    "composition": "Original code-native mockup; synthetic UI and data only",
+    "ratio": "5:4",
+    "dimensions": "1200 × 960",
+    "type": "original UI illustration",
+    "mustProvide": false,
+    "src": "",
+    "status": "Concept mockup, replace with approved screenshot",
+    "alt": "ماکاپ مفهومی آموزش و پیام‌های تیم درمان برای بیمار"
+  },
+  {
+    "id": "PM-KIDS-PREVIEW-01",
+    "page": [
+      "/kids"
+    ],
+    "section": "solution preview",
+    "purpose": "Replaceable concept visual",
+    "composition": "Original code-native mockup; synthetic UI and data only",
+    "ratio": "5:4",
+    "dimensions": "1200 × 960",
+    "type": "original UI illustration",
+    "mustProvide": false,
+    "src": "",
+    "status": "Concept mockup, replace with approved screenshot",
+    "alt": "ماکاپ مفهومی نمای کودک از PM App با آواتار و مسیر فعالیت"
+  },
+  {
+    "id": "PM-KIDS-AVATAR-01",
+    "page": [
+      "/kids"
+    ],
+    "section": "solution preview",
+    "purpose": "Replaceable concept visual",
+    "composition": "Original code-native mockup; synthetic UI and data only",
+    "ratio": "4:3",
+    "dimensions": "1200 × 900",
+    "type": "original UI illustration",
+    "mustProvide": false,
+    "src": "",
+    "status": "Concept mockup, replace with approved screenshot",
+    "alt": "نمونه مفهومی آواتار کودک؛ قابل جایگزینی با طراحی تأییدشده"
+  },
+  {
+    "id": "PM-KIDS-GAME-01",
+    "page": [
+      "/kids"
+    ],
+    "section": "solution preview",
+    "purpose": "Replaceable concept visual",
+    "composition": "Original code-native mockup; synthetic UI and data only",
+    "ratio": "4:3",
+    "dimensions": "1200 × 900",
+    "type": "original UI illustration",
+    "mustProvide": false,
+    "src": "",
+    "status": "Concept mockup, replace with approved screenshot",
+    "alt": "ماکاپ مفهومی مسیر فعالیت‌های کودک؛ بدون داده درمان واقعی"
+  },
+  {
+    "id": "PM-KIDS-REWARD-01",
+    "page": [
+      "/kids"
+    ],
+    "section": "solution preview",
+    "purpose": "Replaceable concept visual",
+    "composition": "Original code-native mockup; synthetic UI and data only",
+    "ratio": "4:3",
+    "dimensions": "1200 × 900",
+    "type": "original UI illustration",
+    "mustProvide": false,
+    "src": "",
+    "status": "Concept mockup, replace with approved screenshot",
+    "alt": "نمونه نمایشی پاداش همکاری؛ پاداش، ارزیابی نتیجه درمان نیست"
+  },
+  {
+    "id": "PM-KIDS-EDUCATION-01",
+    "page": [
+      "/kids"
+    ],
+    "section": "solution preview",
+    "purpose": "Replaceable concept visual",
+    "composition": "Original code-native mockup; synthetic UI and data only",
+    "ratio": "4:3",
+    "dimensions": "1200 × 900",
+    "type": "original UI illustration",
+    "mustProvide": false,
+    "src": "",
+    "status": "Concept mockup, replace with approved screenshot",
+    "alt": "نمونه مفهومی آموزش تصویری کودک؛ نیازمند بازبینی تیم تخصصی"
+  },
+  {
+    "id": "PM-KIDS-FAMILY-01",
+    "page": [
+      "/kids"
+    ],
+    "section": "solution preview",
+    "purpose": "Replaceable concept visual",
+    "composition": "Original code-native mockup; synthetic UI and data only",
+    "ratio": "4:3",
+    "dimensions": "1200 × 900",
+    "type": "original UI illustration",
+    "mustProvide": false,
+    "src": "",
+    "status": "Concept mockup, replace with approved screenshot",
+    "alt": "تصویر مفهومی همراهی والد و کودک در مسیر پایش"
+  },
+  {
+    "id": "PM-PRIVACY-CONCEPT-01",
+    "page": [
+      "/privacy"
+    ],
+    "section": "solution preview",
+    "purpose": "Replaceable concept visual",
+    "composition": "Original code-native mockup; synthetic UI and data only",
+    "ratio": "5:4",
+    "dimensions": "1200 × 960",
+    "type": "original UI illustration",
+    "mustProvide": false,
+    "src": "",
+    "status": "Concept mockup, replace with approved screenshot",
+    "alt": "تصویر مفهومی اطلاعات درمان و دسترسی مسئولانه؛ نشان‌دهنده استاندارد یا تأییدیه امنیتی نیست"
   }
 ]

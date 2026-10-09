@@ -66,7 +66,7 @@ export function Contact({ page }: { page: Page }) {
             <span className="eyebrow">گفت‌وگو درباره نیاز شما</span>
             <h2>از مطب شما شروع می‌کنیم.</h2>
             <p>
-              درباره مسیر پایش، PM ScanBox و امکان اجرای راهکار در مطب یا کلینیک
+              درباره مسیر پایش، PM ScanBoxᴾʳᵒ و امکان اجرای راهکار در مطب یا کلینیک
               شما گفت‌وگو می‌کنیم.
             </p>
             <div className="phone-links">
