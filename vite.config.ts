@@ -25,7 +25,7 @@ const localBindingConfig = {
         },
       ]
     : [],
-  r2_buckets: r2
+  r2_buckets: r2 && process.env.DANTO_USE_R2 === "1"
     ? [
         {
           binding: r2,
@@ -61,7 +61,10 @@ export default defineConfig(async () => {
       cloudflare({
         viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
         inspectorPort: false,
-        config: localBindingConfig,
+        configPath: "wrangler.json",
+        config: process.env.DANTO_CLOUDFLARE_DEPLOY === "1" ? undefined : (config) => {
+          Object.assign(config, localBindingConfig);
+        },
       }),
     ],
   };

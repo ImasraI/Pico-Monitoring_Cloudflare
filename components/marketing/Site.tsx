@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Link, PublicPathContext } from "./navigation";
 import { pages, articles } from "./content";
 import { Header, Footer } from "./components/Layout";
+import { ScrollRuntime, PointerRuntime, ScrollProgress, BackToTop } from "./components/Motion";
 import { Reveal } from "./components/Reveal";
 import { Hero, FAQBlock } from "./components/Sections";
 import { Home } from "./pages/Home";
@@ -41,7 +42,8 @@ export default function Site({ pathname }: { pathname: string }) {
   }, [pathname]);
   return (
     <PublicPathContext.Provider value={pathname}>
-      <Reveal pathname={pathname} />
+      <Reveal />
+      <ScrollRuntime /><PointerRuntime /><ScrollProgress /><BackToTop />
       <Header key={pathname} />
       <main id="main" tabIndex={-1}><PageContent key={pathname} pathname={pathname} /></main>
       <Footer />

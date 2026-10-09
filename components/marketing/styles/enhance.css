@@ -1,0 +1,1606 @@
+/* ==========================================================================
+   Enhanced visual layer — loaded after site.css.
+
+   Everything here is progressive enhancement. Without JavaScript, or with
+   reduced motion requested, the site renders complete and still. The reveal
+   engine only hides content when html.has-js is present, so prerendered HTML
+   stays readable for crawlers and for readers with scripting disabled.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Base polish
+   -------------------------------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 118px;
+  scrollbar-color: var(--line-strong) transparent;
+}
+html.motion-off,
+html.motion-off * {
+  scroll-behavior: auto;
+}
+body {
+  background: var(--white);
+  text-rendering: optimizeLegibility;
+  font-synthesis-weight: none;
+}
+::selection {
+  background: color-mix(in srgb, var(--teal) 26%, transparent);
+  color: var(--ink);
+}
+@supports not (background: color-mix(in srgb, red 50%, blue)) {
+  ::selection {
+    background: #b9e7e7;
+    color: #123;
+  }
+}
+* {
+  scrollbar-width: thin;
+}
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: var(--radius-pill);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  background-image: var(--grad-brand);
+}
+::-webkit-scrollbar-thumb:hover {
+  background-image: linear-gradient(120deg, var(--teal-deep), var(--teal));
+}
+:focus-visible {
+  outline: 2px solid var(--teal-dark);
+  outline-offset: 4px;
+  border-radius: 3px;
+  transition: outline-offset var(--dur-1) var(--ease-out);
+}
+.button:focus-visible,
+.filters button:focus-visible {
+  outline-offset: 6px;
+  box-shadow: var(--ring);
+}
+/* Ambience: two very soft light pools that follow the theme. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      46rem 32rem at 88% -6%,
+      color-mix(in srgb, var(--teal) 12%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      40rem 30rem at 6% 42%,
+      color-mix(in srgb, var(--aqua) 10%, transparent),
+      transparent 62%
+    );
+  opacity: 0.9;
+}
+
+/* --------------------------------------------------------------------------
+   2. Reveal engine
+   -------------------------------------------------------------------------- */
+html.has-js [data-reveal] {
+  --reveal-x: 0px;
+  --reveal-y: var(--reveal-distance);
+  --reveal-scale: 1;
+  --reveal-blur: 0px;
+  --reveal-rotate: 0deg;
+  opacity: 0;
+  transform: translate3d(var(--reveal-x), var(--reveal-y), 0)
+    scale(var(--reveal-scale)) rotate(var(--reveal-rotate));
+  filter: blur(var(--reveal-blur));
+  transition:
+    opacity var(--dur-4) var(--ease-out) var(--reveal-delay, 0ms),
+    transform var(--dur-4) var(--ease-out) var(--reveal-delay, 0ms),
+    filter var(--dur-4) var(--ease-out) var(--reveal-delay, 0ms),
+    clip-path var(--dur-4) var(--ease-out) var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+html.has-js [data-reveal][data-reveal-state="in"] {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  will-change: auto;
+}
+html.has-js [data-reveal="mask"][data-reveal-state="in"] {
+  clip-path: inset(0 0 0 0);
+}
+html.has-js [data-reveal="drop"] {
+  --reveal-y: calc(var(--reveal-distance) * -1);
+}
+html.has-js [data-reveal="fade"] {
+  --reveal-y: 0px;
+}
+html.has-js [data-reveal="zoom"] {
+  --reveal-y: 14px;
+  --reveal-scale: 0.93;
+}
+html.has-js [data-reveal="blur"] {
+  --reveal-y: 20px;
+  --reveal-blur: 12px;
+}
+html.has-js [data-reveal="tilt"] {
+  --reveal-y: 34px;
+  --reveal-rotate: -1.4deg;
+  transform-origin: 50% 100%;
+}
+html.has-js [data-reveal="mask"] {
+  --reveal-y: 0px;
+  clip-path: inset(0 0 100% 0);
+  opacity: 1;
+}
+html.has-js [data-reveal="mask"] img,
+html.has-js [data-reveal="mask"] .visual {
+  transform: scale(1.06);
+  transition: transform var(--dur-5) var(--ease-out);
+}
+html.has-js [data-reveal="mask"][data-reveal-state="in"] img,
+html.has-js [data-reveal="mask"][data-reveal-state="in"] .visual {
+  transform: none;
+}
+/* Parallax rides the independent `translate` property, so an element can be
+   scrolled and revealed at the same time without the two fighting over
+   `transform`. */
+[data-parallax] {
+  translate: 0 var(--pm-shift, 0px);
+  transition: translate var(--dur-3) var(--ease-out);
+  will-change: translate;
+}
+
+/* One-time hero entrance: the header copy arrives in reading order. */
+html.has-js .hero-copy > *,
+html.has-js .hero-visual {
+  animation: pm-enter var(--dur-4) var(--ease-out) both;
+}
+html.has-js .hero-copy > *:nth-child(1) {
+  animation-delay: 40ms;
+}
+html.has-js .hero-copy > *:nth-child(2) {
+  animation-delay: 110ms;
+}
+html.has-js .hero-copy > *:nth-child(3) {
+  animation-delay: 180ms;
+}
+html.has-js .hero-copy > *:nth-child(4) {
+  animation-delay: 250ms;
+}
+html.has-js .hero-copy > *:nth-child(5) {
+  animation-delay: 320ms;
+}
+html.has-js .hero-visual {
+  animation-delay: 180ms;
+}
+@keyframes pm-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+}
+
+/* Decorative rules that draw themselves. */
+html.has-js [data-reveal="line"] {
+  --reveal-y: 0px;
+  opacity: 1;
+  position: relative;
+}
+html.has-js [data-reveal="line"]::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--grad-hairline);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--dur-5) var(--ease-out) var(--reveal-delay, 0ms);
+}
+html.has-js [data-reveal="line"][data-reveal-state="in"]::after {
+  transform: scaleX(1);
+}
+
+/* --------------------------------------------------------------------------
+   3. Scroll progress, reading rail and back-to-top
+   -------------------------------------------------------------------------- */
+.pm-progress {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 3px;
+  z-index: 70;
+  pointer-events: none;
+  background: var(--grad-brand);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--teal) 55%, transparent);
+  transform: scaleX(var(--pm-progress, 0));
+  transform-origin: right center;
+  opacity: 0;
+  transition: opacity var(--dur-2) var(--ease);
+}
+html[data-scrolled] .pm-progress {
+  opacity: 1;
+}
+html[data-scrolled] .site-header {
+  border-bottom-color: var(--line-soft);
+  box-shadow: var(--shadow-1);
+}
+html[data-scrolled] .site-header::after {
+  opacity: 1;
+}
+html[data-scrolled] .site-header .header-inner {
+  height: 70px;
+}
+html[data-scrolled] .site-header .brand {
+  transform: scale(0.94);
+}
+.pm-top {
+  position: fixed;
+  inset-inline-end: 20px;
+  inset-block-end: 22px;
+  z-index: 65;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  padding: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--teal-dark);
+  background: conic-gradient(
+    var(--teal-dark) calc(var(--pm-progress, 0) * 1turn),
+    color-mix(in srgb, var(--line) 90%, transparent) 0
+  );
+  box-shadow: var(--shadow-1);
+  opacity: 0;
+  transform: translateY(14px) scale(0.9);
+  pointer-events: none;
+  transition:
+    opacity var(--dur-3) var(--ease-out),
+    transform var(--dur-3) var(--ease-spring),
+    box-shadow var(--dur-2) var(--ease);
+}
+.pm-top::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--surface);
+}
+.pm-top svg {
+  position: relative;
+  transition: transform var(--dur-2) var(--ease-spring);
+}
+.pm-top[data-visible] {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.pm-top:hover {
+  box-shadow: var(--shadow-2);
+}
+.pm-top:hover svg {
+  transform: translateY(-3px);
+}
+
+/* --------------------------------------------------------------------------
+   4. Header: glass, shrink, animated nav underline, theme switch
+   -------------------------------------------------------------------------- */
+.site-header {
+  background: var(--glass-bg);
+  border-bottom: 1px solid transparent;
+  transition:
+    background var(--dur-3) var(--ease),
+    box-shadow var(--dur-3) var(--ease),
+    border-color var(--dur-3) var(--ease);
+}
+.site-header::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--grad-hairline);
+  opacity: 0;
+  transition: opacity var(--dur-3) var(--ease);
+}
+@supports (backdrop-filter: blur(4px)) {
+  .site-header {
+    backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+  }
+  .nav-dropdown,
+  .mobile-dialog,
+  .mobile-panel {
+    backdrop-filter: blur(calc(var(--glass-blur) + 6px)) saturate(140%);
+  }
+}
+.header-inner {
+  transition:
+    height var(--dur-3) var(--ease-out),
+    gap var(--dur-3) var(--ease-out);
+}
+
+.brand {
+  transition: transform var(--dur-3) var(--ease-out);
+}
+.desktop-nav > a,
+.desktop-nav .nav-group > summary {
+  position: relative;
+}
+.desktop-nav > a::after,
+.desktop-nav .nav-group > summary::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 8px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--grad-brand);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--dur-3) var(--ease-out);
+}
+.desktop-nav > a:hover::after,
+.desktop-nav > a.active::after,
+.desktop-nav .nav-group[open] > summary::after,
+.desktop-nav .nav-group:hover > summary::after {
+  transform: scaleX(1);
+}
+.nav-dropdown {
+  border-color: var(--glass-border);
+  background: var(--glass-bg);
+  box-shadow: var(--shadow-2);
+  animation: pm-drop var(--dur-3) var(--ease-out) both;
+}
+.nav-dropdown a {
+  border-radius: var(--radius-sm);
+  transition:
+    background var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease),
+    padding-inline-start var(--dur-2) var(--ease-out);
+}
+.nav-dropdown a:hover {
+  padding-inline-start: 18px;
+}
+@keyframes pm-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+}
+.pm-theme {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--teal-dark);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  transition:
+    border-color var(--dur-2) var(--ease),
+    background var(--dur-2) var(--ease),
+    transform var(--dur-2) var(--ease-spring);
+}
+.pm-theme:hover {
+  border-color: var(--teal-dark);
+  transform: translateY(-1px);
+}
+.pm-theme:active {
+  transform: scale(0.94);
+}
+.pm-theme-sun,
+.pm-theme-moon {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  transition:
+    transform var(--dur-4) var(--ease-spring),
+    opacity var(--dur-2) var(--ease);
+}
+.pm-theme-sun {
+  opacity: 1;
+  transform: none;
+}
+.pm-theme-moon {
+  opacity: 0;
+  transform: translateY(120%) rotate(-60deg);
+}
+html[data-theme="dark"] .pm-theme-sun {
+  opacity: 0;
+  transform: translateY(-120%) rotate(60deg);
+}
+html[data-theme="dark"] .pm-theme-moon {
+  opacity: 1;
+  transform: none;
+}
+/* Theme swap: a circular wipe from the switch itself where supported. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--dur-3);
+  animation-timing-function: var(--ease-out);
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  animation-name: pm-vt-out;
+}
+::view-transition-new(root) {
+  animation-name: pm-vt-in;
+  clip-path: circle(var(--pm-vt-radius, 120vmax) at var(--pm-vt-x, 50%) var(--pm-vt-y, 50%));
+}
+@keyframes pm-vt-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes pm-vt-in {
+  from {
+    clip-path: circle(0px at var(--pm-vt-x, 50%) var(--pm-vt-y, 50%));
+  }
+  to {
+    clip-path: circle(var(--pm-vt-radius, 120vmax) at var(--pm-vt-x, 50%) var(--pm-vt-y, 50%));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 1ms;
+  }
+}
+.pm-theme-hint {
+  position: absolute;
+  top: calc(100% + 10px);
+  inset-inline-end: 0;
+  padding: 6px 11px;
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+  color: var(--on-ink);
+  font-size: 10px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition:
+    opacity var(--dur-2) var(--ease),
+    transform var(--dur-2) var(--ease);
+}
+.pm-theme:hover .pm-theme-hint,
+.pm-theme:focus-visible .pm-theme-hint {
+  opacity: 1;
+  transform: none;
+}
+.header-actions {
+  gap: 18px;
+}
+/* Mobile sheet entrance. */
+.mobile-dialog {
+  background: var(--glass-bg);
+}
+.mobile-dialog[open] .mobile-panel {
+  animation: pm-sheet var(--dur-3) var(--ease-out) both;
+}
+.mobile-dialog[open]::backdrop {
+  animation: pm-fade var(--dur-3) var(--ease) both;
+}
+.mobile-dialog[open] nav > a,
+.mobile-dialog[open] nav details {
+  animation: pm-sheet-item var(--dur-3) var(--ease-out) both;
+}
+.mobile-dialog[open] nav > *:nth-child(1) {
+  animation-delay: 40ms;
+}
+.mobile-dialog[open] nav > *:nth-child(2) {
+  animation-delay: 80ms;
+}
+.mobile-dialog[open] nav > *:nth-child(3) {
+  animation-delay: 120ms;
+}
+.mobile-dialog[open] nav > *:nth-child(4) {
+  animation-delay: 160ms;
+}
+.mobile-dialog[open] nav > *:nth-child(5) {
+  animation-delay: 200ms;
+}
+.mobile-dialog[open] nav > *:nth-child(6) {
+  animation-delay: 240ms;
+}
+@keyframes pm-sheet {
+  from {
+    transform: translateX(-24px);
+    opacity: 0;
+  }
+}
+@keyframes pm-sheet-item {
+  from {
+    transform: translateX(-14px);
+    opacity: 0;
+  }
+}
+@keyframes pm-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. Hero ambience: aurora field, grain, gradient display type
+   -------------------------------------------------------------------------- */
+.pm-aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.pm-aurora > span {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(96px);
+  opacity: 0.5;
+}
+.pm-aurora .pm-a1 {
+  width: 42vw;
+  height: 42vw;
+  inset-block-start: -12vw;
+  inset-inline-start: -8vw;
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--aurora-1),
+    transparent 68%
+  );
+  animation: pm-drift-1 22s var(--ease-in-out) infinite alternate;
+}
+.pm-aurora .pm-a2 {
+  width: 32vw;
+  height: 32vw;
+  inset-block-start: 26%;
+  inset-inline-end: -6vw;
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--aurora-2),
+    transparent 66%
+  );
+  animation: pm-drift-2 26s var(--ease-in-out) infinite alternate;
+}
+.pm-aurora .pm-a3 {
+  width: 26vw;
+  height: 26vw;
+  inset-block-end: -10vw;
+  inset-inline-start: 32%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--aurora-3),
+    transparent 70%
+  );
+  animation: pm-drift-3 30s var(--ease-in-out) infinite alternate;
+}
+.pm-aurora .pm-grain {
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+  filter: blur(2px);
+  opacity: var(--grain-opacity);
+  background-size: 160px 160px;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+}
+@keyframes pm-drift-1 {
+  to {
+    transform: translate3d(6vw, 4vw, 0) scale(1.14);
+  }
+}
+@keyframes pm-drift-2 {
+  to {
+    transform: translate3d(-7vw, 5vw, 0) scale(1.08);
+  }
+}
+@keyframes pm-drift-3 {
+  to {
+    transform: translate3d(4vw, -5vw, 0) scale(1.2);
+  }
+}
+.hero > .container,
+.hero-bottom {
+  position: relative;
+  z-index: 1;
+}
+.hero {
+  background: var(--mint);
+  isolation: isolate;
+}
+.hero h1,
+h1 em,
+h2 em,
+.evidence-teaser em,
+.simple-hero h1 {
+  background-image: var(--grad-brand);
+  background-size: 180% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--teal-dark);
+  animation: pm-shimmer 14s var(--ease-in-out) infinite alternate;
+}
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero h1,
+  h1 em,
+  h2 em,
+  .evidence-teaser em,
+  .simple-hero h1 {
+    background: none;
+    color: var(--ink);
+  }
+}
+@keyframes pm-shimmer {
+  to {
+    background-position: 100% 0;
+  }
+}
+.eyebrow {
+  transition: letter-spacing var(--dur-3) var(--ease-out);
+}
+.eyebrow > span {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--teal) 16%, transparent);
+}
+/* Feature icons and step icons gain a tinted plate on hover. */
+.feature-icon,
+.review-icon {
+  transition:
+    transform var(--dur-3) var(--ease-spring),
+    background var(--dur-2) var(--ease),
+    border-color var(--dur-2) var(--ease);
+}
+.feature:hover .feature-icon {
+  transform: translateY(-3px) rotate(-4deg);
+  background: var(--surface-3);
+  border-color: var(--teal);
+}
+
+/* --------------------------------------------------------------------------
+   6. Cards: spotlight, tilt, gradient ring, lift
+   -------------------------------------------------------------------------- */
+[data-spotlight] {
+  position: relative;
+  isolation: isolate;
+}
+[data-spotlight]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 0%),
+    var(--glow-color),
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity var(--dur-3) var(--ease);
+  pointer-events: none;
+}
+[data-spotlight]:hover::before,
+[data-spotlight]:focus-within::before {
+  opacity: 1;
+}
+[data-spotlight] > * {
+  position: relative;
+  z-index: 1;
+}
+[data-glow] {
+  position: relative;
+  transition:
+    transform var(--dur-3) var(--ease-out),
+    box-shadow var(--dur-3) var(--ease),
+    border-color var(--dur-3) var(--ease);
+}
+[data-glow]::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--grad-brand);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--dur-3) var(--ease);
+  pointer-events: none;
+}
+[data-glow]:hover::after,
+[data-glow]:focus-within::after {
+  opacity: 1;
+}
+@media (hover: hover) and (pointer: fine) {
+  [data-tilt] {
+    transform: perspective(1100px) rotateX(var(--rx, 0deg))
+      rotateY(var(--ry, 0deg)) translate3d(0, var(--lift, 0px), 0);
+    transform-style: preserve-3d;
+    transition:
+      transform var(--dur-3) var(--ease-out),
+      box-shadow var(--dur-3) var(--ease);
+  }
+  [data-glow]:hover {
+    --lift: -4px;
+  }
+  .treatment-card:hover,
+  .evidence-card:hover {
+    box-shadow: var(--shadow-2);
+  }
+  .feature {
+    transition: transform var(--dur-3) var(--ease-out);
+  }
+  .feature:hover {
+    transform: translateY(-4px);
+  }
+  .resource-card {
+    transition: transform var(--dur-3) var(--ease-out);
+  }
+  .resource-card:hover {
+    transform: translateY(-3px);
+  }
+}
+.treatment-card,
+.evidence-card,
+.resource-card,
+.contact-form-panel,
+.feature {
+  border-radius: var(--radius-md);
+}
+.resource-card .visual,
+.treatment-card > .visual {
+  overflow: hidden;
+}
+.resource-card .visual::after,
+.treatment-card > .visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 55%,
+    color-mix(in srgb, var(--ink) 22%, transparent)
+  );
+  opacity: 0;
+  transition: opacity var(--dur-3) var(--ease);
+  pointer-events: none;
+}
+.treatment-card:hover > .visual::after {
+  opacity: 1;
+}
+/* The trusted-points rail becomes an animated stepper. */
+.trust-points span {
+  position: relative;
+  padding-inline-start: 2px;
+  transition: color var(--dur-2) var(--ease);
+}
+.trust-points svg {
+  transition: transform var(--dur-3) var(--ease-spring);
+}
+.trust-points span:hover svg {
+  transform: translateY(-3px) scale(1.08);
+}
+
+/* --------------------------------------------------------------------------
+   7. Buttons, links and chips
+   -------------------------------------------------------------------------- */
+.button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--teal-deep) 18%, transparent);
+  transition:
+    background var(--dur-2) var(--ease),
+    transform var(--dur-3) var(--ease-spring),
+    box-shadow var(--dur-3) var(--ease);
+}
+.button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    100deg,
+    transparent 22%,
+    color-mix(in srgb, var(--on-brand) 42%, transparent) 48%,
+    transparent 72%
+  );
+  transform: translateX(-140%);
+}
+.button:hover {
+  box-shadow: var(--shadow-brand);
+}
+.button:hover::after {
+  transform: translateX(140%);
+  transition: transform var(--dur-5) var(--ease-out);
+}
+.button:active {
+  transform: translateY(1px) scale(0.99);
+}
+.button[data-magnetic] {
+  transform: translate3d(var(--pull-x, 0px), var(--pull-y, 0px), 0);
+}
+.button[data-magnetic]:hover {
+  transform: translate3d(var(--pull-x, 0px), calc(var(--pull-y, 0px) - 2px), 0);
+}
+.text-link {
+  position: relative;
+  transition: color var(--dur-2) var(--ease);
+}
+.text-link::after {
+  content: "";
+  position: absolute;
+  inset-inline: 26px 0;
+  bottom: -4px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--dur-3) var(--ease-out);
+}
+.text-link:hover {
+  text-decoration: none;
+}
+.text-link:hover::after {
+  transform: scaleX(1);
+}
+.filters button {
+  border-radius: var(--radius-pill);
+  transition:
+    background var(--dur-2) var(--ease),
+    color var(--dur-2) var(--ease),
+    border-color var(--dur-2) var(--ease),
+    transform var(--dur-2) var(--ease-spring);
+}
+.filters button:hover {
+  transform: translateY(-1px);
+}
+.filters button[aria-pressed="true"] {
+  box-shadow: var(--shadow-brand);
+}
+.pm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 15px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  font-size: 12px;
+  color: var(--body);
+  white-space: nowrap;
+  transition:
+    border-color var(--dur-2) var(--ease),
+    color var(--dur-2) var(--ease);
+}
+.pm-chip:hover {
+  border-color: var(--teal);
+  color: var(--teal-dark);
+}
+.pm-chip i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--grad-brand);
+}
+.pm-marquee {
+  position: relative;
+  overflow: hidden;
+  padding-block: 20px;
+  border-block: 1px solid var(--line-soft);
+  background: var(--surface-1);
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+}
+.pm-marquee-track {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: max-content;
+  animation: pm-marquee 46s linear infinite;
+}
+.pm-marquee:hover .pm-marquee-track {
+  animation-play-state: paused;
+}
+.pm-marquee-track > span {
+  flex: none;
+}
+@keyframes pm-marquee {
+  to {
+    transform: translateX(50%);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. Workflow rail: a line that fills as the reader scrolls
+   -------------------------------------------------------------------------- */
+.pm-rail {
+  height: 2px;
+  margin-bottom: 26px;
+  border-radius: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+.pm-rail > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--grad-brand);
+  transform: scaleX(var(--pm-value, 0));
+  transform-origin: right center;
+  transition: transform 120ms linear;
+}
+.workflow-grid li {
+  transition:
+    border-color var(--dur-3) var(--ease),
+    color var(--dur-3) var(--ease);
+}
+.workflow-grid li::after {
+  content: "";
+  position: absolute;
+  inset-block-start: -1px;
+  inset-inline: 0;
+  height: 1px;
+  background: var(--grad-brand);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--dur-4) var(--ease-out);
+}
+.workflow-grid li.is-active::after {
+  transform: scaleX(1);
+}
+.workflow-grid li > svg {
+  transition:
+    transform var(--dur-3) var(--ease-spring),
+    color var(--dur-3) var(--ease);
+}
+.workflow-grid li.is-active > svg {
+  transform: translateY(-3px) scale(1.06);
+  color: var(--teal);
+}
+.step-number {
+  transition:
+    color var(--dur-3) var(--ease),
+    letter-spacing var(--dur-3) var(--ease);
+}
+.workflow-grid li.is-active .step-number {
+  color: var(--teal);
+  letter-spacing: 1px;
+}
+
+/* --------------------------------------------------------------------------
+   9. Content stats (counted from the real content files)
+   -------------------------------------------------------------------------- */
+.pm-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 40px;
+}
+.pm-stat {
+  position: relative;
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--grad-brand-soft);
+  overflow: hidden;
+}
+.pm-stat b {
+  display: block;
+  font-size: clamp(28px, 3.4vw, 40px);
+  font-weight: 650;
+  line-height: 1.2;
+  background-image: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--teal-dark);
+}
+.pm-stat span {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--body);
+}
+.pm-stat::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 2px;
+  background: var(--grad-hairline);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--dur-4) var(--ease-out) var(--reveal-delay, 0ms);
+}
+[data-reveal-state="in"] .pm-stat::after,
+[data-reveal-state="in"].pm-stat::after {
+  transform: scaleX(1);
+}
+
+/* --------------------------------------------------------------------------
+   10. Loading: image skeletons, shimmer, form micro-state
+   -------------------------------------------------------------------------- */
+.visual.supplied,
+.asset-placeholder {
+  position: relative;
+  overflow: hidden;
+}
+.visual.supplied img,
+.asset-placeholder img {
+  opacity: 0;
+  transform: scale(1.02);
+  transition:
+    opacity var(--dur-5) var(--ease-out),
+    transform var(--dur-5) var(--ease-out);
+}
+.visual.supplied img[data-loaded],
+.asset-placeholder img[data-loaded] {
+  opacity: 1;
+  transform: none;
+}
+.visual[data-loading]::before,
+.asset-placeholder[data-loading]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    var(--skeleton-sheen) 50%,
+    transparent 70%
+  );
+  animation: pm-shimmer-sweep 1.5s var(--ease-in-out) infinite;
+}
+.visual[data-loading] {
+  background: var(--skeleton);
+}
+@keyframes pm-shimmer-sweep {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+.button[aria-busy="true"] {
+  pointer-events: none;
+  opacity: 0.75;
+}
+.button[aria-busy="true"] svg:last-child {
+  animation: pm-spin 900ms linear infinite;
+}
+@keyframes pm-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.result-count,
+.form-status,
+.share-status {
+  transition: color var(--dur-2) var(--ease);
+}
+.request-result {
+  animation: pm-rise var(--dur-4) var(--ease-out) both;
+}
+@keyframes pm-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+.empty-state {
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  animation: pm-rise var(--dur-4) var(--ease-out) both;
+}
+
+/* --------------------------------------------------------------------------
+   11. Section colour rhythm
+   -------------------------------------------------------------------------- */
+.wash {
+  background: linear-gradient(
+    180deg,
+    var(--surface-2),
+    color-mix(in srgb, var(--surface-2) 70%, var(--mint)) 100%
+  );
+}
+.scanbox-showcase {
+  background:
+    radial-gradient(
+      80% 120% at 90% 0%,
+      color-mix(in srgb, var(--teal) 35%, transparent),
+      transparent 60%
+    ),
+    var(--teal-dark);
+  position: relative;
+  isolation: isolate;
+}
+.evidence-teaser {
+  position: relative;
+  background: var(--mint);
+}
+.evidence-teaser::before,
+.evidence-teaser::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  height: 1px;
+  background: var(--grad-hairline);
+}
+.evidence-teaser::before {
+  top: 0;
+}
+.evidence-teaser::after {
+  bottom: 0;
+}
+.cta-section {
+  background:
+    radial-gradient(
+      70% 160% at 12% 10%,
+      color-mix(in srgb, var(--aqua) 26%, transparent),
+      transparent 62%
+    ),
+    var(--surface-strong);
+  position: relative;
+  overflow: hidden;
+}
+.cta-section::after {
+  content: "";
+  position: absolute;
+  inset-block: -40%;
+  inset-inline-end: -10%;
+  width: 40%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in srgb, var(--teal) 22%, transparent),
+    transparent 68%
+  );
+  animation: pm-drift-2 26s var(--ease-in-out) infinite alternate;
+  pointer-events: none;
+}
+.cta-inner {
+  position: relative;
+  z-index: 1;
+}
+.intro-strip {
+  background: var(--surface);
+  position: relative;
+}
+.intro-strip .container > div span {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  transition:
+    transform var(--dur-3) var(--ease-spring),
+    border-color var(--dur-2) var(--ease);
+}
+.intro-strip .container > div span:hover {
+  transform: translateY(-2px);
+  border-color: var(--teal);
+}
+.site-footer {
+  background: var(--surface-2);
+  position: relative;
+}
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 2px;
+  background: var(--grad-hairline);
+}
+.footer-grid > div > a:not(.brand) {
+  transition:
+    color var(--dur-2) var(--ease),
+    transform var(--dur-2) var(--ease-out);
+}
+.footer-grid > div > a:not(.brand):hover {
+  transform: translateX(-4px);
+}
+.footer-brand .brand-mark {
+  transition: transform var(--dur-4) var(--ease-spring);
+}
+.footer-brand:hover .brand-mark {
+  transform: rotate(-6deg) scale(1.04);
+}
+
+/* --------------------------------------------------------------------------
+   12. Editorial details: FAQ motion, tables of content, breadcrumbs
+   -------------------------------------------------------------------------- */
+.faq-list summary {
+  transition:
+    color var(--dur-2) var(--ease),
+    padding-inline-start var(--dur-3) var(--ease-out);
+}
+.faq-list details:hover summary {
+  color: var(--teal-dark);
+  padding-inline-start: 6px;
+}
+.faq-list summary svg {
+  transition: transform var(--dur-3) var(--ease-spring);
+}
+.faq-list details[open] summary svg {
+  transform: rotate(135deg);
+}
+@supports (interpolate-size: allow-keywords) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+  .faq-list details::details-content {
+    height: 0;
+    overflow: clip;
+    transition:
+      height var(--dur-3) var(--ease-out),
+      content-visibility var(--dur-3) allow-discrete;
+  }
+  .faq-list details[open]::details-content {
+    height: auto;
+  }
+}
+.article-toc > a {
+  position: relative;
+  transition:
+    color var(--dur-2) var(--ease),
+    padding-inline-start var(--dur-2) var(--ease-out);
+}
+.article-toc > a::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -1px;
+  top: 0.55em;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--teal);
+  opacity: 0;
+  transition:
+    opacity var(--dur-2) var(--ease),
+    transform var(--dur-2) var(--ease-spring);
+  transform: scale(0.4);
+}
+.article-toc > a:hover,
+.article-toc > a[aria-current="true"] {
+  color: var(--teal-dark);
+  padding-inline-start: 8px;
+}
+.article-toc > a[aria-current="true"]::before {
+  opacity: 1;
+  transform: none;
+}
+.article-toc > a[aria-current="true"] {
+  font-weight: 600;
+}
+.breadcrumbs a {
+  transition: color var(--dur-2) var(--ease);
+}
+.article-content > section {
+  transition: opacity var(--dur-3) var(--ease);
+}
+.resource-meta > span:first-child,
+.evidence-tag {
+  transition: letter-spacing var(--dur-3) var(--ease-out);
+}
+.resource-card:hover .resource-meta > span:first-child {
+  letter-spacing: 0.4px;
+}
+.evidence-metric {
+  display: inline-block;
+  background-image: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--teal-dark);
+}
+.evidence-disclosure {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+  transition: transform var(--dur-3) var(--ease-out);
+}
+.pm-evidence {
+  border-radius: var(--radius-lg);
+  background: var(--grad-brand-soft);
+}
+
+/* --------------------------------------------------------------------------
+   13. Route transition
+   -------------------------------------------------------------------------- */
+.page {
+  animation: pm-page-in var(--dur-3) var(--ease-out) both;
+}
+@keyframes pm-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.pm-route-veil {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 2px;
+  z-index: 69;
+  pointer-events: none;
+  background: var(--grad-brand);
+  transform-origin: right center;
+  transform: scaleX(0);
+  opacity: 0;
+}
+html[data-route-change] .pm-route-veil {
+  animation: pm-veil var(--dur-3) var(--ease-out) both;
+}
+@keyframes pm-veil {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  60% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+.skip-link {
+  border-radius: var(--radius-pill);
+  transition:
+    transform var(--dur-3) var(--ease-spring),
+    opacity var(--dur-2) var(--ease);
+}
+
+/* --------------------------------------------------------------------------
+   14. Native scroll-driven animation where the engine supports it
+   -------------------------------------------------------------------------- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-visual .visual {
+      animation: pm-view-float linear both;
+      animation-timeline: view();
+      animation-range: entry 10% exit 20%;
+    }
+    .scanbox-showcase .visual {
+      animation: pm-view-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 70%;
+    }
+    .pm-aurora {
+      animation: pm-parallax linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 90vh;
+    }
+    .article-content > .visual {
+      animation: pm-view-zoom linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 60%;
+    }
+  }
+}
+@keyframes pm-view-float {
+  from {
+    transform: translateY(26px) scale(0.97);
+  }
+  to {
+    transform: translateY(-16px) scale(1);
+  }
+}
+@keyframes pm-view-rise {
+  from {
+    transform: translateY(40px) rotate(-1.5deg);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes pm-view-zoom {
+  from {
+    transform: scale(0.955);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes pm-parallax {
+  to {
+    transform: translateY(-70px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   15. Theme-specific corrections
+   -------------------------------------------------------------------------- */
+:root[data-theme="dark"] .scanbox-showcase .button.secondary {
+  background: #08242a;
+  border-color: #08242a;
+  color: var(--ink);
+}
+:root[data-theme="dark"] .scanbox-showcase .button.secondary:hover {
+  background: #0d3038;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .scanbox-showcase .button.secondary {
+    background: #08242a;
+    border-color: #08242a;
+    color: var(--ink);
+  }
+  :root:not([data-theme="light"]) .scanbox-showcase .button.secondary:hover {
+    background: #0d3038;
+  }
+}
+html[data-theme="dark"] .visual.device-visual,
+html[data-theme="dark"] .teeth-art svg {
+  filter: saturate(0.92) brightness(0.96);
+}
+/* The illustrations carry original artwork, not photographs, and they read as a
+   product screen: inside a frame they keep their light surfaces in dark mode
+   instead of collapsing into the page. Declaring the light values here is a
+   no-op for the light theme, so no media query duplicate is needed. */
+:is(.visual, .asset-placeholder) {
+  --surface: #fff;
+  --surface-1: #f8faf9;
+  --surface-2: #f5f8f6;
+  --surface-3: #edf5f1;
+  --surface-inset: #e9f1ed;
+  --pale: #f5f8f6;
+  --skeleton: #dfe9e5;
+  --skeleton-sheen: #ffffffb3;
+  --line: #d8e8e5;
+  --line-soft: #ebf0ee;
+  --line-strong: #b4d2c9;
+  --ink: #173e47;
+  --ink-deep: #1b424b;
+  --body: #526970;
+  --muted: #567377;
+  --art-muted: #5f7d82;
+  --teal-dark: #00747b;
+  --aqua: #69c1c2;
+  --on-brand: #fff;
+  --hairline-on-art: #fff9;
+  --shadow-color: #16485014;
+}
+html[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(120deg, #12c2c9, #0f8f96);
+}
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition:
+    background-color var(--dur-3) var(--ease),
+    border-color var(--dur-3) var(--ease),
+    color var(--dur-3) var(--ease) !important;
+}
+header .pm-theme {
+  margin-inline-end: 2px;
+}
+.mobile-top .pm-theme {
+  margin-inline-start: auto;
+  margin-inline-end: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   16. Motion and contrast guardrails
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html.has-js [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+    transition: none !important;
+  }
+  .pm-aurora > span,
+  .pm-progress,
+  .cta-section::after {
+    animation: none !important;
+  }
+  .pm-marquee {
+    mask-image: none;
+    overflow-x: auto;
+  }
+  .pm-marquee-track {
+    animation: none !important;
+    transform: none !important;
+  }
+  .pm-top {
+    transition: none;
+  }
+}
+@media (forced-colors: active) {
+  .pm-progress,
+  .pm-top::before,
+  [data-glow]::after,
+  [data-spotlight]::before {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   17. Responsive adjustments for the new layers
+   -------------------------------------------------------------------------- */
+@media (max-width: 1050px) {
+  .pm-theme {
+    width: 34px;
+    height: 34px;
+  }
+}
+/* Very narrow headers keep the demo CTA on one line; the switch stays available
+   in the navigation sheet. */
+@media (max-width: 480px) {
+  .header-actions > .pm-theme {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  :root {
+    --reveal-distance: 22px;
+    --glass-blur: 14px;
+  }
+  .pm-aurora > span {
+    filter: blur(52px);
+    opacity: 0.45;
+  }
+  .pm-top {
+    inset-inline-end: 14px;
+    inset-block-end: 16px;
+    width: 42px;
+    height: 42px;
+  }
+  .pm-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .pm-stat {
+    padding: 18px 20px;
+  }
+  .pm-marquee {
+    padding-block: 14px;
+  }
+  html[data-scrolled] .site-header .header-inner {
+    height: 62px;
+  }
+  .pm-aurora .pm-a1,
+  .pm-aurora .pm-a2,
+  .pm-aurora .pm-a3 {
+    width: 70vw;
+    height: 70vw;
+  }
+}
+@media (max-width: 374px) {
+  .pm-theme {
+    width: 30px;
+    height: 30px;
+  }
+  .pm-top {
+    width: 38px;
+    height: 38px;
+    inset-inline-end: 10px;
+  }
+}

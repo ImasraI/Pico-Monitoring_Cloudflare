@@ -17,7 +17,7 @@ const specialistLabel = "تماس با تیم تخصصی PM";
 
 function EvidenceCard({ study }: { study: Evidence }) {
   return (
-    <article className="evidence-card" aria-labelledby={study.id}>
+    <article className="evidence-card" aria-labelledby={study.id} data-reveal="up" data-spotlight data-glow>
       <div className="study-tags">
         <span className="evidence-tag">{study.category}</span>
         <span className="study-type">{study.evidenceType}</span>
@@ -93,7 +93,7 @@ export function EvidencePage({ page }: { page: Page }) {
               {persianNumber(filtered.length)} مقاله · {category}
             </p>
           </div>
-          <div className="evidence-grid">{filtered.map(study => <EvidenceCard key={study.id} study={study} />)}</div>
+          <div className="evidence-grid" data-reveal-group="120">{filtered.map(study => <EvidenceCard key={study.id} study={study} />)}</div>
         </div>
       </section>
       <section className="section wash evidence-research" aria-labelledby="pico-research-title">

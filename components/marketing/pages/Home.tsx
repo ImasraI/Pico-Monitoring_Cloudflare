@@ -1,5 +1,6 @@
 import { Link } from "../navigation";
 import { SolutionLinks } from "./Solutions";
+import { articles, evidence, faqs } from "../content";
 import type { Page } from "../content/types";
 import {
   Hero,
@@ -10,6 +11,8 @@ import {
   CTA,
   FAQBlock,
   ButtonLink,
+  CapabilityMarquee,
+  Stats,
 } from "../components/Sections";
 import { Visual } from "../components/Visual";
 import { Icon } from "../components/Icon";
@@ -19,7 +22,7 @@ export function Home({ page }: { page: Page }) {
     <>
       <Hero page={page} />
       <section className="intro-strip" id="discover">
-        <div className="container">
+        <div className="container" data-reveal="up">
           <p>
             یک مسیر متصل برای <strong>ارتودنتیست، مطب و بیمار.</strong>
           </p>
@@ -36,6 +39,7 @@ export function Home({ page }: { page: Page }) {
           </div>
         </div>
       </section>
+      <CapabilityMarquee />
       <SplitSection section={page.sections[0]} />
       <section className="section wash">
         <div className="container">
@@ -80,7 +84,7 @@ export function Home({ page }: { page: Page }) {
       <Workflow />
       <section className="section scanbox-showcase">
         <div className="container split-grid">
-          <div>
+          <div data-reveal="up">
             <span className="eyebrow light" dir="ltr">
               PM ScanBoxᴾʳᵒ
             </span>
@@ -114,7 +118,7 @@ export function Home({ page }: { page: Page }) {
               راهکار پایش <Icon name="arrow" size={20} />
             </Link>
           </div>
-          <div className="treatment-grid">
+          <div className="treatment-grid" data-reveal-group="140">
             {[
               {
                 to: "/aligners",
@@ -131,7 +135,14 @@ export function Home({ page }: { page: Page }) {
                 body: "پیگیری وضعیت قابل مشاهده ابزار و بررسی نیاز به مراجعه با نظر ارتودنتیست.",
               },
             ].map((t) => (
-              <article key={t.to} className="treatment-card">
+              <article
+                key={t.to}
+                className="treatment-card"
+                data-reveal="up"
+                data-tilt
+                data-glow
+                data-spotlight
+              >
                 <Visual assetId={t.asset} compact />
                 <div>
                   <span className="eyebrow" dir="ltr">
@@ -154,7 +165,7 @@ export function Home({ page }: { page: Page }) {
       </section>
       <section className="section wash">
         <div className="container split-grid">
-          <div>
+          <div data-reveal="up">
             <SectionHeading
               eyebrow="تجربه بیمار"
               title="فاصله از مطب، فاصله از درمان نباشد."
@@ -162,7 +173,7 @@ export function Home({ page }: { page: Page }) {
             />
             <ButtonLink to="/patients">تجربه بیمار را بشناسید</ButtonLink>
           </div>
-          <Visual assetId="PM-PATIENT-UI-01" />
+          <Visual assetId="PM-PATIENT-UI-01" reveal="mask" />
         </div>
       </section>
       <section className="section evidence-teaser">
@@ -180,6 +191,13 @@ export function Home({ page }: { page: Page }) {
           <Link className="text-link" to="/evidence">
             شواهد و پژوهش‌ها <Icon name="arrow" size={21} />
           </Link>
+          <Stats
+            items={[
+              { value: articles.length, label: "راهنمای آموزشی منتشرشده" },
+              { value: faqs.length, label: "پرسش با پاسخ روشن" },
+              { value: evidence.length, label: "منبع پژوهشی خارجی با ارجاع" },
+            ]}
+          />
           <div className="trust-points">
             <span>
               <Icon name="research" /> منابع قابل ارجاع

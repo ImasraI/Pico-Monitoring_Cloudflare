@@ -1,3 +1,4 @@
+/* Self-hosted Vazirmatn subsets. */
 @font-face {
   font-family: Vazirmatn;
   font-style: normal;
@@ -29,26 +30,189 @@
     U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
     U+2215, U+FEFF, U+FFFD;
 }
+
+/* ---------------------------------------------------------------------------
+   Design tokens.
+
+   Every colour is a semantic role. Each role states a light value first (so
+   older engines still paint a valid light theme) and then a light-dark() pair
+   that follows the active color-scheme. The color-scheme itself is driven by the
+   explicit data-theme choice, or by the operating system when no choice exists.
+   --------------------------------------------------------------------------- */
 :root {
+  color-scheme: light;
+
+  /* ---- Brand ramp ---- */
   --teal: #009fa8;
+  --teal: light-dark(#009fa8, #2ec4c9);
   --teal-dark: #00747b;
-  --ink: #173e47;
-  --body: #526970;
-  --muted: #5a7076;
+  --teal-dark: light-dark(#00747b, #48d6d8);
+  --teal-deep: #005f65;
+  --teal-deep: light-dark(#005f65, #12a7ad);
+  --teal-bright: #12c2c9;
+  --teal-bright: light-dark(#12c2c9, #34d8dd);
+  --aqua: #6fd6d2;
+  --aqua: light-dark(#6fd6d2, #63d3cd);
   --mint: #edf5f1;
-  --pale: #f5f8f6;
-  --line: #d8e5e1;
+  --mint: light-dark(#edf5f1, #0f2a30);
+  --sage: #deeee6;
+  --sage: light-dark(#deeee6, #123037);
+
+  /* ---- Surfaces ---- */
   --white: #fff;
+  --white: light-dark(#fff, #0c2127);
+  --surface: #fff;
+  --surface: light-dark(#fff, #0e262c);
+  --surface-1: #fbfcfa;
+  --surface-1: light-dark(#fbfcfa, #0b1f24);
+  --surface-2: #f5f8f6;
+  --surface-2: light-dark(#f5f8f6, #102b32);
+  --pale: #f5f8f6;
+  --pale: light-dark(#f5f8f6, #102b32);
+  --surface-3: #edf5f1;
+  --surface-3: light-dark(#edf5f1, #10303a);
+  --surface-inset: #e7f0ea;
+  --surface-inset: light-dark(#e7f0ea, #12333c);
+  --surface-strong: #deeee6;
+  --surface-strong: light-dark(#deeee6, #123641);
+  --skeleton: #dfe9e5;
+  --skeleton: light-dark(#dfe9e5, #1b414b);
+  --skeleton-sheen: #ffffffb3;
+  --skeleton-sheen: light-dark(#ffffffb3, #ffffff14);
+
+  /* ---- Text ---- */
+  --ink: #173e47;
+  --ink: light-dark(#173e47, #eaf6f4);
+  --ink-deep: #1b424b;
+  --ink-deep: light-dark(#1b424b, #071619);
+  --body: #526970;
+  --body: light-dark(#526970, #b3cbcb);
+  --muted: #5a7076;
+  --muted: light-dark(#5a7076, #93b1b3);
+  --art-muted: #679b9d;
+  --art-muted: light-dark(#679b9d, #7fb3b2);
+  --on-brand: #fff;
+  --on-brand: light-dark(#fff, #06282c);
+  --on-ink: #fff;
+  --on-ink: light-dark(#fff, #0b1f24);
+  --on-deep: #fff;
+  --on-deep: light-dark(#fff, #06282c);
+
+  /* ---- Lines ---- */
+  --line: #d8e5e1;
+  --line: light-dark(#d8e5e1, #1e444d);
+  --line-soft: #e4edea;
+  --line-soft: light-dark(#e4edea, #17363d);
+  --line-strong: #c2d4cb;
+  --line-strong: light-dark(#c2d4cb, #2b5a63);
+  --hairline-on-art: #fff9;
+  --hairline-on-art: light-dark(#fff9, #ffffff2b);
+  --overlay: #163e4766;
+  --overlay: light-dark(#163e4766, #04161ac9);
+
+  /* ---- Feedback ---- */
+  --danger: #a23727;
+  --danger: light-dark(#a23727, #ff9d86);
+  --success: #0f7a58;
+  --success: light-dark(#0f7a58, #5fd3a6);
+
+  /* ---- Elevation ---- */
+  /* light-dark() carries colours only, so multi-part values are composed from
+     colour tokens instead of being wrapped whole. */
+  --shadow-color: #16485014;
+  --shadow-color: light-dark(#16485014, #00000073);
+  --shadow-brand-color: #00747b2e;
+  --shadow-brand-color: light-dark(#00747b2e, #001b1f8c);
+  --ring-color: #009fa81f;
+  --ring-color: light-dark(#009fa81f, #12c2c940);
+  --shadow: 0 22px 58px var(--shadow-color);
+  --shadow-1: 0 10px 26px var(--shadow-color);
+  --shadow-2: 0 30px 80px var(--shadow-color);
+  --shadow-brand: 0 20px 46px var(--shadow-brand-color);
+  --ring: 0 0 0 1px var(--ring-color), 0 22px 56px var(--shadow-color);
+
+  /* ---- Gradients and decoration ---- */
+  /* Gradients are built from the theme-aware colour roles, so they follow the
+     active scheme without holding a light-dark() pair. */
+  --grad-brand: linear-gradient(
+    120deg,
+    var(--teal-deep),
+    var(--teal) 48%,
+    var(--teal-bright)
+  );
+  --grad-brand-soft: linear-gradient(
+    150deg,
+    var(--surface-1),
+    var(--mint) 60%,
+    var(--surface-3)
+  );
+  --grad-hairline: linear-gradient(
+    90deg,
+    transparent,
+    var(--teal) 45%,
+    transparent
+  );
+  --aurora-1: #12c2c9;
+  --aurora-1: light-dark(#12c2c9, #0f8f96);
+  --aurora-2: #6fd6d2;
+  --aurora-2: light-dark(#6fd6d2, #1fbac0);
+  --aurora-3: #009fa8;
+  --aurora-3: light-dark(#009fa8, #06636b);
+  --grain-opacity: 0.16;
+  --glow-color: #12c2c92e;
+  --glow-color: light-dark(#12c2c92e, #34d8dd26);
+
+  /* ---- Glass ---- */
+  --glass-bg: #ffffffd0;
+  --glass-bg: light-dark(#ffffffd0, #0b1f24d6);
+  --glass-border: #ffffffb8;
+  --glass-border: light-dark(#ffffffb8, #ffffff1a);
+  --glass-blur: 18px;
+
+  /* ---- Geometry ---- */
   --container: 1200px;
   --gutter: clamp(20px, 4.6vw, 72px);
   --section-space: 104px;
   --radius: 6px;
-  --shadow: 0 22px 58px #16485012;
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --radius-xl: 28px;
+  --radius-pill: 99px;
+  --button-height: 52px;
+  --image-ratio: 5/4;
+
+  /* ---- Motion ---- */
   --duration: 200ms;
+  --dur-1: 160ms;
+  --dur-2: 280ms;
+  --dur-3: 460ms;
+  --dur-4: 760ms;
+  --dur-5: 1200ms;
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --ease-snap: cubic-bezier(0.2, 0.9, 0.25, 1);
+  --reveal-distance: 30px;
+
+  /* ---- Type ---- */
+  --font-fa: Vazirmatn, Arial, sans-serif;
+  --font-en: Arial, sans-serif;
   --hero-size: clamp(36px, 4.3vw, 62px);
   --h2-size: clamp(28px, 3vw, 42px);
   --body-size: 17px;
-  --button-height: 52px;
-  --image-ratio: 5/4;
+}
+
+/* Theme selection: explicit choice first, operating system second. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+  }
 }

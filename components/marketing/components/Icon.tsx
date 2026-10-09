@@ -27,6 +27,8 @@ const paths: Record<string, string> = {
   copy: "M8 8h13v13H8V8Zm8-3V3H3v13h2",
   call: "M7 3H3c-1 10 8 19 18 18v-4l-5-2-2 2a15 15 0 0 1-7-7l2-2-2-5",
   lock: "M5 10h14v11H5V10Zm3 0V6a4 4 0 0 1 8 0v4m-4 5v2",
+  sun: "M12 4.5V2m0 20v-2.5M19.5 12H22M2 12h2.5m13.4-5.9 1.8-1.8M4.3 19.7l1.8-1.8m0-11.8L4.3 4.3m15.4 15.4-1.8-1.8M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0",
+  moon: "M20.5 14.8A8.6 8.6 0 0 1 9.2 3.5a8.6 8.6 0 1 0 11.3 11.3Z",
 };
 export function Icon({
   name,

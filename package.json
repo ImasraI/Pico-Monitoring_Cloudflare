@@ -6,6 +6,11 @@
     "node": ">=22.13.0"
   },
   "scripts": {
+    "test:free-storage": "node --test tests/free-storage.test.mjs",
+    "build:cloudflare": "node scripts/build-cloudflare.mjs",
+    "deploy:cloudflare": "node scripts/deploy-cloudflare.mjs",
+    "db:cloudflare:local": "wrangler d1 migrations apply DB --local --config wrangler.json",
+    "dev:cloudflare": "wrangler dev --config dist/server/wrangler.json --local --port 8787",
     "install:ci": "node scripts/install-ci.mjs",
     "dev": "node scripts/run-framework.mjs dev",
     "build": "node scripts/run-framework.mjs build",

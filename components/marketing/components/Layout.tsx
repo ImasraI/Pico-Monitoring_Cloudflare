@@ -3,6 +3,7 @@ import { Link, NavLink, PublicPathContext } from "../navigation";
 import { config } from "../config";
 import { navigation, solutions } from "../content/navigation";
 import { Icon } from "./Icon";
+import { ThemeToggle } from "./Motion";
 
 export function Logo() {
   return (
@@ -123,8 +124,9 @@ export function Header() {
             )}
           </nav>
           <div className="header-actions">
+            <ThemeToggle />
             <LoginButton />
-            <Link className="button small" to="/contact">
+            <Link className="button small" to="/contact" data-magnetic>
               {contactLabel} <Icon name="arrow" size={17} />
             </Link>
             <button
@@ -143,8 +145,8 @@ export function Header() {
       <dialog
         ref={dialog}
         id="mobile-navigation"
-        aria-label="فهرست صفحات پیکو مانیتورینگ"
         className="mobile-dialog"
+        aria-label="فهرست صفحات پیکو مانیتورینگ"
         onCancel={(e) => {
           e.preventDefault();
           close();
@@ -156,6 +158,7 @@ export function Header() {
         <div className="mobile-panel">
           <div className="mobile-top">
             <Logo />
+            <ThemeToggle />
             <button
               onClick={close}
               className="icon-button"
@@ -201,8 +204,8 @@ export function Footer() {
   const publicPath = useContext(PublicPathContext);
   return (
     <footer className="site-footer">
-      <div className="container footer-grid">
-        <div className="footer-brand">
+      <div className="container footer-grid" data-reveal-group="70">
+        <div className="footer-brand" data-reveal="up">
           <Logo />
           <p>
             پایش ارتودنسی از راه دور،
@@ -213,24 +216,24 @@ export function Footer() {
             شروع همکاری <Icon name="arrow" size={19} />
           </Link>
         </div>
-        <div>
+        <div data-reveal="up">
           <h2>راهکارهای ما</h2>
           {solutions.map(s=><Link key={s.to} to={s.to}>{s.label}</Link>)}
         </div>
-        <div>
+        <div data-reveal="up">
           <h2>برای شما</h2>
           <Link to="/orthodontists">ارتودنتیست‌ها</Link>
           <Link to="/clinics">کلینیک‌ها و مطب‌ها</Link>
           <Link to="/patients">بیماران و خانواده‌ها</Link>
           <LoginButton />
         </div>
-        <div>
+        <div data-reveal="up">
           <h2>بیشتر بدانید</h2>
           <Link to="/evidence">شواهد و پژوهش‌ها</Link>
           <Link to="/privacy">امنیت و حریم خصوصی</Link>
           <Link to="/faq">پرسش‌های متداول</Link>
         </div>
-        <div>
+        <div data-reveal="up">
           <h2>در ارتباط باشیم</h2>
           <Link to="/contact">{publicPath === "/evidence" ? "تماس با تیم تخصصی PM" : "تماس و درخواست دمو"}</Link>
           {config.phones.map((phone) => (

@@ -282,16 +282,22 @@ export function Visual({
   assetId,
   className = "",
   compact = false,
+  reveal,
 }: {
   assetId: string;
   className?: string;
   compact?: boolean;
+  reveal?: "up" | "mask" | "zoom" | "fade" | "blur";
 }) {
   const asset = assets.find((a) => a.id === assetId);
   const src = asset?.src;
   if (src)
     return (
-      <figure className={`visual supplied ${className}`}>
+      <figure
+        className={`visual supplied ${className}`}
+        data-reveal={reveal}
+        data-parallax={reveal ? "0.07" : undefined}
+      >
         <img
           src={src}
           alt={asset.alt}
@@ -314,6 +320,8 @@ export function Visual({
       className={`visual ${compact ? "compact" : ""} ${scan ? "device-visual" : ""} ${className}`}
       role="img"
       aria-label={asset?.alt || "تصویر مفهومی پایش ارتودنسی"}
+      data-reveal={reveal}
+      data-parallax={reveal ? "0.07" : undefined}
     >
       <div className="visual-orbit orbit-one" />
       <div className="visual-orbit orbit-two" />
@@ -345,10 +353,20 @@ export function Visual({
     </figure>
   );
 }
-export function AssetPlaceholder({ assetId }: { assetId: string }) {
+export function AssetPlaceholder({
+  assetId,
+  reveal,
+}: {
+  assetId: string;
+  reveal?: "up" | "zoom" | "fade";
+}) {
   const asset = assets.find((a) => a.id === assetId);
   return (
-    <figure className="asset-placeholder" data-asset-id={assetId}>
+    <figure
+      className="asset-placeholder"
+      data-asset-id={assetId}
+      data-reveal={reveal}
+    >
       {asset?.src ? (
         <img src={asset.src} alt={asset.alt} loading="lazy" />
       ) : (

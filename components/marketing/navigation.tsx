@@ -16,3 +16,5 @@ export function NavLink({ to, className = "", ...props }: LinkProps) {
     <a href={to} className={`${className}${active ? " active" : ""}`} aria-current={active ? "page" : undefined} {...props} />
   );
 }
+
+export function useLocation() { return { pathname: useContext(PublicPathContext), hash: "" }; }
