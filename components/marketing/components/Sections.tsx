@@ -27,7 +27,7 @@ export function ButtonLink({
     </Link>
   );
 }
-export function Hero({ page }: { page: Page }) {
+export function Hero({ page, contactLabel }: { page: Page; contactLabel?: string }) {
   const home = page.slug === "/";
   const simple = !page.hero.asset;
   return (
@@ -49,7 +49,7 @@ export function Hero({ page }: { page: Page }) {
           {page.slug != "/contact" && (
             <div className="hero-actions">
               <ButtonLink to={page.slug === "/patients" ? "/faq" : "/contact"}>
-                {page.slug === "/patients" ? "پرسش‌های شما" : "درخواست دمو"}
+                {contactLabel ?? (page.slug === "/patients" ? "پرسش‌های شما" : "درخواست دمو")}
               </ButtonLink>
               <Link
                 className="text-link"
@@ -184,9 +184,13 @@ export function SplitSection({
 export function CTA({
   title = "پایش را متناسب با مطب شما بررسی کنیم.",
   patient = false,
+  body,
+  contactLabel,
 }: {
   title?: string;
   patient?: boolean;
+  body?: string;
+  contactLabel?: string;
 }) {
   return (
     <section className="cta-section">
@@ -197,13 +201,13 @@ export function CTA({
           </span>
           <h2>{title}</h2>
           <p>
-            {patient
+            {body ?? (patient
               ? "پایش درمان با هماهنگی مطب آغاز می‌شود. برای شناخت PM می‌توانید با تیم ما هم گفت‌وگو کنید."
-              : "یک گفت‌وگو درباره نیازهای شما، مسیر اجرای پایش و نقش PM ScanBox."}
+              : "یک گفت‌وگو درباره نیازهای شما، مسیر اجرای پایش و نقش PM ScanBox.")}
           </p>
         </div>
         <ButtonLink to="/contact">
-          {patient ? "آشنایی بیشتر با PM" : "درخواست دمو"}
+          {contactLabel ?? (patient ? "آشنایی بیشتر با PM" : "درخواست دمو")}
         </ButtonLink>
       </div>
     </section>

@@ -1,0 +1,67 @@
+.evidence-page .evidence-categories { padding-bottom: 0; }
+.evidence-page .evidence-category-nav {
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px;
+}
+.evidence-category-nav button {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
+  padding: 24px; color: var(--ink); background: var(--white);
+  border: 1px solid var(--line); border-radius: var(--radius); text-align: start;
+  transition: border-color var(--duration) var(--ease), background var(--duration) var(--ease);
+}
+.evidence-category-nav button svg { color: var(--teal-dark); }
+.evidence-category-nav button > span { font-weight: 500; font-size: 15px; }
+.evidence-category-nav button small { color: var(--muted); font-size: 13px; }
+.evidence-category-nav button:hover { border-color: var(--teal-dark); }
+.evidence-category-nav button[aria-pressed="true"] {
+  border-color: var(--teal-dark); background: var(--mint);
+}
+.evidence-page .evidence-library { padding-top: 64px; }
+.evidence-library-heading {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 36px;
+}
+.evidence-library-heading h2 { font-size: var(--h2-size); }
+.evidence-library-heading > p { font-size: 14px; color: var(--muted); }
+.evidence-page .evidence-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+.evidence-page .evidence-card { padding: 36px; min-width: 0; }
+.study-tags { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 24px; }
+.evidence-page .evidence-tag { font-size: 12px; margin: 0; }
+.study-type { font-size: 12px; color: var(--muted); border-inline-start: 1px solid var(--line); padding-inline-start: 12px; }
+.study-introduction { min-width: 0; }
+.study-introduction.with-image { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 28px; }
+.evidence-card .study-image { width: 100%; height: auto; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--radius); }
+.evidence-card h3 { font-size: 22px; font-weight: 650; line-height: 1.65; }
+.evidence-card .study-original-title { font-size: 14px; color: var(--muted); margin-top: 12px; overflow-wrap: anywhere; text-align: start; }
+.evidence-card .study-summary { font-size: 16px; margin-top: 22px; }
+.study-finding { background: var(--mint); border-inline-start: 3px solid var(--teal-dark); padding: 20px 24px; margin-top: 24px; }
+.evidence-card h4 { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.8; color: var(--ink); }
+.study-finding p, .study-relevance p { font-size: 14px; margin-top: 10px; }
+.study-bibliography { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) minmax(0, 1fr); gap: 20px 28px; margin-top: 28px; }
+.study-bibliography > div { min-width: 0; }
+.study-bibliography dt { color: var(--muted); font-size: 12px; margin-bottom: 7px; }
+.study-bibliography dd { margin: 0; color: var(--body); font-size: 13px; overflow-wrap: anywhere; }
+.study-bibliography .study-setting { grid-column: span 2; }
+.study-relevance { margin-top: 26px; padding-top: 24px; border-top: 1px solid var(--line); }
+.evidence-page .study-source { align-self: flex-start; flex-wrap: wrap; overflow-wrap: anywhere; }
+.evidence-research h2 { font-size: var(--h2-size); }
+.evidence-research p { font-size: 16px; margin-top: 22px; }
+@media (max-width: 1023px) {
+  .evidence-page .evidence-category-nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .study-bibliography { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .study-bibliography .study-setting { grid-column: 1 / -1; }
+}
+@media (max-width: 767px) {
+  .evidence-page .evidence-category-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .evidence-category-nav button { padding: 18px; gap: 10px; }
+  .evidence-category-nav button:first-child { grid-column: 1 / -1; flex-direction: row; align-items: center; }
+  .evidence-category-nav button:first-child small { margin-inline-start: auto; }
+  .evidence-category-nav button > span { font-size: 14px; }
+  .evidence-page .evidence-library { padding-top: 44px; }
+  .evidence-library-heading { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 28px; }
+  .evidence-page .evidence-card { padding: 24px 20px; }
+  .study-tags { margin-bottom: 20px; gap: 10px; }
+  .evidence-card h3 { font-size: 20px; }
+  .study-introduction.with-image { grid-template-columns: minmax(0, 1fr); }
+  .study-finding { padding: 18px; }
+  .study-bibliography { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .study-bibliography .study-setting { grid-column: auto; }
+}

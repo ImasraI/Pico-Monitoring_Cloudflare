@@ -257,5 +257,37 @@
     "src": "",
     "status": "Reusable placeholder component exists; deliberately not displayed without verified source",
     "alt": "جایگاه تجربه تأییدشده ارتودنتیست"
+  },
+  {
+    "id": "PM-EVIDENCE-RESEARCH-01",
+    "page": [
+      "/evidence"
+    ],
+    "section": "hero",
+    "purpose": "Support an evidence-first message",
+    "composition": "Original paper and clinical-review diagram; no fake charts or metrics",
+    "ratio": "5:4",
+    "dimensions": "1200 × 960",
+    "type": "original illustration",
+    "mustProvide": false,
+    "src": "",
+    "status": "Original code-native illustration",
+    "alt": "تصویر مفهومی مرور پژوهش و منابع علمی"
+  },
+  {
+    "id": "PM-RESEARCH-CURRENT-01",
+    "page": [
+      "/evidence"
+    ],
+    "section": "ongoing research",
+    "purpose": "Support an evidence-first message",
+    "composition": "Original paper and clinical-review diagram; no fake charts or metrics",
+    "ratio": "5:4",
+    "dimensions": "1200 × 960",
+    "type": "original illustration",
+    "mustProvide": false,
+    "src": "",
+    "status": "Original code-native illustration",
+    "alt": "تصویر مفهومی فرایند مرور و پژوهش؛ بدون نمایش داده یا نتیجه واقعی"
   }
 ]

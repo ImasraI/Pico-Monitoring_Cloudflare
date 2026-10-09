@@ -47,7 +47,9 @@ export function LoginButton() {
   );
 }
 export function Header() {
-  const onScanboxPage = useContext(PublicPathContext) === "/scanbox";
+  const publicPath = useContext(PublicPathContext);
+  const onScanboxPage = publicPath === "/scanbox";
+  const contactLabel = publicPath === "/evidence" ? "تماس با تیم تخصصی PM" : "درخواست دمو";
   const [open, setOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
@@ -110,7 +112,7 @@ export function Header() {
           <div className="header-actions">
             <LoginButton />
             <Link className="button small" to="/contact">
-              درخواست دمو <Icon name="arrow" size={17} />
+              {contactLabel} <Icon name="arrow" size={17} />
             </Link>
             <button
               className="menu-toggle"
@@ -173,7 +175,7 @@ export function Header() {
           </nav>
           <div className="mobile-bottom">
             <Link className="button" to="/contact">
-              درخواست دمو <Icon name="arrow" />
+              {contactLabel} <Icon name="arrow" />
             </Link>
             <LoginButton />
           </div>
@@ -183,7 +185,8 @@ export function Header() {
   );
 }
 export function Footer() {
-  const onScanboxPage = useContext(PublicPathContext) === "/scanbox";
+  const publicPath = useContext(PublicPathContext);
+  const onScanboxPage = publicPath === "/scanbox";
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
@@ -221,7 +224,7 @@ export function Footer() {
         </div>
         <div>
           <h2>در ارتباط باشیم</h2>
-          <Link to="/contact">تماس و درخواست دمو</Link>
+          <Link to="/contact">{publicPath === "/evidence" ? "تماس با تیم تخصصی PM" : "تماس و درخواست دمو"}</Link>
           {config.phones.map((phone) => (
             <a
               className="footer-phone"

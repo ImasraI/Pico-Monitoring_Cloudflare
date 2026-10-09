@@ -48,14 +48,24 @@ export interface FAQ {
 }
 export interface Evidence {
   id: string;
-  title: string;
-  source: string;
+  titleFa: string;
+  titleEn: string;
+  evidenceType: string;
+  journal: string;
   year: number;
   category: string;
-  metric: string;
   summary: string;
-  reference: string;
-  attribution: string;
+  keyFinding: string;
+  authors: string[];
+  sourceType: string;
+  sourceUrl: string;
+  doi: string;
+  system: string;
+  picoRelevance: string;
+  relevanceType: string;
+  verifiedAt: string;
+  image: string | null;
+  imageAlt: string;
 }
 export interface Asset {
   id: string;
