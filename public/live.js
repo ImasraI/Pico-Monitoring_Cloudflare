@@ -73,8 +73,8 @@ async function enter() {
 async function loadPatients() { state.patients = (await api("patients")).patients; }
 async function loadPatientData() {
   const id = myPatientId(); if (!id) return;
-  const [steps, scans, messages, record, rewards] = await Promise.all([api("steps", null, { patientId: id }), api("scans", null, { patientId: id }), api("messages", null, { patientId: id }), api(state.user.role === "doctor" ? "patient.record" : "patient.personal", null, { patientId: id }), api("rewards",null,{patientId:id})]);
-  state.rewards=rewards; state.steps = steps.steps; state.notes = state.user.role === "doctor" ? (await api("notes", null, {patientId:id})).notes : []; state.scans = scans.scans; state.messages = messages.messages;
+  const [steps, scans, messages, record, rewards, notes] = await Promise.all([api("steps", null, { patientId: id }), api("scans", null, { patientId: id }), api("messages", null, { patientId: id }), api(state.user.role === "doctor" ? "patient.record" : "patient.personal", null, { patientId: id }), api("rewards",null,{patientId:id}), state.user.role === "doctor" ? api("notes", null, {patientId:id}) : Promise.resolve({notes:[]})]);
+  state.rewards=rewards; state.steps = steps.steps; state.notes = notes.notes; state.scans = scans.scans; state.messages = messages.messages;
   state.profile = record?.profile ?? null; state.schedule = record?.schedule ?? record?.profile ?? null; state.files = record?.files ?? [];
 }
 async function refreshNotifications() {
@@ -331,9 +331,9 @@ document.addEventListener("click", async event => {
     if (target.classList.contains("mobile-menu")) return $(".sidebar").classList.toggle("open");
     if (target.dataset.patientFilter) { state.patientFilter = target.dataset.patientFilter; document.querySelectorAll("[data-patient-filter]").forEach(el => el.classList.toggle("active", el.dataset.patientFilter === state.patientFilter)); $("#patient-rows").innerHTML = patientRows(); return; }
     if (target.dataset.doctorView) { if (state.doctorView === "wizard" && wizardDirty() && !confirm("اطلاعات واردشده ذخیره نشده است. خارج می‌شوید؟")) return; state.doctorView = target.dataset.doctorView; $(".sidebar").classList.remove("open"); return renderDoctor(); }
-    if (target.dataset.patientView) { state.patientView = target.dataset.patientView; await loadPatientData(); return renderPatient(); }
+    if (target.dataset.patientView) { if (state.patientView === target.dataset.patientView) return; state.patientView = target.dataset.patientView; return renderPatient(); }
     if (target.dataset.openPatient || target.dataset.id) { closeModal(); return openPatient(target.dataset.openPatient || target.dataset.id, target.dataset.openTab || "overview"); }
-    if (target.dataset.detailTab) { state.detailTab = target.dataset.detailTab; await loadPatientData(); return renderDetail(); }
+    if (target.dataset.detailTab) { if (state.detailTab === target.dataset.detailTab) return; state.detailTab = target.dataset.detailTab; return renderDetail(); }
     if (target.id === "detail-back") return renderDoctor();
     if (target.id === "detail-message") { state.detailTab = "communication"; return renderDetail(); }
     if (target.id === "detail-action" || target.id === "create-step") return stepModal();
