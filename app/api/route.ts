@@ -1,9 +1,10 @@
 import { env } from "cloudflare:workers";
 import { d1Files } from "./file-storage";
+import { AdminError, adminGet, adminPost, checkDoctorAccess, doctorPermissions, type ManagedAccount } from "./admin";
 import { RewardError, windowStart, getStep, ensureReady, score, awardBonuses, summary as rewardSummary, action as rewardAction } from "./rewards";
 
 export const dynamic = "force-dynamic";
-type Account = { id: string; email: string | null; username?: string | null; name: string; role: "doctor" | "patient"; doctor_id: string | null };
+type Account = ManagedAccount;
 type DbRow = Record<string, unknown>;
 const COOKIE = "danto_session";
 const WEEK = 7 * 24 * 60 * 60 * 1000;
@@ -54,12 +55,22 @@ const FILE_TYPES: Record<string, string[]> = { oral: ["jpg","jpeg","png","webp"]
 async function validatePatientFile(file: File, category: string) { const extension = file.name.split(".").at(-1)?.toLowerCase() ?? ""; if (!FILE_TYPES[category]?.includes(extension) || file.size < 100 || file.size > 10_000_000) throw new Error("نوع یا حجم یکی از فایل‌ها مجاز نیست؛ هر فایل باید حداکثر ۱۰ مگابایت باشد"); const header = new Uint8Array(await file.slice(0, 132).arrayBuffer()); const image = ["jpg","jpeg","png","webp"].includes(extension); if (image) { const valid = ["jpg","jpeg"].includes(extension) ? header[0] === 255 && header[1] === 216 && file.type === "image/jpeg" : extension === "png" ? header[0] === 137 && header[1] === 80 && header[2] === 78 && header[3] === 71 && file.type === "image/png" : header[0] === 82 && header[1] === 73 && header[2] === 70 && header[3] === 70 && header[8] === 87 && header[9] === 69 && file.type === "image/webp"; if (!valid) throw new Error("محتوای یکی از تصاویر معتبر نیست"); } if (extension === "pdf" && (String.fromCharCode(...header.slice(0, 4)) !== "%PDF")) throw new Error("فایل PDF معتبر نیست"); if (extension === "zip" && !(header[0] === 80 && header[1] === 75)) throw new Error("فایل فشرده معتبر نیست"); return image ? file.type : extension === "pdf" ? "application/pdf" : "application/octet-stream"; }
 async function collectPatientFiles(form: FormData) { const items: Array<{ category: string; file: File; mime: string }> = []; for (const category of Object.keys(FILE_TYPES)) for (const value of form.getAll(`file:${category}`)) { if (!(value instanceof File) || !value.name) continue; items.push({ category, file: value, mime: await validatePatientFile(value, category) }); } if (items.length > 12 || items.reduce((sum, item) => sum + item.file.size, 0) > 30_000_000) throw new Error("حداکثر ۱۲ فایل و ۳۰ مگابایت در هر بار مجاز است"); return items; }
 function cookie(request: Request, value: string, maxAge: number) { const secure = new URL(request.url).protocol === "https:" ? "; Secure" : ""; return `${COOKIE}=${value}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAge}${secure}`; }
-async function currentUser(request: Request): Promise<Account | null> { const raw = request.headers.get("cookie")?.match(/(?:^|;\s*)danto_session=([a-f0-9]{64})(?:;|$)/)?.[1]; if (!raw) return null; const row = await sql<Account>("SELECT u.id,u.email,u.username,u.name,u.role,u.doctor_id FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>?", await hash(raw), Date.now()); return row ?? null; }
-async function issueSession(request: Request, user: Account) { const raw = token(); const now = Date.now(); await exec("INSERT INTO sessions (token_hash,user_id,expires_at,created_at) VALUES (?,?,?,?)", await hash(raw), user.id, now + WEEK, now); return json({ user: publicUser(user) }, 200, { "Set-Cookie": cookie(request, raw, WEEK / 1000) }); }
+async function currentUser(request: Request): Promise<Account | null> {
+  const raw = request.headers.get("cookie")?.match(/(?:^|;\s*)danto_session=([a-f0-9]{64})(?:;|$)/)?.[1];
+  if (!raw) return null;
+  const row = await sql<Account & {access_json: string | null}>("SELECT u.id,u.email,u.username,u.name,u.role,u.doctor_id,u.auth_version,a.permissions AS access_json FROM sessions s JOIN users u ON u.id=s.user_id LEFT JOIN doctor_access a ON a.doctor_id=u.id WHERE s.token_hash=? AND s.expires_at>? AND u.disabled=0", await hash(raw), Date.now());
+  return row ? {...row, permissions: row.role === "doctor" ? doctorPermissions(row.access_json) : []} : null;
+}
+async function issueSession(request: Request, user: Account) {
+  const raw = token(), now = Date.now();
+  const inserted = await exec("INSERT INTO sessions (token_hash,user_id,expires_at,created_at) SELECT ?,id,?,? FROM users WHERE id=? AND disabled=0 AND auth_version=?", await hash(raw), now + WEEK, now, user.id, user.auth_version ?? 0);
+  if (!inserted.meta.changes) return fail("اطلاعات ورود تغییر کرده است؛ دوباره وارد شوید.", 401);
+  return json({ user: publicUser(user) }, 200, { "Set-Cookie": cookie(request, raw, WEEK / 1000) });
+}
 async function requirePatient(user: Account, id: string) { if (user.role === "patient" && user.id === id) return user; if (user.role === "doctor") return (await sql<Account>("SELECT id,email,username,name,role,doctor_id FROM users WHERE id=? AND doctor_id=? AND role='patient'", id, user.id)) ?? null; return null; }
 async function notification(userId: string, kind: "messages" | "scans" | "roadmap", title: string, body: string) { const settings = await sql<{ enabled: number }>(`SELECT ${kind} AS enabled FROM notification_settings WHERE user_id=?`, userId); if (settings && !settings.enabled) return; await exec("INSERT INTO notifications (id,user_id,kind,title,body,created_at,read_at) VALUES (?,?,?,?,?,?,NULL)", crypto.randomUUID(), userId, kind, title, body, Date.now()); }
 function ownOrigin(request: Request) { const origin = request.headers.get("origin"); return !origin || origin === new URL(request.url).origin; }
-function publicUser(row: Account) { return { id: row.id, email: row.email, username: row.username ?? null, name: row.name, role: row.role, doctorId: row.doctor_id }; }
+function publicUser(row: Account) { return { id: row.id, email: row.email, username: row.username ?? null, name: row.name, role: row.role, doctorId: row.doctor_id, permissions: row.permissions ?? [] }; }
 async function bodyJson(request: Request) { const length = Number(request.headers.get("content-length") || 0); if (length > 128000) throw new Error("درخواست بیش از حد بزرگ است"); return await request.json() as Record<string, unknown>; }
 
 type PlanEvent = { title: string; detail: string; dueAt: number; opensAt: number; rewardPoints: number | null; eventType: string; alignerNo: number | null; seriesId: string | null };
@@ -79,7 +90,9 @@ function planInput(value: unknown, profile: { treatment_type?: string; aligner_c
 
 export async function GET(request: Request) { try {
   const url = new URL(request.url); const op = url.searchParams.get("op");
-  const user = await currentUser(request); if (!user) return fail("لطفاً وارد حساب شوید", 401);
+  const user = await currentUser(request);
+  if (op?.startsWith("admin.")) return await adminGet(db(), user, op, url);
+  if (!user) return fail("لطفاً وارد حساب شوید", 401);
   if (op === "me") return json({ user: publicUser(user) });
   if (op === "patients") { if (user.role !== "doctor") return fail("دسترسی مجاز نیست", 403); const patients = await all("SELECT u.id,u.name,u.email,u.username,u.created_at,p.phone,p.personal_completed_at,p.activated_at,p.treatment_type,p.aligner_count,p.next_scan_at,p.next_visit_at,(SELECT f.id FROM patient_files f WHERE f.patient_id=u.id AND f.category='face' AND f.mime LIKE 'image/%' ORDER BY f.created_at DESC LIMIT 1) AS face_file_id,(SELECT f.id FROM patient_files f WHERE f.patient_id=u.id AND f.category='oral' AND f.mime LIKE 'image/%' ORDER BY f.created_at DESC LIMIT 1) AS oral_file_id FROM users u LEFT JOIN patient_profiles p ON p.user_id=u.id WHERE u.role='patient' AND u.doctor_id=? ORDER BY u.created_at DESC", user.id); return json({ patients }); }
   if (op === "notifications") { const rows = await all("SELECT id,kind,title,body,created_at,read_at FROM notifications WHERE user_id=? ORDER BY created_at DESC LIMIT 50", user.id); return json({ notifications: rows }); }
@@ -101,7 +114,7 @@ export async function GET(request: Request) { try {
   if (op === "steps") { const rows = await all("SELECT id,title,detail,due_at,completed_at,points_awarded,position,event_type,series_id,aligner_no,opens_at,paused_at,first_attempt_at,reward_points,on_time FROM steps WHERE patient_id=? ORDER BY due_at,position,id", patientId); return json({ steps: rows }); }
   if (op === "scans") { const rows = await all("SELECT s.id,s.created_at,s.status,s.doctor_note,s.step_id,s.review_result,i.id AS image_id,i.view FROM scans s LEFT JOIN scan_images i ON i.scan_id=s.id WHERE s.patient_id=? ORDER BY s.created_at DESC LIMIT 150", patientId); const groups = new Map<string, { id: string; created_at: number; status: string; doctor_note: string | null; step_id: string | null; review_result: string; images: Array<{ id: string; view: string }> }>(); for (const r of rows as DbRow[]) { const id = String(r.id); if (!groups.has(id)) groups.set(id, { id, created_at: Number(r.created_at), status: String(r.status), doctor_note: r.doctor_note ? String(r.doctor_note) : null, step_id:r.step_id?String(r.step_id):null, review_result:String(r.review_result), images: [] }); if (r.image_id) groups.get(id)!.images.push({ id: String(r.image_id), view: String(r.view) }); } return json({ scans: [...groups.values()] }); }
   return fail("درخواست ناشناخته است", 404);
-} catch (error) { console.error("DANTO_GET", error); return fail("دریافت اطلاعات ممکن نشد. دوباره تلاش کنید.", 500); } }
+} catch (error) { if (error instanceof AdminError) return fail(error.message,error.status); console.error("DANTO_GET", error); return fail("دریافت اطلاعات ممکن نشد. دوباره تلاش کنید.", 500); } }
 
 export async function POST(request: Request) { try {
   if (!ownOrigin(request)) return fail("منبع درخواست مجاز نیست", 403);
@@ -109,8 +122,20 @@ export async function POST(request: Request) { try {
   if (type.startsWith("multipart/form-data")) { if (Number(request.headers.get("content-length") || 0) > 32_000_000) return fail("حجم فایل‌ها بیش از حد مجاز است", 413); const form = await request.formData(); const op = form.get("op"); if (op === "patient.create") return await postPatient(request, form); if (op === "patient.file.add") return await postPatientFiles(request, form); return await postScan(request, form); }
   if (!type.startsWith("application/json")) return fail("فرمت درخواست معتبر نیست", 415);
   const body = await bodyJson(request); const op = body.op;
-  if (op === "setup") { const setupKey = typeof body.setupKey === "string" ? body.setupKey : ""; if (!env.DANTO_SETUP_KEY || !equal(setupKey, env.DANTO_SETUP_KEY)) return fail("کد راه‌اندازی معتبر نیست", 403); const email = normalizedEmail(body.email), name = safeName(body.name); if (!validEmail(email) || name.length < 2 || !validPassword(body.password)) return fail("نام، ایمیل یا رمز عبور معتبر نیست. رمز باید حداقل ۱۲ نویسه باشد."); if (await sql("SELECT id FROM users WHERE email=?", email)) return fail("این ایمیل قبلاً ثبت شده است", 409); const id = crypto.randomUUID(), salt = token(), now = Date.now(); await exec("INSERT INTO users (id,email,name,role,doctor_id,password_hash,password_salt,created_at) VALUES (?,?,?,'doctor',NULL,?,?,?)", id, email, name, await passwordHash(body.password, salt), salt, now); await exec("INSERT INTO notification_settings (user_id,messages,scans,roadmap) VALUES (?,1,1,1)", id); return issueSession(request, { id, email, name, role: "doctor", doctor_id: null }); }
-  if (op === "accept") { const code = typeof body.invite === "string" ? body.invite : ""; if (!/^[a-f0-9]{64}$/.test(code) || !validPassword(body.password)) return fail("دعوت‌نامه یا رمز عبور معتبر نیست"); const codeHash = await hash(code); const invite = await sql<{ doctor_id: string; email: string; patient_name: string }>("SELECT doctor_id,email,patient_name FROM invites WHERE token_hash=? AND used_at IS NULL AND expires_at>?", codeHash, Date.now()); if (!invite) return fail("دعوت‌نامه منقضی یا استفاده شده است", 400); const existing = await sql<{ id: string; doctor_id: string }>("SELECT id,doctor_id FROM users WHERE email=?", invite.email); const salt = token(), now = Date.now(), password = await passwordHash(body.password, salt); let id: string; if (existing) { const profile = await sql<{ activated_at: number | null }>("SELECT activated_at FROM patient_profiles WHERE user_id=?", existing.id); if (existing.doctor_id !== invite.doctor_id || !profile || profile.activated_at) return fail("این ایمیل قبلاً ثبت شده است", 409); id = existing.id; await db().batch([db().prepare("UPDATE users SET password_hash=?,password_salt=? WHERE id=?").bind(password, salt, id), db().prepare("UPDATE patient_profiles SET activated_at=? WHERE user_id=? AND activated_at IS NULL").bind(now, id), db().prepare("UPDATE invites SET used_at=? WHERE token_hash=? AND used_at IS NULL").bind(now, codeHash)]); } else { id = crypto.randomUUID(); await db().batch([db().prepare("INSERT INTO users (id,email,name,role,doctor_id,password_hash,password_salt,created_at) VALUES (?,?,?,'patient',?,?,?,?)").bind(id, invite.email, invite.patient_name, invite.doctor_id, password, salt, now), db().prepare("UPDATE invites SET used_at=? WHERE token_hash=? AND used_at IS NULL").bind(now, codeHash), db().prepare("INSERT INTO notification_settings (user_id,messages,scans,roadmap) VALUES (?,1,1,1)").bind(id)]); } return issueSession(request, { id, email: invite.email, name: invite.patient_name, role: "patient", doctor_id: invite.doctor_id }); }
+  if (op === "setup") return fail("ساخت حساب پزشک فقط از پنل ادمین امکان‌پذیر است", 403);
+  if (typeof op === "string" && op.startsWith("admin.")) {
+    let attemptKey: string | null = null;
+    if (op === "admin.bootstrap") {
+      attemptKey = await hash("admin-bootstrap:" + (request.headers.get("CF-Connecting-IP") ?? "local"));
+      const attempt = await sql<{count: number; reset_at: number}>("SELECT count,reset_at FROM auth_attempts WHERE key=?",attemptKey), now=Date.now();
+      if(attempt && attempt.reset_at>now && attempt.count>=8)return fail("تلاش‌های زیادی انجام شده؛ ۱۵ دقیقه دیگر دوباره امتحان کنید",429);
+      await exec("INSERT INTO auth_attempts (key,count,reset_at) VALUES (?,?,?) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN reset_at<? THEN 1 ELSE count+1 END,reset_at=CASE WHEN reset_at<? THEN ? ELSE reset_at END",attemptKey,1,now+900000,now,now,now+900000);
+    }
+    const result = await adminPost({db: db(), passwordHash, token, issueSession}, request, await currentUser(request), op, body, env.DANTO_ADMIN_SETUP_KEY);
+    if(attemptKey)await exec("DELETE FROM auth_attempts WHERE key=?",attemptKey);
+    return result;
+  }
+  if (op === "accept") { const code = typeof body.invite === "string" ? body.invite : ""; if (!/^[a-f0-9]{64}$/.test(code) || !validPassword(body.password)) return fail("دعوت‌نامه یا رمز عبور معتبر نیست"); const codeHash = await hash(code); const invite = await sql<{ doctor_id: string; email: string; patient_name: string }>("SELECT i.doctor_id,i.email,i.patient_name FROM invites i JOIN users d ON d.id=i.doctor_id WHERE i.token_hash=? AND i.used_at IS NULL AND i.expires_at>? AND d.role='doctor' AND d.disabled=0", codeHash, Date.now()); if (!invite) return fail("دعوت‌نامه منقضی یا استفاده شده است", 400); const existing = await sql<{ id: string; doctor_id: string }>("SELECT id,doctor_id FROM users WHERE email=?", invite.email); const salt = token(), now = Date.now(), password = await passwordHash(body.password, salt); let id: string; if (existing) { const profile = await sql<{ activated_at: number | null }>("SELECT activated_at FROM patient_profiles WHERE user_id=?", existing.id); if (existing.doctor_id !== invite.doctor_id || !profile || profile.activated_at) return fail("این ایمیل قبلاً ثبت شده است", 409); id = existing.id; await db().batch([db().prepare("UPDATE users SET password_hash=?,password_salt=? WHERE id=?").bind(password, salt, id), db().prepare("UPDATE patient_profiles SET activated_at=? WHERE user_id=? AND activated_at IS NULL").bind(now, id), db().prepare("UPDATE invites SET used_at=? WHERE token_hash=? AND used_at IS NULL").bind(now, codeHash)]); } else { id = crypto.randomUUID(); await db().batch([db().prepare("INSERT INTO users (id,email,name,role,doctor_id,password_hash,password_salt,created_at) VALUES (?,?,?,'patient',?,?,?,?)").bind(id, invite.email, invite.patient_name, invite.doctor_id, password, salt, now), db().prepare("UPDATE invites SET used_at=? WHERE token_hash=? AND used_at IS NULL").bind(now, codeHash), db().prepare("INSERT INTO notification_settings (user_id,messages,scans,roadmap) VALUES (?,1,1,1)").bind(id)]); } return issueSession(request, { id, email: invite.email, name: invite.patient_name, role: "patient", doctor_id: invite.doctor_id }); }
   if (op === "login") {
     const raw=String(body.identifier ?? body.email ?? "").trim(); let identifier=normalizedEmail(raw);
     if (!raw.includes("@")) { try { identifier=phoneNumber(raw,true); } catch { return fail("نام کاربری یا رمز عبور اشتباه است",401); } }
@@ -118,17 +143,19 @@ export async function POST(request: Request) { try {
     if ((!validEmail(identifier) && !/^09\d{9}$/.test(identifier)) || !password || password.length>128) return fail("نام کاربری یا رمز عبور اشتباه است",401);
     const key=await hash("login:"+identifier), attempt=await sql<{count:number;reset_at:number}>("SELECT count,reset_at FROM auth_attempts WHERE key=?",key);
     if (attempt && attempt.reset_at>Date.now() && attempt.count>=8) return fail("تلاش‌های زیادی انجام شده؛ ۱۵ دقیقه دیگر دوباره امتحان کنید",429);
-    const row=await sql<Account & {password_hash:string;password_salt:string}>("SELECT id,email,username,name,role,doctor_id,password_hash,password_salt FROM users WHERE " + (identifier.includes("@") ? "email=?" : "username=?"),identifier);
+    const row=await sql<Account & {password_hash:string;password_salt:string;access_json:string|null}>("SELECT u.id,u.email,u.username,u.name,u.role,u.doctor_id,u.disabled,u.auth_version,u.password_hash,u.password_salt,a.permissions AS access_json FROM users u LEFT JOIN doctor_access a ON a.doctor_id=u.id WHERE " + (identifier.includes("@") ? "u.email=?" : "u.username=?"),identifier);
     const entered=row?.role === "patient" && /^\d{10}$/.test(asciiDigits(password)) ? asciiDigits(password) : password;
     const candidate=await passwordHash(entered,row?.password_salt ?? "fallback-fixed-salt"), profile=row?.role === "patient" ? await sql<{activated_at:number|null}>("SELECT activated_at FROM patient_profiles WHERE user_id=?",row.id) : null;
-    if (!row || !equal(candidate,row.password_hash) || (profile && !profile.activated_at)) {
+    if (!row || row.disabled || !equal(candidate,row.password_hash) || (profile && !profile.activated_at)) {
       const now=Date.now(); await exec("INSERT INTO auth_attempts (key,count,reset_at) VALUES (?,?,?) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN reset_at<? THEN 1 ELSE count+1 END, reset_at=CASE WHEN reset_at<? THEN ? ELSE reset_at END",key,1,now+900000,now,now,now+900000);
       return fail("نام کاربری یا رمز عبور اشتباه است",401);
     }
-    await exec("DELETE FROM auth_attempts WHERE key=?",key); return issueSession(request,row);
+    await exec("DELETE FROM auth_attempts WHERE key=?",key); await exec("UPDATE users SET last_login_at=? WHERE id=?",Date.now(),row.id); row.permissions = row.role === "doctor" ? doctorPermissions(row.access_json) : []; return issueSession(request,row);
   }
   const user = await currentUser(request); if (!user) return fail("لطفاً وارد حساب شوید", 401);
   if (op === "logout") { const raw = request.headers.get("cookie")?.match(/(?:^|;\s*)danto_session=([a-f0-9]{64})(?:;|$)/)?.[1]; if (raw) await exec("DELETE FROM sessions WHERE token_hash=?", await hash(raw)); return json({ ok: true }, 200, { "Set-Cookie": cookie(request, "", 0) }); }
+  if (user.role === "admin") return fail("برای امور درمانی وارد حساب پزشک شوید",403);
+  if (typeof op === "string") checkDoctorAccess(user,op);
   if (op === "invite") { if (user.role !== "doctor") return fail("دسترسی مجاز نیست", 403); const email = normalizedEmail(body.email), name = safeName(body.name); if (!validEmail(email) || name.length < 2) return fail("نام و ایمیل بیمار را وارد کنید"); if (await sql("SELECT id FROM users WHERE email=?", email)) return fail("این ایمیل قبلاً ثبت شده است", 409); const raw = token(), now = Date.now(); await exec("INSERT INTO invites (token_hash,doctor_id,email,patient_name,expires_at,used_at) VALUES (?,?,?,?,?,NULL)", await hash(raw), user.id, email, name, now + WEEK); return json({ invite: raw, expiresAt: now + WEEK }, 201); }
   if (op === "settings") { const settings = body.settings as Record<string, unknown> | undefined; if (!settings || ["messages", "scans", "roadmap"].some(k => typeof settings[k] !== "boolean")) return fail("تنظیمات معتبر نیست"); await exec("UPDATE notification_settings SET messages=?,scans=?,roadmap=? WHERE user_id=?", settings.messages ? 1 : 0, settings.scans ? 1 : 0, settings.roadmap ? 1 : 0, user.id); return json({ ok: true }); }
   if (op === "notifications.read") { await exec("UPDATE notifications SET read_at=? WHERE user_id=? AND read_at IS NULL", Date.now(), user.id); return json({ ok: true }); }
@@ -213,7 +240,7 @@ export async function POST(request: Request) { try {
     await notification(patientId,"scans",decision==="recapture"?"عکس مجدد لازم است":"اسکن تأیید شد",note||"پزشک تصاویر شما را تأیید کرد");return json({ok:true});
   }
   return fail("درخواست ناشناخته است", 404);
-} catch (error) { if(error instanceof RewardError)return fail(error.message,error.status); console.error("DANTO_POST", error); return fail("ثبت اطلاعات ممکن نشد. دوباره تلاش کنید.", 500); } }
+} catch (error) { if(error instanceof RewardError || error instanceof AdminError)return fail(error.message,error.status); if(String(error).includes("doctor_patient_limit"))return fail("سقف تعداد بیماران این پزشک تکمیل شده است. با ادمین تماس بگیرید.",409); console.error("DANTO_POST", error); return fail("ثبت اطلاعات ممکن نشد. دوباره تلاش کنید.", 500); } }
 
 async function uploadPatientFiles(patientId: string, form: FormData) {
   const items = await collectPatientFiles(form);
@@ -223,6 +250,7 @@ async function uploadPatientFiles(patientId: string, form: FormData) {
 }
 async function postPatient(request: Request, form: FormData) {
   const doctor=await currentUser(request);if(!doctor || doctor.role!=="doctor")return fail("فقط پزشک می‌تواند بیمار اضافه کند",403);
+  checkDoctorAccess(doctor,"patient.create");
   const name=field(form,"name",100);let phone,idNumber,birth;
   try{if(name.length<2)throw new Error("نام کامل بیمار را وارد کنید");phone=phoneNumber(field(form,"phone",30),true);idNumber=nationalId(field(form,"nationalId",20),true)!;birth=birthDate(field(form,"birthDate",10),true);}catch(error){return fail((error as Error).message);}
   if(await sql("SELECT u.id FROM users u LEFT JOIN patient_profiles p ON p.user_id=u.id WHERE u.username=? OR p.phone=?",phone,phone))return fail("این شماره تلفن قبلاً ثبت شده است",409);
@@ -236,6 +264,7 @@ async function postPatient(request: Request, form: FormData) {
 }
 async function postPatientFiles(request: Request, form: FormData) {
   const user=await currentUser(request);if(!user)return fail("لطفاً وارد حساب شوید",401);
+  checkDoctorAccess(user,"patient.file.add");
   const patientId=field(form,"patientId",100),patient=await requirePatient(user,patientId);if(!patient)return fail("پرونده پیدا نشد",404);
   if(user.role === "patient" && [...form.keys()].some(key=>key.startsWith("file:") && !["oral","face","opg","cbct","faceScan","dentalScan"].includes(key.slice(5))))return fail("ثبت فایل‌های طرح درمان فقط برای پزشک مجاز است",403);
   let uploaded: Awaited<ReturnType<typeof uploadPatientFiles>>=[];

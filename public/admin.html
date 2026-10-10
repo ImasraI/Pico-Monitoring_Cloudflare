@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#147e83">
+  <title>مدیریت سامانه | Pico Monitoring</title>
+  <link rel="icon" href="/assets/favicon.svg"><link rel="stylesheet" href="/admin.css">
+  <script defer src="/admin.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">رفتن به محتوای اصلی</a>
+  <section id="auth-screen" class="auth-screen">
+    <div class="auth-story"><a class="brand" href="/" dir="ltr"><b>PM</b><span>Pico Monitoring</span></a><span class="eyebrow">مدیریت سامانه</span><h1>یک نقطهٔ روشن<br>برای مدیریت تیم.</h1><p>حساب پزشک‌ها، دسترسی‌ها و وضعیت فعالیت را از یک فضای مشخص مدیریت کنید.</p><div class="story-tags"><span>حساب‌ها</span><span>دسترسی‌ها</span><span>سابقهٔ تغییرات</span></div></div>
+    <main class="auth-card" id="main">
+      <p class="eyebrow">پنل ادمین</p><h2 id="auth-title">ورود به مدیریت</h2><p id="auth-copy">با ایمیل و رمز حساب ادمین وارد شوید.</p>
+      <form id="admin-auth-form">
+        <div id="bootstrap-fields" hidden><label for="admin-name">نام کامل ادمین</label><input id="admin-name" name="name" maxlength="100" autocomplete="name"><label for="setup-key">کلید راه‌اندازی اولیه</label><input id="setup-key" name="setupKey" type="password" autocomplete="off"><p class="hint">این کلید را مسئول سرور در تنظیمات سامانه ثبت می‌کند.</p></div>
+        <label for="admin-email">ایمیل</label><input id="admin-email" name="email" type="email" autocomplete="username" required dir="ltr" maxlength="254">
+        <label for="admin-password">رمز عبور</label><input id="admin-password" name="password" type="password" autocomplete="current-password" required maxlength="128" dir="ltr">
+        <p id="auth-error" class="error" role="alert" hidden></p><button class="primary full" type="submit" id="auth-submit">ورود</button>
+      </form>
+      <button type="button" class="text-button" id="bootstrap-switch" hidden>راه‌اندازی ادمین اولیه</button><a class="back-link" href="/danto.html">ورود پزشک و بیمار ←</a>
+    </main>
+  </section>
+  <div id="admin-shell" class="admin-shell" hidden>
+    <aside class="sidebar"><a class="brand" href="/" dir="ltr"><b>PM</b><span>Pico Monitoring</span></a><small>مدیریت سامانه</small><nav aria-label="ناوبری مدیریت"><button type="button" data-view="doctors" class="selected">پزشک‌ها <span>◉</span></button><button type="button" data-view="audit">سابقهٔ تغییرات <span>↗</span></button></nav><div class="sidebar-note">اطلاعات درمانی هر بیمار در حساب پزشک مربوط به او باقی می‌ماند.</div></aside>
+    <section class="workspace"><header class="topbar"><div><span class="eyebrow">PICO MONITORING</span><h1 id="view-title">حساب پزشک‌ها</h1></div><div class="account"><span id="account-name"></span><button type="button" class="outline" id="own-password">تغییر رمز من</button><button type="button" class="outline" id="logout">خروج</button></div></header>
+      <section id="summary" class="summary" aria-label="آمار سامانه"></section>
+      <main id="admin-content" tabindex="-1"><section id="doctors-view"><div class="section-heading"><div><h2>پزشک‌ها و دسترسی‌ها</h2><p>حساب تازه بسازید یا شرایط فعالیت پزشک را تغییر دهید.</p></div><button type="button" class="primary" id="create-doctor">+ افزودن پزشک</button></div>
+        <form id="search-form" class="filters"><label class="search"><span class="sr-only">جست‌وجوی نام، ایمیل یا مطب</span><input type="search" name="q" placeholder="جست‌وجوی نام، ایمیل یا مطب" maxlength="100"></label><label><span class="sr-only">وضعیت حساب</span><select name="status"><option value="all">همهٔ حساب‌ها</option><option value="active">فعال</option><option value="suspended">تعلیق‌شده</option></select></label><button class="outline" type="submit">جست‌وجو</button></form>
+        <p id="list-status" class="hint" role="status"></p><div id="doctors-list" class="doctors-list"></div><nav id="doctor-pagination" class="pagination" aria-label="صفحه‌بندی پزشک‌ها"></nav>
+      </section><section id="audit-view" hidden><div class="section-heading"><div><h2>سابقهٔ تغییرات مدیریت</h2><p>زمان، مسئول و نوع هر تغییر حساب ثبت می‌شود.</p></div></div><div id="audit-list"></div><nav id="audit-pagination" class="pagination" aria-label="صفحه‌بندی سابقه"></nav></section></main>
+    </section>
+  </div>
+  <dialog id="editor-dialog" aria-labelledby="dialog-title"><div class="dialog-heading"><h2 id="dialog-title"></h2><button type="button" class="close" id="close-dialog" aria-label="بستن">×</button></div><div id="dialog-body"></div></dialog>
+  <p id="notice" class="notice" role="status" aria-live="polite" hidden></p>
+</body></html>

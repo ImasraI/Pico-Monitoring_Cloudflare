@@ -3,9 +3,9 @@ import ts from 'typescript';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 await mkdir('work/api-test', { recursive: true });
-for (const name of ['route', 'rewards', 'file-storage']) {
+for (const name of ['route', 'rewards', 'file-storage', 'admin']) {
   const source = (await readFile(`app/api/${name}.ts`, 'utf8'))
-    .replace('"./rewards"', '"./rewards.mjs"').replace('"./file-storage"', '"./file-storage.mjs"');
+    .replace('"./rewards"', '"./rewards.mjs"').replace('"./file-storage"', '"./file-storage.mjs"').replace('"./admin"', '"./admin.mjs"');
   await writeFile(`work/api-test/${name}.mjs`, ts.transpileModule(source, {
     compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 },
   }).outputText);
