@@ -30,34 +30,29 @@ function modal(heading, content) { $("#modal-title").textContent = heading; $("#
 function closeModal() { $("#modal-layer").hidden = true; $("#modal-body").innerHTML = ""; }
 function showShell(which) { for (const id of ["login-screen", "doctor-app", "patient-detail", "patient-app"]) $(`#${id}`).hidden = id !== which; }
 function authMode(mode) {
-  state.mode = mode;
+  state.mode = mode === "accept" ? "accept" : "login";
+  const accepting = state.mode === "accept";
   const invitation = new URL(location.href).searchParams.get("invite") || "";
-  const copy = { login: "بیمار: شماره تلفن و رمز عبور اولیه (کد ملی). پزشک: ایمیل و رمز عبور.", setup: "برای ساخت حساب پزشک، کد راه‌اندازی را وارد کنید.", accept: "با دعوت‌نامه پزشک حساب بیمار خود را فعال کنید." };
-  $("#auth-copy").textContent = copy[mode];
-  $("#auth-extra").innerHTML = mode === "setup" ? `<label class="field-label" for="auth-name">نام پزشک</label><div class="field"><input id="auth-name" required maxlength="100" autocomplete="name"></div><label class="field-label" for="auth-code">کد راه‌اندازی</label><div class="field"><input id="auth-code" required autocomplete="off"></div>` : mode === "accept" ? `<label class="field-label" for="auth-code">کد دعوت</label><div class="field"><input id="auth-code" required value="${escapeHtml(invitation)}" autocomplete="off"></div>` : "";
-  $("#login-id").parentElement.parentElement.querySelector('label[for="login-id"]').hidden = mode === "accept";
-  $("#login-id").parentElement.hidden = mode === "accept";
-  $("#login-id").required = mode !== "accept";
-  $("label[for=login-id]").textContent=mode === "setup" ? "ایمیل پزشک" : "شماره تلفن بیمار یا ایمیل پزشک";
-  $("#login-id").type=mode === "setup" ? "email" : "text";
-  $("#login-id").placeholder=mode === "setup" ? "name@example.com" : "09123456789 / name@example.com";
-  $("#login-pass").placeholder=mode === "login" ? "رمز عبور" : "حداقل ۱۲ نویسه";
-  $("#login-pass").autocomplete = mode === "login" ? "current-password" : "new-password";
-  $("#login-submit").innerHTML = ({ login: "ورود", setup: "ساخت حساب پزشک", accept: "فعال‌سازی حساب بیمار" })[mode] + " <span>←</span>";
-  $("#auth-error").hidden = true;
-  document.querySelectorAll("[data-auth-mode]").forEach(button => button.classList.toggle("active", button.dataset.authMode === mode));
+  $("#auth-copy").textContent = accepting ? "با دعوت‌نامه پزشک حساب بیمار خود را فعال کنید." : "بیمار: شماره تلفن و رمز عبور اولیه (کد ملی). پزشک: ایمیل و رمز عبور. حساب پزشک توسط ادمین ساخته می‌شود.";
+  $("#auth-extra").innerHTML = accepting ? '<label class="field-label" for="auth-code">کد دعوت</label><div class="field"><input id="auth-code" required value="'+escapeHtml(invitation)+'" autocomplete="off"></div>' : "";
+  $("label[for=login-id]").hidden=accepting;$("#login-id").parentElement.hidden=accepting;$("#login-id").required=!accepting;
+  $("label[for=login-id]").textContent="شماره تلفن بیمار یا ایمیل پزشک";$("#login-id").type="text";$("#login-id").placeholder="09123456789 / name@example.com";
+  $("#login-pass").placeholder=accepting?"حداقل ۱۲ نویسه":"رمز عبور";$("#login-pass").autocomplete=accepting?"new-password":"current-password";
+  $("#login-submit").innerHTML=(accepting?"فعال‌سازی حساب بیمار":"ورود")+" <span>←</span>";$("#auth-error").hidden=true;
+  document.querySelectorAll("[data-auth-mode]").forEach(button=>button.classList.toggle("active",button.dataset.authMode===state.mode));
 }
 async function authSubmit(event) {
   event.preventDefault();
   const button = $("#login-submit"); button.disabled = true;
   const password = $("#login-pass").value;
-  const data = state.mode === "login" ? { identifier: $("#login-id").value, password } : state.mode === "setup" ? { email: $("#login-id").value, name: $("#auth-name").value, setupKey: $("#auth-code").value.trim(), password } : { invite: $("#auth-code").value.trim(), password };
+  const data = state.mode === "login" ? { identifier: $("#login-id").value, password } : { invite: $("#auth-code").value.trim(), password };
   try { const result = await api(state.mode, data); state.user = result.user; history.replaceState({}, "", "/danto.html"); await enter(); }
   catch (error) { $("#auth-error").textContent = error.message; $("#auth-error").hidden = false; }
   finally { button.disabled = false; }
 }
 async function enter() {
   if (!state.user) return showShell("login-screen");
+  if (state.user.role === "admin") { location.replace("/admin.html"); return; }
   if (state.user.role === "doctor") {
     $("#doctor-account-name").textContent = state.user.name; $(".detail-site-account").textContent = state.user.name;
     $("#doctor-title").textContent = `سلام، ${state.user.name}`;

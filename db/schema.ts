@@ -5,12 +5,32 @@ export const users = sqliteTable("users", {
   email: text("email"),
   username: text("username"),
   name: text("name").notNull(),
-  role: text("role", { enum: ["doctor", "patient"] }).notNull(),
+  role: text("role", { enum: ["admin", "doctor", "patient"] }).notNull(),
   doctorId: text("doctor_id"),
   passwordHash: text("password_hash").notNull(),
   passwordSalt: text("password_salt").notNull(),
   createdAt: integer("created_at").notNull(),
+  disabled: integer("disabled", { mode: "boolean" }).notNull().default(false),
+  lastLoginAt: integer("last_login_at"),
+  authVersion: integer("auth_version").notNull().default(0),
 }, table => [uniqueIndex("users_email_unique").on(table.email), uniqueIndex("users_username_unique").on(table.username), index("users_doctor_id_idx").on(table.doctorId)]);
+
+export const doctorAccess = sqliteTable("doctor_access", {
+  doctorId: text("doctor_id").primaryKey().references(() => users.id),
+  clinic: text("clinic").notNull().default(""),
+  phone: text("phone").notNull().default(""),
+  permissions: text("permissions").notNull().default('["patients.manage","files.manage","treatment.manage","scans.review","messages.send","rewards.manage"]'),
+  patientLimit: integer("patient_limit"),
+  updatedAt: integer("updated_at").notNull(),
+});
+export const adminAudit = sqliteTable("admin_audit", {
+  id: text("id").primaryKey(),
+  actorId: text("actor_id").notNull().references(() => users.id),
+  subjectId: text("subject_id").references(() => users.id),
+  action: text("action").notNull(),
+  details: text("details").notNull(),
+  createdAt: integer("created_at").notNull(),
+}, table => [index("admin_audit_created_idx").on(table.createdAt)]);
 
 export const patientProfiles = sqliteTable("patient_profiles", {
   userId: text("user_id").primaryKey(),

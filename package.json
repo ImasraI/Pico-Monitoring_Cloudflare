@@ -6,6 +6,8 @@
     "node": ">=22.13.0"
   },
   "scripts": {
+    "test:admin-migration": "node --test tests/admin-migration.test.mjs",
+    "test:admin": "node tests/admin.integration.mjs",
     "test:free-storage": "node --test tests/free-storage.test.mjs",
     "build:cloudflare": "node scripts/build-cloudflare.mjs",
     "deploy:cloudflare": "node scripts/deploy-cloudflare.mjs",
