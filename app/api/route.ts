@@ -67,6 +67,30 @@ async function issueSession(request: Request, user: Account) {
   if (!inserted.meta.changes) return fail("اطلاعات ورود تغییر کرده است؛ دوباره وارد شوید.", 401);
   return json({ user: publicUser(user) }, 200, { "Set-Cookie": cookie(request, raw, WEEK / 1000) });
 }
+async function changeOwnPassword(request: Request, user: Account, body: Record<string, unknown>) {
+  if ([body.userId, body.patientId, body.doctorId].some(id => id !== undefined && id !== user.id)) return fail("فقط رمز حساب خودتان را می‌توانید تغییر دهید", 403);
+  const normalize = (value: unknown) => typeof value === "string" ? (user.role === "patient" && /^\d{10}$/.test(asciiDigits(value)) ? asciiDigits(value) : value) : "";
+  const current = normalize(body.currentPassword), next = normalize(body.password), minimum = user.role === "patient" ? 8 : 12;
+  if (next.length < minimum || next.length > 128) return fail(`رمز جدید باید بین ${minimum === 8 ? "۸" : "۱۲"} تا ۱۲۸ نویسه باشد`);
+  const key = await hash("password-change:" + user.id), attempt = await sql<{count:number;reset_at:number}>("SELECT count,reset_at FROM auth_attempts WHERE key=?",key);
+  if (attempt && attempt.reset_at > Date.now() && attempt.count >= 8) return fail("تلاش‌های زیادی انجام شده؛ ۱۵ دقیقه دیگر دوباره امتحان کنید",429);
+  const row = await sql<{password_hash:string;password_salt:string}>("SELECT password_hash,password_salt FROM users WHERE id=?",user.id);
+  if (!row || !current || current.length > 128 || !equal(await passwordHash(current,row.password_salt),row.password_hash)) {
+    const now=Date.now();await exec("INSERT INTO auth_attempts (key,count,reset_at) VALUES (?,?,?) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN reset_at<? THEN 1 ELSE count+1 END,reset_at=CASE WHEN reset_at<? THEN ? ELSE reset_at END",key,1,now+900000,now,now,now+900000);
+    return fail("رمز عبور فعلی صحیح نیست",403);
+  }
+  const salt=token(), digest=await passwordHash(next,salt);
+  const statements=[
+    db().prepare("UPDATE users SET password_hash=?,password_salt=?,auth_version=auth_version+1 WHERE id=? AND password_hash=? AND auth_version=? AND disabled=0").bind(digest,salt,user.id,row.password_hash,user.auth_version ?? 0),
+    db().prepare("DELETE FROM sessions WHERE user_id=? AND EXISTS (SELECT 1 FROM users WHERE id=? AND password_hash=?)").bind(user.id,user.id,digest),
+  ];
+  if (user.role === "admin") statements.push(db().prepare("INSERT INTO admin_audit (id,actor_id,subject_id,action,details,created_at) SELECT ?,id,id,'admin.password','{}',? FROM users WHERE id=? AND password_hash=?").bind(crypto.randomUUID(),Date.now(),user.id,digest));
+  const results=await db().batch(statements);
+  if (!results[0].meta.changes) return fail("اطلاعات حساب تغییر کرده است؛ دوباره وارد شوید",409);
+  const attemptKeys=await Promise.all(["password-change:"+user.id,...[user.username,user.email].filter(Boolean).map(identifier=>"login:"+identifier)].map(hash));
+  await db().batch(attemptKeys.map(attemptKey=>db().prepare("DELETE FROM auth_attempts WHERE key=?").bind(attemptKey)));
+  return json({ok:true,signInAgain:true},200,{"Set-Cookie":cookie(request,"",0)});
+}
 async function requirePatient(user: Account, id: string) { if (user.role === "patient" && user.id === id) return user; if (user.role === "doctor") return (await sql<Account>("SELECT id,email,username,name,role,doctor_id FROM users WHERE id=? AND doctor_id=? AND role='patient'", id, user.id)) ?? null; return null; }
 async function notification(userId: string, kind: "messages" | "scans" | "roadmap", title: string, body: string) { const settings = await sql<{ enabled: number }>(`SELECT ${kind} AS enabled FROM notification_settings WHERE user_id=?`, userId); if (settings && !settings.enabled) return; await exec("INSERT INTO notifications (id,user_id,kind,title,body,created_at,read_at) VALUES (?,?,?,?,?,?,NULL)", crypto.randomUUID(), userId, kind, title, body, Date.now()); }
 function ownOrigin(request: Request) { const origin = request.headers.get("origin"); return !origin || origin === new URL(request.url).origin; }
@@ -145,6 +169,7 @@ export async function POST(request: Request) { try {
   }
   const user = await currentUser(request); if (!user) return fail("لطفاً وارد حساب شوید", 401);
   if (op === "logout") { const raw = request.headers.get("cookie")?.match(/(?:^|;\s*)danto_session=([a-f0-9]{64})(?:;|$)/)?.[1]; if (raw) await exec("DELETE FROM sessions WHERE token_hash=?", await hash(raw)); return json({ ok: true }, 200, { "Set-Cookie": cookie(request, "", 0) }); }
+  if (op === "account.password") return await changeOwnPassword(request,user,body);
   if (user.role === "admin") return fail("برای امور درمانی وارد حساب پزشک شوید",403);
   if (typeof op === "string") checkDoctorAccess(user,op);
   if (op === "invite") { if (user.role !== "doctor") return fail("دسترسی مجاز نیست", 403); const email = normalizedEmail(body.email), name = safeName(body.name); if (!validEmail(email) || name.length < 2) return fail("نام و ایمیل بیمار را وارد کنید"); if (await sql("SELECT id FROM users WHERE email=?", email)) return fail("این ایمیل قبلاً ثبت شده است", 409); const raw = token(), now = Date.now(); await exec("INSERT INTO invites (token_hash,doctor_id,email,patient_name,expires_at,used_at) VALUES (?,?,?,?,?,NULL)", await hash(raw), user.id, email, name, now + WEEK); return json({ invite: raw, expiresAt: now + WEEK }, 201); }

@@ -37,6 +37,7 @@ node node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.jso
 $env:DANTO_TEST_ADMIN_PHONE='<شماره ادمین محلی>'
 $env:DANTO_TEST_ADMIN_PASSWORD='<رمز ادمین محلی>'
 npm.cmd run test:mobile
+npm.cmd run test:password
 npm.cmd run test:admin
 node tests/rewards.integration.mjs
 ```

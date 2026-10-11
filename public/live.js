@@ -188,8 +188,23 @@ async function renderPatient() {
 }
 async function renderSettings(root) {
   state.settings = (await api("settings")).settings;
-  root.innerHTML = title("تنظیم اعلان‌ها", "این تنظیمات اعلان‌های داخل برنامه را کنترل می‌کنند.") + `<form id="settings-form" class="panel settings-list">${[["messages","پیام‌ها"],["scans","اسکن‌ها"],["roadmap","مسیر درمان"]].map(([key,label]) => `<label><span>${label}</span><input type="checkbox" name="${key}" ${state.settings[key] ? "checked" : ""}></label>`).join("")}<button class="primary" type="submit">ذخیره تنظیمات</button></form>`;
+  root.innerHTML = title("تنظیم اعلان‌ها", "این تنظیمات اعلان‌های داخل برنامه را کنترل می‌کنند.") + `<form id="settings-form" class="panel settings-list">${[["messages","پیام‌ها"],["scans","اسکن‌ها"],["roadmap","مسیر درمان"]].map(([key,label]) => `<label><span>${label}</span><input type="checkbox" name="${key}" ${state.settings[key] ? "checked" : ""}></label>`).join("")}<button class="primary" type="submit">ذخیره تنظیمات</button></form>` + passwordSettingsHtml();
 }
+function passwordSettingsHtml() {
+  const minimum=state.user.role==='patient'?8:12;
+  return '<section class="panel password-settings"><h2>تغییر رمز عبور</h2><p class="muted">'+(state.user.role==='patient'?'اگر هنوز رمز را عوض نکرده‌اید، رمز فعلی همان کد ملی شماست. ':'')+'پس از ذخیره با شماره تلفن و رمز جدید دوباره وارد شوید.</p><form id="account-password-form" class="form-grid"><label class="full" for="account-current-password">رمز عبور فعلی<input id="account-current-password" name="currentPassword" type="password" required maxlength="128" autocomplete="current-password" dir="ltr"></label><label for="account-new-password">رمز عبور جدید<input id="account-new-password" name="password" type="password" required minlength="'+minimum+'" maxlength="128" autocomplete="new-password" dir="ltr" aria-describedby="new-password-help"></label><label for="account-confirm-password">تکرار رمز جدید<input id="account-confirm-password" name="confirmPassword" type="password" required minlength="'+minimum+'" maxlength="128" autocomplete="new-password" dir="ltr"></label><p id="new-password-help" class="muted full">رمز جدید دست‌کم '+(minimum===8?'۸':'۱۲')+' نویسه باشد.</p><p class="auth-error full" role="alert" data-password-error hidden></p><div class="full"><button class="primary" type="submit">ذخیره رمز جدید</button></div></form></section>';
+}
+async function submitPasswordChange(form) {
+  const errorBox=form.querySelector('[data-password-error]');errorBox.hidden=true;
+  const fields=Object.fromEntries(new FormData(form));
+  if(fields.password!==fields.confirmPassword){errorBox.textContent='رمز جدید و تکرار آن یکسان نیستند.';errorBox.hidden=false;return;}
+  try{
+    await api('account.password',{currentPassword:fields.currentPassword,password:fields.password});
+    form.reset();state.user=null;state.patientId=null;state.patients=[];closeModal();$('#auth-form').reset();showShell('login-screen');
+    window.scrollTo({top:0});$('#login-id').focus();toast('رمز تغییر کرد؛ با شماره تلفن و رمز جدید وارد شوید.');
+  }catch(error){errorBox.textContent=error.message;errorBox.hidden=false;}
+}
+
 function stepModal() { modal("مرحله جدید درمان", `<form id="step-form" class="form-grid"><label class="full">عنوان مرحله<input name="title" required maxlength="100"></label><label class="full">توضیح<textarea name="detail" maxlength="500"></textarea></label><label class="full">موعد انجام<input name="dueAt" type="date" required></label><div class="modal-actions full"><button class="primary" type="submit">افزودن مرحله</button></div></form>`); }
 function reviewModal(id) { const scan=state.scans.find(s=>s.id===id), step=state.steps.find(s=>s.id===scan?.step_id); modal("بررسی اسکن", `<form id="review-form" data-scan-id="${id}">${step?'<p class="muted">مرحله: '+escapeHtml(step.title)+' · امتیاز بر اساس ارسال اول محاسبه می‌شود.</p>':''}<label>نتیجه بررسی<select name="decision"><option value="accepted">تصاویر قابل استفاده‌اند؛ تأیید مرحله</option><option value="recapture">نیاز به عکس مجدد</option></select></label><label>نظر پزشک<textarea name="note" maxlength="1000" placeholder="برای عکس مجدد دلیل را بنویسید"></textarea></label><div class="modal-actions"><button class="primary" type="submit">ثبت بررسی</button></div></form>`); }
 
@@ -339,7 +354,8 @@ document.addEventListener("submit", async event => {
   const form = event.target; if (form.id === "auth-form") return authSubmit(event);
   event.preventDefault(); const button = $("button[type=submit]", form); if (button) button.disabled = true;
   try {
-    if (form.id === "patient-create-form") {
+    if (form.id === "account-password-form") { await submitPasswordChange(form); }
+    else if (form.id === "patient-create-form") {
       const data=new FormData(form);data.set("op","patient.create");const password=String(data.get("nationalId")).replace(/[۰-۹]/g,d=>String(d.charCodeAt(0)-1776)).replace(/[٠-٩]/g,d=>String(d.charCodeAt(0)-1632)).replace(/\s/g,"");
       const result=await api("patient.create",data);state.doctorView="patients";await loadPatients();await renderDoctor();
       modal("حساب بیمار ساخته شد",'<p>حساب '+escapeHtml(result.patient.name)+' فعال است و بیمار می‌تواند همین حالا وارد شود.</p><div class="credential-receipt"><label>نام کاربری (شماره تلفن)<input readonly value="'+escapeHtml(result.patient.username)+'" dir="ltr"></label><label>رمز عبور اولیه (کد ملی)<input readonly value="'+escapeHtml(password)+'" dir="ltr"></label></div><p class="muted">این اطلاعات را در اختیار بیمار قرار دهید. مشخصات تکمیلی و مدارک از داخل حساب بیمار یا پرونده پزشک قابل ثبت هستند.</p><div class="modal-actions"><button class="primary" data-open-patient="'+result.patient.id+'" data-open-tab="record">باز کردن پرونده بیمار</button><button class="outline" id="copy-account">کپی اطلاعات ورود</button></div>');
