@@ -1,4 +1,4 @@
-/* Layout and palette follow the supplied DANTO HTML files. */
+/* Pico Monitoring layout and palette follow the supplied dashboard HTML references. */
 @font-face { font-family:DantoVazir; src:url('./fonts/vazirmatn-regular.ttf') format('truetype'); font-weight:400 600; font-display:swap; }
 @font-face { font-family:DantoVazir; src:url('./fonts/vazirmatn-bold.ttf') format('truetype'); font-weight:700; font-display:swap; }
 @font-face { font-family:DantoVazir; src:url('./fonts/vazirmatn-extra-bold.ttf') format('truetype'); font-weight:800 900; font-display:swap; }

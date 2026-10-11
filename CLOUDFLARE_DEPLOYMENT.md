@@ -1,6 +1,6 @@
 # Full application on Cloudflare Free — no card or R2
 
-The public website stays at `/`; the complete DANTO patient/doctor application stays at `/danto.html`, and its API at `/api`. Accounts, scans, treatment plans, rewards, messaging and private uploads remain available. This deployment uses Workers Free and D1 only. Do not activate R2 or a paid plan.
+The public website stays at `/`; the complete Pico Monitoring patient/doctor application stays at `/danto.html`, and its API at `/api`. Accounts, scans, treatment plans, rewards, messaging and private uploads remain available. This deployment uses Workers Free and D1 only. Do not activate R2 or a paid plan.
 
 Files are split into BLOB chunks below D1's 2 MB row limit. Patient records and files share the **500 MB per-database limit**. The app caps file payloads at **400 MB** to reserve room for records/indexes. Actual database overhead and growing records can still reach the database limit. Each file retains the existing 10 MB limit. Uploads and their quota reservations are transactional; deletion releases file payload quota and deletes chunks.
 
