@@ -1,5 +1,5 @@
 const $ = (selector, root = document) => root.querySelector(selector);
-const state = { rewards: null, scanStepId: null, notes: [], draftPlan: [], planView: null, patientSort: "priority", treatmentFilter: "all", activityFilter: "all", filtersOpen: false, user: null, mode: "login", doctorView: "patients", patientView: "home", detailTab: "overview", patientId: null, patientName: "", patientEmail: "", profile: null, schedule: null, files: [], wizardStep: 1, patients: [], patientRecords: [], patientFilter: "all", steps: [], scans: [], messages: [], notifications: [], settings: null };
+const state = { rewards: null, scanStepId: null, notes: [], draftPlan: [], planView: null, patientSort: "priority", treatmentFilter: "all", activityFilter: "all", filtersOpen: false, user: null, doctorView: "patients", patientView: "home", detailTab: "overview", patientId: null, patientName: "", patientEmail: "", profile: null, schedule: null, files: [], wizardStep: 1, patients: [], patientRecords: [], patientFilter: "all", steps: [], scans: [], messages: [], notifications: [], settings: null };
 const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const date = value => value ? new Intl.DateTimeFormat("fa-IR", { year: "numeric", month: "long", day: "numeric", timeZone: "Asia/Tehran" }).format(new Date(Number(value))) : "—";
 const time = value => value ? new Intl.DateTimeFormat("fa-IR", { dateStyle: "short", timeStyle: "short", timeZone: "Asia/Tehran" }).format(new Date(Number(value))) : "—";
@@ -29,24 +29,13 @@ function showError(error) { toast(error.message || "خطایی رخ داد"); }
 function modal(heading, content) { $("#modal-title").textContent = heading; $("#modal-body").innerHTML = content; $("#modal-layer").hidden = false; DantoPlanner.hydrateDates($("#modal-body")); }
 function closeModal() { $("#modal-layer").hidden = true; $("#modal-body").innerHTML = ""; }
 function showShell(which) { for (const id of ["login-screen", "doctor-app", "patient-detail", "patient-app"]) $(`#${id}`).hidden = id !== which; }
-function authMode(mode) {
-  state.mode = mode === "accept" ? "accept" : "login";
-  const accepting = state.mode === "accept";
-  const invitation = new URL(location.href).searchParams.get("invite") || "";
-  $("#auth-copy").textContent = accepting ? "با دعوت‌نامه پزشک حساب بیمار خود را فعال کنید." : "بیمار: شماره تلفن و رمز عبور اولیه (کد ملی). پزشک: ایمیل و رمز عبور. حساب پزشک توسط ادمین ساخته می‌شود.";
-  $("#auth-extra").innerHTML = accepting ? '<label class="field-label" for="auth-code">کد دعوت</label><div class="field"><input id="auth-code" required value="'+escapeHtml(invitation)+'" autocomplete="off"></div>' : "";
-  $("label[for=login-id]").hidden=accepting;$("#login-id").parentElement.hidden=accepting;$("#login-id").required=!accepting;
-  $("label[for=login-id]").textContent="شماره تلفن بیمار یا ایمیل پزشک";$("#login-id").type="text";$("#login-id").placeholder="09123456789 / name@example.com";
-  $("#login-pass").placeholder=accepting?"حداقل ۱۲ نویسه":"رمز عبور";$("#login-pass").autocomplete=accepting?"new-password":"current-password";
-  $("#login-submit").innerHTML=(accepting?"فعال‌سازی حساب بیمار":"ورود")+" <span>←</span>";$("#auth-error").hidden=true;
-  document.querySelectorAll("[data-auth-mode]").forEach(button=>button.classList.toggle("active",button.dataset.authMode===state.mode));
-}
 async function authSubmit(event) {
   event.preventDefault();
   const button = $("#login-submit"); button.disabled = true;
   const password = $("#login-pass").value;
-  const data = state.mode === "login" ? { identifier: $("#login-id").value, password } : { invite: $("#auth-code").value.trim(), password };
-  try { const result = await api(state.mode, data); state.user = result.user; history.replaceState({}, "", "/danto.html"); await enter(); }
+  const data = { identifier: $("#login-id").value, password };
+  $("#auth-error").hidden = true;
+  try { const result = await api("login", data); state.user = result.user; history.replaceState({}, "", "/danto.html"); await enter(); }
   catch (error) { $("#auth-error").textContent = error.message; $("#auth-error").hidden = false; }
   finally { button.disabled = false; }
 }
@@ -319,10 +308,9 @@ document.addEventListener("click", async event => {
     if(target.dataset.planDay)return planEventModal('custom',target.dataset.planDay);
     if(target.id==='delete-plan-event'){if(!confirm('این رویداد از برنامه حذف شود؟'))return;await savePlanDelete(target.dataset.id,false);return;}
     if(target.id==='delete-plan-series'){if(!confirm('همه رویدادهای انجام‌نشده این برنامه تکرارشونده حذف شوند؟'))return;await savePlanDelete(target.dataset.id,true);return;}
-    if (target.dataset.authMode) return authMode(target.dataset.authMode);
     if(target.id === "copy-account") {const inputs=[...document.querySelectorAll('.credential-receipt input')];try{await navigator.clipboard.writeText('نام کاربری: '+inputs[0].value+'\nرمز عبور اولیه: '+inputs[1].value);toast('اطلاعات ورود کپی شد.');}catch{toast('اطلاعات را از کادر بالا کپی کنید.');}return;}
     if (target.id === "toggle-pass") { $("#login-pass").type = $("#login-pass").type === "password" ? "text" : "password"; return; }
-    if (target.hasAttribute("data-logout")) { await api("logout", {}); state.user = null; state.patientId = null; state.patients = []; $("#auth-form").reset(); authMode("login"); closeModal(); showShell("login-screen"); return; }
+    if (target.hasAttribute("data-logout")) { await api("logout", {}); state.user = null; state.patientId = null; state.patients = []; $("#auth-form").reset(); closeModal(); showShell("login-screen"); return; }
     if (target.classList.contains("mobile-menu")) return $(".sidebar").classList.toggle("open");
     if (target.dataset.patientFilter) { state.patientFilter = target.dataset.patientFilter; document.querySelectorAll("[data-patient-filter]").forEach(el => el.classList.toggle("active", el.dataset.patientFilter === state.patientFilter)); $("#patient-rows").innerHTML = patientRows(); return; }
     if (target.dataset.doctorView) { if (state.doctorView === "wizard" && wizardDirty() && !confirm("اطلاعات واردشده ذخیره نشده است. خارج می‌شوید؟")) return; state.doctorView = target.dataset.doctorView; $(".sidebar").classList.remove("open"); return renderDoctor(); }
@@ -380,6 +368,5 @@ document.addEventListener("click", async event => { const copy = event.target.cl
 document.addEventListener("input", event => { if (event.target.id === "patient-search") $("#patient-rows").innerHTML = patientRows(); });
 document.addEventListener("change", event => { if(event.target.name==='mode'&&event.target.closest('#reward-preferences-form')){const box=event.target.form.querySelector('[data-child-accessories]');if(box)box.hidden=event.target.value!=='child'&&!(event.target.value==='auto'&&state.rewards.mode==='child');}  if(event.target.id==="patient-sort"){state.patientSort=event.target.value;$("#patient-rows").innerHTML=patientRows();} if (event.target.id === "compare-before" || event.target.id === "compare-after") $(`#${event.target.id}-image`).src = imageUrl(event.target.value); if (event.target.name === "treatmentType" && event.target.closest("#patient-profile-form")) { const aligner = event.target.value === "aligner"; $(".aligner-count-field",event.target.form).hidden = !aligner; $(".aligner-count-field input",event.target.form).required = aligner; } if (event.target.type === "file") { const label = document.getElementById(`file-${event.target.name}`); if (label) label.textContent = event.target.files[0]?.name || "انتخاب تصویر"; if (event.target.name.startsWith("file:")) { const list = event.target.closest(".record-upload-slot")?.querySelector("[data-selected-files]"); if(list){(list.previewUrls||[]).forEach(url=>URL.revokeObjectURL(url));list.previewUrls=[];list.innerHTML=[...event.target.files].map(file=>{const src=file.type.startsWith('image/')?URL.createObjectURL(file):'';if(src)list.previewUrls.push(src);return '<div class="selected-file-preview">'+(src?'<img src="'+src+'" alt="پیش‌نمایش فایل">':'<span>▣</span>')+'<span>'+escapeHtml(file.name)+'</span></div>';}).join('')||'فایلی انتخاب نشده است.';} } } if (event.target.name === "category" && event.target.closest("#patient-file-form")) { const slot = PATIENT_FILE_SLOTS.find(item => item[0] === event.target.value); if (slot) { const picker = $("#patient-file-form input[type=file]"); picker.accept = slot[3]; picker.value = ""; } } });
 $("#modal-layer").addEventListener("click", event => { if (event.target.id === "modal-layer") closeModal(); });
-authMode(new URL(location.href).searchParams.has("invite") ? "accept" : "login");
 api("me").then(async result => { state.user = result.user; await enter(); }).catch(() => showShell("login-screen"));
 setInterval(async () => { if (!state.user || document.hidden) return; await refreshNotifications(); if (state.user.role === "patient" && state.patientView === "messages") { await loadPatientData(); await renderPatient(); } if (state.user.role === "doctor" && state.patientId && state.detailTab === "communication" && !$("#patient-detail").hidden) { await loadPatientData(); await renderDetail(); } }, 30000);

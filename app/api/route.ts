@@ -1,4 +1,5 @@
 import { env } from "cloudflare:workers";
+import { phoneNumber } from "./mobile";
 import { d1Files } from "./file-storage";
 import { AdminError, adminGet, adminPost, checkDoctorAccess, doctorPermissions, type ManagedAccount } from "./admin";
 import { RewardError, windowStart, getStep, ensureReady, score, awardBonuses, summary as rewardSummary, action as rewardAction } from "./rewards";
@@ -35,7 +36,6 @@ function isoDate(value: string) {
 }
 function dateAt(value: string) { const iso = isoDate(value); return iso ? new Date(iso + "T23:59:59+03:30").getTime() : null; }
 function birthDate(value: string, required = false) { const iso = isoDate(value); if ((required && !iso) || (iso && (iso < "1900-01-01" || iso > new Date().toISOString().slice(0,10)))) throw new Error("تاریخ تولد معتبر نیست"); return iso; }
-function phoneNumber(value: string, required = false) { let phone = asciiDigits(value).replace(/[\s()-]/g, ""); if (phone.startsWith("+98")) phone = "0" + phone.slice(3); else if (phone.startsWith("0098")) phone = "0" + phone.slice(4); else if (/^9\d{9}$/.test(phone)) phone = "0" + phone; if ((required && !phone) || (phone && !/^09\d{9}$/.test(phone))) throw new Error("شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود"); return phone; }
 function nationalId(value: string, required = false) { const id = asciiDigits(value).replace(/\s/g, ""); if ((required && !id) || (id && !/^\d{10}$/.test(id))) throw new Error("کد ملی باید ۱۰ رقم باشد؛ صفر ابتدای آن را وارد کنید"); return id || null; }
 function profileInput(form: FormData) {
   const treatmentType = field(form, "treatmentType", 20), alignerCount = Number(asciiDigits(field(form, "alignerCount", 3)) || 0);
@@ -124,26 +124,17 @@ export async function POST(request: Request) { try {
   const body = await bodyJson(request); const op = body.op;
   if (op === "setup") return fail("ساخت حساب پزشک فقط از پنل ادمین امکان‌پذیر است", 403);
   if (typeof op === "string" && op.startsWith("admin.")) {
-    let attemptKey: string | null = null;
-    if (op === "admin.bootstrap") {
-      attemptKey = await hash("admin-bootstrap:" + (request.headers.get("CF-Connecting-IP") ?? "local"));
-      const attempt = await sql<{count: number; reset_at: number}>("SELECT count,reset_at FROM auth_attempts WHERE key=?",attemptKey), now=Date.now();
-      if(attempt && attempt.reset_at>now && attempt.count>=8)return fail("تلاش‌های زیادی انجام شده؛ ۱۵ دقیقه دیگر دوباره امتحان کنید",429);
-      await exec("INSERT INTO auth_attempts (key,count,reset_at) VALUES (?,?,?) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN reset_at<? THEN 1 ELSE count+1 END,reset_at=CASE WHEN reset_at<? THEN ? ELSE reset_at END",attemptKey,1,now+900000,now,now,now+900000);
-    }
-    const result = await adminPost({db: db(), passwordHash, token, issueSession}, request, await currentUser(request), op, body, env.DANTO_ADMIN_SETUP_KEY);
-    if(attemptKey)await exec("DELETE FROM auth_attempts WHERE key=?",attemptKey);
-    return result;
+    return await adminPost({db: db(), passwordHash, token}, await currentUser(request), op, body);
   }
   if (op === "accept") { const code = typeof body.invite === "string" ? body.invite : ""; if (!/^[a-f0-9]{64}$/.test(code) || !validPassword(body.password)) return fail("دعوت‌نامه یا رمز عبور معتبر نیست"); const codeHash = await hash(code); const invite = await sql<{ doctor_id: string; email: string; patient_name: string }>("SELECT i.doctor_id,i.email,i.patient_name FROM invites i JOIN users d ON d.id=i.doctor_id WHERE i.token_hash=? AND i.used_at IS NULL AND i.expires_at>? AND d.role='doctor' AND d.disabled=0", codeHash, Date.now()); if (!invite) return fail("دعوت‌نامه منقضی یا استفاده شده است", 400); const existing = await sql<{ id: string; doctor_id: string }>("SELECT id,doctor_id FROM users WHERE email=?", invite.email); const salt = token(), now = Date.now(), password = await passwordHash(body.password, salt); let id: string; if (existing) { const profile = await sql<{ activated_at: number | null }>("SELECT activated_at FROM patient_profiles WHERE user_id=?", existing.id); if (existing.doctor_id !== invite.doctor_id || !profile || profile.activated_at) return fail("این ایمیل قبلاً ثبت شده است", 409); id = existing.id; await db().batch([db().prepare("UPDATE users SET password_hash=?,password_salt=? WHERE id=?").bind(password, salt, id), db().prepare("UPDATE patient_profiles SET activated_at=? WHERE user_id=? AND activated_at IS NULL").bind(now, id), db().prepare("UPDATE invites SET used_at=? WHERE token_hash=? AND used_at IS NULL").bind(now, codeHash)]); } else { id = crypto.randomUUID(); await db().batch([db().prepare("INSERT INTO users (id,email,name,role,doctor_id,password_hash,password_salt,created_at) VALUES (?,?,?,'patient',?,?,?,?)").bind(id, invite.email, invite.patient_name, invite.doctor_id, password, salt, now), db().prepare("UPDATE invites SET used_at=? WHERE token_hash=? AND used_at IS NULL").bind(now, codeHash), db().prepare("INSERT INTO notification_settings (user_id,messages,scans,roadmap) VALUES (?,1,1,1)").bind(id)]); } return issueSession(request, { id, email: invite.email, name: invite.patient_name, role: "patient", doctor_id: invite.doctor_id }); }
   if (op === "login") {
-    const raw=String(body.identifier ?? body.email ?? "").trim(); let identifier=normalizedEmail(raw);
-    if (!raw.includes("@")) { try { identifier=phoneNumber(raw,true); } catch { return fail("نام کاربری یا رمز عبور اشتباه است",401); } }
+    const raw=String(body.identifier ?? body.username ?? body.email ?? "").trim(); let identifier=asciiDigits(raw).toLowerCase();
+    if (/^[+\d\s()-]+$/.test(identifier)) { try { identifier=phoneNumber(identifier,true); } catch { return fail("نام کاربری یا رمز عبور اشتباه است",401); } }
     const password=typeof body.password === "string" ? body.password : "";
     if ((!validEmail(identifier) && !/^09\d{9}$/.test(identifier)) || !password || password.length>128) return fail("نام کاربری یا رمز عبور اشتباه است",401);
     const key=await hash("login:"+identifier), attempt=await sql<{count:number;reset_at:number}>("SELECT count,reset_at FROM auth_attempts WHERE key=?",key);
     if (attempt && attempt.reset_at>Date.now() && attempt.count>=8) return fail("تلاش‌های زیادی انجام شده؛ ۱۵ دقیقه دیگر دوباره امتحان کنید",429);
-    const row=await sql<Account & {password_hash:string;password_salt:string;access_json:string|null}>("SELECT u.id,u.email,u.username,u.name,u.role,u.doctor_id,u.disabled,u.auth_version,u.password_hash,u.password_salt,a.permissions AS access_json FROM users u LEFT JOIN doctor_access a ON a.doctor_id=u.id WHERE " + (identifier.includes("@") ? "u.email=?" : "u.username=?"),identifier);
+    const row=await sql<Account & {password_hash:string;password_salt:string;access_json:string|null}>("SELECT u.id,u.email,u.username,u.name,u.role,u.doctor_id,u.disabled,u.auth_version,u.password_hash,u.password_salt,a.permissions AS access_json FROM users u LEFT JOIN doctor_access a ON a.doctor_id=u.id WHERE u.username=? OR (u.email=? AND u.role<>'admin')",identifier,identifier);
     const entered=row?.role === "patient" && /^\d{10}$/.test(asciiDigits(password)) ? asciiDigits(password) : password;
     const candidate=await passwordHash(entered,row?.password_salt ?? "fallback-fixed-salt"), profile=row?.role === "patient" ? await sql<{activated_at:number|null}>("SELECT activated_at FROM patient_profiles WHERE user_id=?",row.id) : null;
     if (!row || row.disabled || !equal(candidate,row.password_hash) || (profile && !profile.activated_at)) {

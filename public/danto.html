@@ -25,18 +25,15 @@
     <div class="login-panel"><div class="login-box">
       <div class="mobile-brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32 13c-6-4-15-5-20 1-7 8-3 18 0 26 3 9 4 15 9 15 5 0 4-15 11-15s6 15 11 15c5 0 6-6 9-15 3-8 7-18 0-26-5-6-14-5-20-1Z" fill="currentColor"/><path d="M23 18c5 2 10 3 16 0M18 24c-2 5 0 10 2 14" stroke="#0f4952" stroke-width="3" stroke-linecap="round"/></svg></span><b>DANTO</b></div>
       <p class="eyebrow">ورود به سامانه پایش درمان</p><h1>خوش آمدید</h1>
-      <p class="login-copy" id="auth-copy">با ایمیل و رمز عبور وارد حساب خود شوید.</p>
+      <p class="login-copy" id="auth-copy">با شماره موبایل و رمز عبور وارد حساب خود شوید.</p>
       <form id="auth-form">
-      <div id="auth-extra"></div>
-      <label class="field-label" for="login-id">ایمیل</label>
-      <div class="field"><span>＠</span><input id="login-id" type="email" required autocomplete="username" placeholder="name@example.com"></div>
+      <label class="field-label" for="login-id">شماره موبایل</label>
+      <div class="field"><span>☎</span><input id="login-id" type="tel" inputmode="tel" required autocomplete="username" dir="ltr" maxlength="30" placeholder="09123456789"></div>
       <label class="field-label" for="login-pass">رمز عبور</label>
-      <div class="field"><span>●</span><input id="login-pass" required type="password" autocomplete="current-password" placeholder="حداقل ۱۲ نویسه"><button type="button" id="toggle-pass" aria-label="نمایش رمز">◉</button></div>
+      <div class="field"><span>●</span><input id="login-pass" required type="password" autocomplete="current-password" placeholder="رمز عبور"><button type="button" id="toggle-pass" aria-label="نمایش رمز">◉</button></div>
       <p id="auth-error" class="auth-error" role="alert" hidden></p>
       <button class="login-submit" id="login-submit" type="submit">ورود به داشبورد <span>←</span></button>
       </form>
-      <div class="auth-links"><button type="button" data-auth-mode="login">ورود</button><button type="button" data-auth-mode="accept">دعوت‌نامه‌های قبلی</button></div>
-      <a href="/admin.html" class="demo-note" style="display:block;margin-top:15px">مدیریت سامانه</a><p class="demo-note">حساب بیمار در مطب توسط پزشک ساخته می‌شود؛ نام کاربری شماره تلفن و رمز اولیه کد ملی است.</p>
     </div></div>
   </section>
 

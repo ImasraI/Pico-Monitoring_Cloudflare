@@ -6,7 +6,7 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "test:admin-migration": "node --test tests/admin-migration.test.mjs",
+    "test:admin-migration": "node --test tests/admin-migration.test.mjs tests/mobile-migration.test.mjs",
     "test:admin": "node tests/admin.integration.mjs",
     "test:free-storage": "node --test tests/free-storage.test.mjs",
     "build:cloudflare": "node scripts/build-cloudflare.mjs",
@@ -18,7 +18,8 @@
     "build": "node scripts/run-framework.mjs build",
     "start": "node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 127.0.0.1 --inspector-port 0",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "test:mobile": "node tests/mobile-login.integration.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

@@ -31,10 +31,10 @@ Root `wrangler.json` has the real D1 database UUID and no R2 binding. The build 
 7. Review the deployment API token permissions shown in Advanced settings. Cloudflare may offer to create a token automatically. Authorize it only after reviewing the access. The credential itself does not purchase a paid plan or R2 subscription.
 8. Click Deploy and watch dependency installation, build, pending SQL migrations, and Worker upload. Applied migrations are skipped. `0005_free_file_storage.sql` adds the private file tables and quota.
 9. If required, set build variable `NODE_VERSION=24` under Worker Settings → Builds and retry.
-10. Open Worker Settings → Variables and Secrets. Add runtime **Secret** `DANTO_ADMIN_SETUP_KEY` with a random value of at least 32 characters; save/deploy it. Do not put it in Git or public/build variables.
-11. Visit `/admin.html` and use “راه‌اندازی ادمین اولیه” to create the single primary administrator, with an unused email and a password of at least 12 characters. See [ADMIN_SETUP.md](ADMIN_SETUP.md). Remove the bootstrap secret afterwards; the old `DANTO_SETUP_KEY` is no longer used.
-12. Create doctor accounts inside the administrator panel. Doctor self-registration is disabled even if the old key is still configured. Existing doctor accounts and patients are retained by migration `0006_admin_accounts.sql`.
-13. Log in as the doctor at `/danto.html`, create a test patient, and test patient profile completion, scan upload and doctor review. Check admin access restrictions, suspension, password reset, logout, login and page reload.
+10. Migration `0007_unified_mobile_login.sql` provisions the owner-requested administrator with a mobile number and salted password hash. No bootstrap key, runtime secret or setup form is required. It runs once; the audit marker prevents resetting a changed password if the SQL is replayed.
+11. Visit `/danto.html`. All three roles use the same mobile-number/password form; the server determines the role. Administrator login opens `/admin.html` automatically. See [ADMIN_SETUP.md](ADMIN_SETUP.md).
+12. Create doctors inside the administrator panel with a unique mobile number. Doctor self-registration is disabled. Existing valid, unique doctor mobile numbers are migrated; add or correct missing/duplicate numbers through the panel. Existing doctor passwords and patient records are retained.
+13. Test doctor login, patient creation and profile completion, scan upload and doctor review. Check administrator access restrictions, suspension, password reset, logout, login and page reload.
 
 If a Worker is already connected, update Settings → Builds to these commands and rebuild after pushing. The dashboard Worker name must match the root config. The default HTTPS workers.dev URL is enough; no purchased domain, Oracle server, `BUCKET`, `BACKEND_ORIGIN` or `PROXY_SECRET` is needed. [Build configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
 
@@ -72,7 +72,6 @@ npm.cmd run test:free-storage
 npm.cmd run build:cloudflare
 npx.cmd wrangler deploy --config dist/server/wrangler.json --dry-run
 npm.cmd run db:cloudflare:local
-Set-Content -Path .dev.vars -Value 'DANTO_ADMIN_SETUP_KEY="local-admin-bootstrap-test-key-2026"'
 npm.cmd run dev:cloudflare
 ```
 
@@ -80,11 +79,14 @@ Open http://localhost:8787 and `/danto.html`. In another PowerShell window:
 
 ```powershell
 $env:DANTO_TEST_URL='http://localhost:8787'
+$env:DANTO_TEST_ADMIN_PHONE='<local administrator mobile>'
+$env:DANTO_TEST_ADMIN_PASSWORD='<local administrator password>'
+node tests/mobile-login.integration.mjs
 node tests/admin.integration.mjs
 node tests/rewards.integration.mjs
 ```
 
-Local emulated D1 is separate from production. Integration tests create accounts and must run on localhost. The local `.dev.vars` file is ignored. A timeout in the Windows emulator is not a passing runtime test; inspect logs and independently verify the deployed Worker.
+Local emulated D1 is separate from production. Integration tests create accounts and must run on localhost. Administrator test credentials are read from environment variables and are never logged. A timeout in the Windows emulator is not a passing runtime test; inspect logs and independently verify the deployed Worker.
 
 ## Troubleshooting
 
@@ -94,7 +96,7 @@ Local emulated D1 is separate from production. Integration tests create accounts
 | Missing stored_files table | Apply migration 0005 using the deploy command |
 | Migration permission denied | Git deployment token needs D1 edit access |
 | Missing build script | Push package.json and the scripts before building |
-| Administrator bootstrap rejected | Set DANTO_ADMIN_SETUP_KEY as a runtime secret; bootstrap is allowed only before an administrator exists |
+| Administrator mobile login rejected | Apply migration 0007 before publishing; use the owner-provided mobile number and password |
 | Missing doctor_access table | Apply migration 0006 before publishing the new Worker |
 | Storage full | Check payload quota and actual D1 size; back up before removing uploads |
 | Error 1102 | Worker CPU quota exceeded; investigate without enabling paid usage |
