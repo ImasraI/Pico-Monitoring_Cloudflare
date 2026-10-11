@@ -13,7 +13,11 @@ export const users = sqliteTable("users", {
   disabled: integer("disabled", { mode: "boolean" }).notNull().default(false),
   lastLoginAt: integer("last_login_at"),
   authVersion: integer("auth_version").notNull().default(0),
-}, table => [uniqueIndex("users_email_unique").on(table.email), uniqueIndex("users_username_unique").on(table.username), index("users_doctor_id_idx").on(table.doctorId)]);
+  deletedAt: integer("deleted_at"),
+  deletedBy: text("deleted_by"),
+  deletedDisabled: integer("deleted_disabled"),
+  deletedGroup: text("deleted_group"),
+}, table => [uniqueIndex("users_email_unique").on(table.email), uniqueIndex("users_username_unique").on(table.username), index("users_doctor_id_idx").on(table.doctorId),index("users_deleted_doctor_idx").on(table.deletedAt,table.doctorId,table.role)]);
 
 export const doctorAccess = sqliteTable("doctor_access", {
   doctorId: text("doctor_id").primaryKey().references(() => users.id),

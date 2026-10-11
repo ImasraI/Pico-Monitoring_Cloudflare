@@ -6,7 +6,8 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "test:admin-migration": "node --test tests/admin-migration.test.mjs tests/mobile-migration.test.mjs",
+    "test:admin-migration": "node --test tests/admin-migration.test.mjs tests/mobile-migration.test.mjs tests/admin-patients-migration.test.mjs",
+    "test:admin-patients": "node tests/admin-patients.integration.mjs",
     "test:admin": "node tests/admin.integration.mjs",
     "test:free-storage": "node --test tests/free-storage.test.mjs",
     "build:cloudflare": "node scripts/build-cloudflare.mjs",
