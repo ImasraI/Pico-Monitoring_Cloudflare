@@ -146,6 +146,7 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
 .record-file-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
 .doctor-note { border-bottom:1px solid #e1e8ec; padding:14px 0; }
 .doctor-note p { white-space:pre-wrap; overflow-wrap:anywhere; font-size:.95rem; }
+.note-delete { color:#a84333; border-color:#eccac4; }
 #note-form { margin-top:16px; display:grid; gap:10px; }
 #note-form textarea { border:1px solid #e1e8ec; border-radius:12px; padding:12px; }
 .planner { display:grid; gap:16px; }

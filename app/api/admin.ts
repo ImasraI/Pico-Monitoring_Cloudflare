@@ -23,7 +23,7 @@ const writePermissions: Record<string, string> = {
   invite: "patients.manage", "patient.create": "patients.manage", "patient.personal": "patients.manage",
   "patient.invite": "patients.manage",
   "patient.file.add": "files.manage", "patient.file.delete": "files.manage",
-  "patient.profile": "treatment.manage", "note.create": "treatment.manage", "step.create": "treatment.manage",
+  "patient.profile": "treatment.manage", "note.create": "treatment.manage", "note.delete": "treatment.manage", "step.create": "treatment.manage",
   "plan.create": "treatment.manage", "plan.update": "treatment.manage", "plan.pause": "treatment.manage",
   "plan.delete": "treatment.manage",
   "scan.review": "scans.review", message: "messages.send",

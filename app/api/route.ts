@@ -190,6 +190,17 @@ export async function POST(request: Request) { try {
     await notification(patientId,"roadmap",body.paused?"مرحله درمان متوقف شد":"مرحله درمان فعال شد",step.title);return json({ok:true});
   }
   if (op === "note.create") { if (user.role !== "doctor") return fail("دسترسی مجاز نیست", 403); const text = typeof body.text === "string" ? body.text.trim() : ""; if (!text || text.length > 2000) return fail("یادداشت باید بین ۱ تا ۲۰۰۰ نویسه باشد"); await exec("INSERT INTO patient_notes (id,patient_id,doctor_id,body,created_at) VALUES (?,?,?,?,?)", crypto.randomUUID(), patientId, user.id, text, Date.now()); return json({ ok: true }, 201); }
+  if (op === "note.delete") {
+    if (user.role !== "doctor") return fail("دسترسی مجاز نیست", 403);
+    const noteId = typeof body.noteId === "string" ? body.noteId : "";
+    if (!noteId) return fail("یادداشت را انتخاب کنید");
+    // The initial intake note lives in the profile; clear only that field.
+    const result = noteId === "initial"
+      ? await exec("UPDATE patient_profiles SET doctor_note='' WHERE user_id=? AND doctor_note<>''", patientId)
+      : await exec("DELETE FROM patient_notes WHERE id=? AND patient_id=? AND doctor_id=?", noteId, patientId, user.id);
+    if (!result.meta.changes) return fail("یادداشت پیدا نشد", 404);
+    return json({ ok: true });
+  }
   if (op === "plan.create") {
     if (user.role !== "doctor") return fail("دسترسی مجاز نیست", 403);
     const profile = await sql<{ treatment_type: string; aligner_count: number }>("SELECT treatment_type,aligner_count FROM patient_profiles WHERE user_id=?", patientId);
@@ -234,7 +245,16 @@ export async function POST(request: Request) { try {
     await exec("DELETE FROM patient_files WHERE id=? AND patient_id=?",fileId,patientId);await bucket().delete(file.object_key).catch(error=>console.warn("PATIENT_FILE_DELETE",error));return json({ok:true});
   }
   if (op === "messages.read") { await exec("UPDATE messages SET read_at=? WHERE patient_id=? AND sender_id<>? AND read_at IS NULL", Date.now(), patientId, user.id); return json({ ok: true }); }
-  if (op === "message") { const text = typeof body.text === "string" ? body.text.trim() : ""; const kind = body.kind === "urgent" ? "urgent" : "normal"; if (!text || text.length > 2000) return fail("متن پیام باید بین ۱ تا ۲۰۰۰ نویسه باشد"); const id = crypto.randomUUID(), now = Date.now(); await exec("INSERT INTO messages (id,doctor_id,patient_id,sender_id,kind,body,created_at,read_at) VALUES (?,?,?,?,?,?,?,NULL)", id, patient.doctor_id ?? user.id, patientId, user.id, kind, text, now); const recipient = user.role === "doctor" ? patientId : patient.doctor_id!; await notification(recipient, "messages", kind === "urgent" ? "پیام فوری" : "پیام جدید", `${user.name}: ${text.slice(0, 90)}`); return json({ message: { id, sender_id: user.id, kind, body: text, created_at: now } }, 201); }
+  if (op === "message") {
+    if (user.role === "doctor" && body.kind === "urgent") return fail("ارسال پیام فوری فقط برای بیمار فعال است");
+    const text = typeof body.text === "string" ? body.text.trim() : ""; const kind = body.kind === "urgent" ? "urgent" : "normal";
+    if (!text || text.length > 2000) return fail("متن پیام باید بین ۱ تا ۲۰۰۰ نویسه باشد");
+    const id = crypto.randomUUID(), now = Date.now();
+    await exec("INSERT INTO messages (id,doctor_id,patient_id,sender_id,kind,body,created_at,read_at) VALUES (?,?,?,?,?,?,?,NULL)", id, patient.doctor_id ?? user.id, patientId, user.id, kind, text, now);
+    const recipient = user.role === "doctor" ? patientId : patient.doctor_id!;
+    await notification(recipient, "messages", kind === "urgent" ? "پیام فوری" : "پیام جدید", `${user.name}: ${text.slice(0, 90)}`);
+    return json({ message: { id, sender_id: user.id, kind, body: text, created_at: now } }, 201);
+  }
   if (op === "step.create") { if (user.role !== "doctor") return fail("دسترسی مجاز نیست", 403); const title = safeName(body.title), detail = typeof body.detail === "string" ? body.detail.trim().slice(0, 500) : "", dueAt = Number(body.dueAt); if (title.length < 2 || !Number.isFinite(dueAt) || dueAt < Date.now() - 86400000) return fail("عنوان یا موعد مرحله معتبر نیست"); const current = await sql<{ position: number }>("SELECT COALESCE(MAX(position),0) AS position FROM steps WHERE patient_id=?", patientId); const id = crypto.randomUUID(), now = Date.now(); await exec("INSERT INTO steps (id,patient_id,doctor_id,title,detail,due_at,completed_at,points_awarded,position,created_at) VALUES (?,?,?,?,?,?,NULL,0,?,?)", id, patientId, user.id, title, detail, dueAt, (current?.position ?? 0) + 1, now); await notification(patientId, "roadmap", "مرحله جدید درمان", title); return json({ step: { id, title, detail, due_at: dueAt, completed_at: null, points_awarded: 0, position: (current?.position ?? 0) + 1 } }, 201); }
   if (op === "step.complete") {
     if(user.role!=="patient")return fail("این مرحله را بیمار ثبت می‌کند",403);

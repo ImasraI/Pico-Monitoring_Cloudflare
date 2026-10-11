@@ -21,7 +21,8 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
     "test:mobile": "node tests/mobile-login.integration.mjs",
-    "test:password": "node tests/password-change.integration.mjs"
+    "test:password": "node tests/password-change.integration.mjs",
+    "test:doctor-tools": "node tests/doctor-tools.integration.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

@@ -43,7 +43,7 @@ await denied(doctorActor,'patient.invite',{patientId:first.id});
 await denied(doctorActor,'patient.profile',{patientId:first.id});
 await denied(doctorActor,'patient.file.delete',{patientId:first.id,fileId:'anything'});
 const upload=new FormData();upload.set('op','patient.file.add');upload.set('patientId',first.id);await denied(doctorActor,'patient.file.add',upload);
-for(const op of ['plan.create','plan.update','plan.pause','plan.delete','step.create','note.create','scan.review','message','rewards.rules','rewards.correct'])await denied(doctorActor,op,{patientId:first.id});
+for(const op of ['plan.create','plan.update','plan.pause','plan.delete','step.create','note.create','note.delete','scan.review','message','rewards.rules','rewards.correct'])await denied(doctorActor,op,{patientId:first.id});
 assert.equal((await ok(doctorActor,'patients')).patients.length,2);checks++;
 await ok(patientActor,'patient.personal',{patientId:first.id,gender:'female',address:'نمونهٔ آزمون'});
 await denied(other,'patient.record',undefined,404,{patientId:first.id});
