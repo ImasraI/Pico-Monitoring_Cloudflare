@@ -8,6 +8,7 @@ import { ScrollRuntime, PointerRuntime, ScrollProgress, BackToTop } from "./comp
 import { Reveal } from "./components/Reveal";
 import { Hero, FAQBlock } from "./components/Sections";
 import { Home } from "./pages/Home";
+import { AudiencePage, SpecialistDirectory } from "./pages/Audiences";
 import { Product } from "./pages/Product";
 import { ArticleDetail } from "./pages/Articles";
 import { SolutionPage } from "./pages/Solutions";
@@ -27,6 +28,8 @@ function PageContent({ pathname }: { pathname: string }) {
       <Link className="button" to="/">بازگشت به خانه</Link>
     </section>
   );
+  if (pathname === "/find-orthodontist") return <SpecialistDirectory />;
+  if (["/orthodontists", "/patients"].includes(pathname)) return <AudiencePage patient={pathname === "/patients"} />;
   if (pathname === "/") return <Home page={page} />;
   if (pathname === "/contact") return <Contact page={page} />;
   if (pathname === "/evidence") return <EvidencePage page={page} />;

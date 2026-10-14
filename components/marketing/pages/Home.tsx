@@ -72,11 +72,8 @@ export function Home({ page }: { page: Page }) {
             <Link to="/orthodontists">
               برای ارتودنتیست‌ها <Icon name="arrow" size={18} />
             </Link>
-            <Link to="/clinics">
-              برای کلینیک‌ها <Icon name="arrow" size={18} />
-            </Link>
             <Link to="/patients">
-              برای بیماران <Icon name="arrow" size={18} />
+              تجربه درمان شما <Icon name="arrow" size={18} />
             </Link>
           </div>
         </div>

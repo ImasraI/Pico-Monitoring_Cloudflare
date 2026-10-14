@@ -223,8 +223,7 @@ export function Footer() {
         <div data-reveal="up">
           <h2>برای شما</h2>
           <Link to="/orthodontists">ارتودنتیست‌ها</Link>
-          <Link to="/clinics">کلینیک‌ها و مطب‌ها</Link>
-          <Link to="/patients">بیماران و خانواده‌ها</Link>
+          <Link to="/patients">تجربه درمان شما</Link>
           <LoginButton />
         </div>
         <div data-reveal="up">

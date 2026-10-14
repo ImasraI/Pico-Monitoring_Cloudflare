@@ -13,8 +13,7 @@ export const navigation = [
     label: "برای شما",
     items: [
       { label: "ارتودنتیست‌ها", to: "/orthodontists", note: "تصمیم بالینی با شماست" },
-      { label: "کلینیک‌ها و مطب‌ها", to: "/clinics", note: "جریان کار منظم‌تر" },
-      { label: "بیماران و خانواده‌ها", to: "/patients", note: "در ارتباط با درمان" },
+      { label: "تجربه درمان شما", to: "/patients", note: "در ارتباط با درمان" },
     ],
   },
   { label: "شواهد و پژوهش‌ها", to: "/evidence" },
