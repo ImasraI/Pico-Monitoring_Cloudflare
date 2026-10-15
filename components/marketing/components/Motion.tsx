@@ -287,21 +287,9 @@ export function RouteVeil() {
 
 export function BackToTop() {
   const scrollUp = () => {
-    const start = window.scrollY;
-    if (start <= 0) return;
-    if (reducedMotion()) {
-      window.scrollTo(0, 0);
-      return;
-    }
-    const from = performance.now();
-    const duration = Math.min(900, 320 + start * 0.25);
-    const step = (now: number) => {
-      const progress = Math.min(1, (now - from) / duration);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      window.scrollTo(0, Math.round(start * (1 - eased)));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
+    // Use one native animation. Repeated scrollTo calls restart the browser's
+    // CSS smooth scroll and delay movement, especially on long pages.
+    window.scrollTo({ top: 0, behavior: reducedMotion() ? "instant" : "smooth" });
   };
   return (
     <button
