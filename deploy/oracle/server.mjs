@@ -24,6 +24,7 @@ function authenticated(value) {
 }
 let active = 0;
 const server = createServer(async (req, res) => {
+  res.setHeader('X-Pico-Backend', 'oracle');
   if (active >= 8) { res.writeHead(503, { 'Retry-After': '5' }); res.end('Busy; retry shortly'); return; }
   active++;
   try {
