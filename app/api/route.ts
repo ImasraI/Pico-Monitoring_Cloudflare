@@ -4,6 +4,23 @@ import { d1Files } from "./file-storage";
 import { AdminError, adminGet, adminPost, checkDoctorAccess, doctorPermissions, type ManagedAccount } from "./admin";
 import { RewardError, windowStart, getStep, ensureReady, score, awardBonuses, summary as rewardSummary, action as rewardAction } from "./rewards";
 
+async function oracleProxy(request: Request): Promise<Response | null> {
+  const settings = env as typeof env & { BACKEND_ORIGIN?: string; PROXY_SECRET?: string };
+  if (!settings.BACKEND_ORIGIN) return null;
+  try {
+    const backend = new URL(settings.BACKEND_ORIGIN);
+    if (backend.protocol !== "https:" || backend.username || backend.password || backend.pathname !== "/" || backend.search || backend.hash || !settings.PROXY_SECRET || settings.PROXY_SECRET.length < 32) throw new Error("Invalid Oracle proxy configuration");
+    const incoming = new URL(request.url);
+    backend.pathname = "/api";
+    backend.search = incoming.search;
+    const headers = new Headers(request.headers);
+    headers.delete("host");
+    headers.set("x-danto-proxy-secret", settings.PROXY_SECRET);
+    return await fetch(backend, { method: request.method, headers, body: request.method === "GET" ? undefined : request.body, redirect: "manual", signal: AbortSignal.timeout(45000) });
+  } catch {
+    return Response.json({ error: "Backend temporarily unavailable" }, { status: 502, headers: { "Cache-Control": "no-store" } });
+  }
+}
 export const dynamic = "force-dynamic";
 type Account = ManagedAccount;
 type DbRow = Record<string, unknown>;
@@ -118,6 +135,7 @@ function planInput(value: unknown, profile: { treatment_type?: string; aligner_c
 }
 
 export async function GET(request: Request) { try {
+  const remote = await oracleProxy(request); if (remote) return remote;
   const url = new URL(request.url); const op = url.searchParams.get("op");
   const user = await currentUser(request);
   if (op?.startsWith("admin.")) return await adminGet(db(), user, op, url);
@@ -146,6 +164,7 @@ export async function GET(request: Request) { try {
 } catch (error) { if (error instanceof AdminError) return fail(error.message,error.status); console.error("DANTO_GET", error); return fail("دریافت اطلاعات ممکن نشد. دوباره تلاش کنید.", 500); } }
 
 export async function POST(request: Request) { try {
+  const remote = await oracleProxy(request); if (remote) return remote;
   if (!ownOrigin(request)) return fail("منبع درخواست مجاز نیست", 403);
   const type = request.headers.get("content-type") ?? "";
   if (type.startsWith("multipart/form-data")) { if (Number(request.headers.get("content-length") || 0) > 32_000_000) return fail("حجم فایل‌ها بیش از حد مجاز است", 413); const form = await request.formData(); const op = form.get("op"); if (op === "patient.create") return await postPatient(request, form); if (op === "patient.file.add") return await postPatientFiles(request, form); return await postScan(request, form); }

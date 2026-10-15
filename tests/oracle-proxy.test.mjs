@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+import ts from 'typescript';
+const source=readFileSync(new URL('../app/api/route.ts',import.meta.url),'utf8');
+const helper=source.slice(source.indexOf('async function oracleProxy'),source.indexOf('export const dynamic'));
+function proxy(env,fetch){const code=ts.transpile(helper,{target:ts.ScriptTarget.ES2022});return vm.runInNewContext(code+';oracleProxy',{env,fetch,URL,Headers,Response,AbortSignal});}
+test('disabled proxy leaves Cloudflare backend in control',async()=>{assert.equal(await proxy({},()=>{throw Error();})(new Request('https://picomonitoring.ir/api')),null)});
+test('Oracle proxy preserves query, cookies, origin and body; replaces caller secret',async()=>{let call; const secret='a'.repeat(48); const run=proxy({BACKEND_ORIGIN:'https://api.picomonitoring.ir',PROXY_SECRET:secret},async(url,init)=>{call={url:String(url),init};return new Response('ok',{status:201})});const req=new Request('https://picomonitoring.ir/api?op=me',{method:'POST',headers:{cookie:'danto_session=test',origin:'https://picomonitoring.ir','x-danto-proxy-secret':'spoof'},body:'payload'});const res=await run(req);assert.equal(res.status,201);assert.equal(call.url,'https://api.picomonitoring.ir/api?op=me');assert.equal(call.init.headers.get('cookie'),'danto_session=test');assert.equal(call.init.headers.get('origin'),'https://picomonitoring.ir');assert.equal(call.init.headers.get('x-danto-proxy-secret'),secret);assert.equal(await new Response(call.init.body).text(),'payload');assert.equal(call.init.redirect,'manual')});
+test('invalid configuration and outages fail closed without using old database',async()=>{for(const settings of [{BACKEND_ORIGIN:'http://insecure',PROXY_SECRET:'a'.repeat(48)},{BACKEND_ORIGIN:'https://api.picomonitoring.ir'}, {BACKEND_ORIGIN:'https://api.picomonitoring.ir',PROXY_SECRET:'a'.repeat(48)}]){const res=await proxy(settings,async()=>{throw Error('offline')})(new Request('https://picomonitoring.ir/api'));assert.equal(res.status,502)}});
