@@ -16,7 +16,8 @@ async function oracleProxy(request: Request): Promise<Response | null> {
     const headers = new Headers(request.headers);
     headers.delete("host");
     headers.set("x-danto-proxy-secret", settings.PROXY_SECRET);
-    return await fetch(backend, { method: request.method, headers, body: request.method === "GET" ? undefined : request.body, redirect: "manual", signal: AbortSignal.timeout(45000) });
+    const upstream = await fetch(backend, { method: request.method, headers, body: request.method === "GET" ? undefined : request.body, redirect: "manual", signal: AbortSignal.timeout(45000) });
+    return new Response(upstream.body, { status: upstream.status, statusText: upstream.statusText, headers: upstream.headers });
   } catch {
     return Response.json({ error: "Backend temporarily unavailable" }, { status: 502, headers: { "Cache-Control": "no-store" } });
   }
