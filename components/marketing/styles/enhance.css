@@ -97,13 +97,12 @@ html.has-js [data-reveal] {
   opacity: 0;
   transform: translate3d(var(--reveal-x), var(--reveal-y), 0)
     scale(var(--reveal-scale)) rotate(var(--reveal-rotate));
-  filter: blur(var(--reveal-blur));
+  filter: none;
   transition:
     opacity var(--dur-4) var(--ease-out) var(--reveal-delay, 0ms),
     transform var(--dur-4) var(--ease-out) var(--reveal-delay, 0ms),
-    filter var(--dur-4) var(--ease-out) var(--reveal-delay, 0ms),
     clip-path var(--dur-4) var(--ease-out) var(--reveal-delay, 0ms);
-  will-change: opacity, transform;
+  will-change: auto;
 }
 html.has-js [data-reveal][data-reveal-state="in"] {
   opacity: 1;
@@ -147,13 +146,9 @@ html.has-js [data-reveal="mask"][data-reveal-state="in"] img,
 html.has-js [data-reveal="mask"][data-reveal-state="in"] .visual {
   transform: none;
 }
-/* Parallax rides the independent `translate` property, so an element can be
-   scrolled and revealed at the same time without the two fighting over
-   `transform`. */
+/* Keep illustrations stationary; large moving layers make scrolling costly. */
 [data-parallax] {
-  translate: 0 var(--pm-shift, 0px);
-  transition: translate var(--dur-3) var(--ease-out);
-  will-change: translate;
+  translate: none;
 }
 
 /* One-time hero entrance: the header copy arrives in reading order. */
@@ -234,9 +229,6 @@ html[data-scrolled] .site-header {
 html[data-scrolled] .site-header::after {
   opacity: 1;
 }
-html[data-scrolled] .site-header .header-inner {
-  height: 70px;
-}
 html[data-scrolled] .site-header .brand {
   transform: scale(0.94);
 }
@@ -253,10 +245,7 @@ html[data-scrolled] .site-header .brand {
   display: grid;
   place-items: center;
   color: var(--teal-dark);
-  background: conic-gradient(
-    var(--teal-dark) calc(var(--pm-progress, 0) * 1turn),
-    color-mix(in srgb, var(--line) 90%, transparent) 0
-  );
+  background: var(--teal-dark);
   box-shadow: var(--shadow-1);
   opacity: 0;
   transform: translateY(14px) scale(0.9);
@@ -290,10 +279,10 @@ html[data-scrolled] .site-header .brand {
 }
 
 /* --------------------------------------------------------------------------
-   4. Header: glass, shrink, animated nav underline, theme switch
+   4. Header: opaque surface, animated nav underline, theme switch
    -------------------------------------------------------------------------- */
 .site-header {
-  background: var(--glass-bg);
+  background: var(--surface);
   border-bottom: 1px solid transparent;
   transition:
     background var(--dur-3) var(--ease),
@@ -311,9 +300,6 @@ html[data-scrolled] .site-header .brand {
   transition: opacity var(--dur-3) var(--ease);
 }
 @supports (backdrop-filter: blur(4px)) {
-  .site-header {
-    backdrop-filter: blur(var(--glass-blur)) saturate(150%);
-  }
   .nav-dropdown,
   .mobile-dialog,
   .mobile-panel {
@@ -545,7 +531,7 @@ html[data-theme="dark"] .pm-theme-moon {
   position: absolute;
   display: block;
   border-radius: 50%;
-  filter: blur(96px);
+  filter: none;
   opacity: 0.5;
 }
 .pm-aurora .pm-a1 {
@@ -558,7 +544,7 @@ html[data-theme="dark"] .pm-theme-moon {
     var(--aurora-1),
     transparent 68%
   );
-  animation: pm-drift-1 22s var(--ease-in-out) infinite alternate;
+  animation: none;
 }
 .pm-aurora .pm-a2 {
   width: 32vw;
@@ -570,7 +556,7 @@ html[data-theme="dark"] .pm-theme-moon {
     var(--aurora-2),
     transparent 66%
   );
-  animation: pm-drift-2 26s var(--ease-in-out) infinite alternate;
+  animation: none;
 }
 .pm-aurora .pm-a3 {
   width: 26vw;
@@ -582,13 +568,13 @@ html[data-theme="dark"] .pm-theme-moon {
     var(--aurora-3),
     transparent 70%
   );
-  animation: pm-drift-3 30s var(--ease-in-out) infinite alternate;
+  animation: none;
 }
 .pm-aurora .pm-grain {
   position: absolute;
   inset: 0;
   border-radius: 0;
-  filter: blur(2px);
+  filter: none;
   opacity: var(--grain-opacity);
   background-size: 160px 160px;
   mix-blend-mode: soft-light;
@@ -629,7 +615,7 @@ h2 em,
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: var(--teal-dark);
-  animation: pm-shimmer 14s var(--ease-in-out) infinite alternate;
+  animation: none;
 }
 @supports not ((-webkit-background-clip: text) or (background-clip: text)) {
   .hero h1,
@@ -1177,7 +1163,7 @@ h2 em,
     color-mix(in srgb, var(--teal) 22%, transparent),
     transparent 68%
   );
-  animation: pm-drift-2 26s var(--ease-in-out) infinite alternate;
+  animation: none;
   pointer-events: none;
 }
 .cta-inner {
@@ -1380,29 +1366,17 @@ html[data-route-change] .pm-route-veil {
 /* --------------------------------------------------------------------------
    14. Native scroll-driven animation where the engine supports it
    -------------------------------------------------------------------------- */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .hero-visual .visual {
-      animation: pm-view-float linear both;
-      animation-timeline: view();
-      animation-range: entry 10% exit 20%;
-    }
-    .scanbox-showcase .visual {
-      animation: pm-view-rise linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 70%;
-    }
-    .pm-aurora {
-      animation: pm-parallax linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0 90vh;
-    }
-    .article-content > .visual {
-      animation: pm-view-zoom linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 60%;
-    }
+/* Keep large illustrations stationary while scrolling. Only the thin reading
+   indicator animates, without invalidating inherited styles across the page. */
+@supports (animation-timeline: scroll(root)) {
+  .pm-progress {
+    animation: pm-reading-progress linear both;
+    animation-timeline: scroll(root);
   }
+}
+@keyframes pm-reading-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 @keyframes pm-view-float {
   from {
@@ -1564,7 +1538,7 @@ header .pm-theme {
     --glass-blur: 14px;
   }
   .pm-aurora > span {
-    filter: blur(52px);
+    filter: none;
     opacity: 0.45;
   }
   .pm-top {
@@ -1582,9 +1556,6 @@ header .pm-theme {
   }
   .pm-marquee {
     padding-block: 14px;
-  }
-  html[data-scrolled] .site-header .header-inner {
-    height: 62px;
   }
   .pm-aurora .pm-a1,
   .pm-aurora .pm-a2,

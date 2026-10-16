@@ -15,17 +15,21 @@ type Tracked = { el: HTMLElement; top: number; height: number };
 /* ---------------------------------------------------------------------------
    One scroll runtime drives every scroll-linked effect. Layout is measured only
    on resize, on route change and after late content settles, so the scroll path
-   itself reads nothing from the DOM and writes only custom properties. Slow
-   motion is produced by CSS transitions on those properties, not by JS loops.
+   itself avoids layout reads. Reading progress uses the native scroll timeline
+   when available; its fallback updates only the small progress bar.
    --------------------------------------------------------------------------- */
 export function ScrollRuntime() {
   const { pathname } = useLocation();
 
   useEffect(() => {
     const root = document.documentElement;
-    const still = reducedMotion();
+    const progress = document.querySelector<HTMLElement>(".pm-progress");
+    const top = document.querySelector<HTMLElement>(".pm-top");
+    const nativeProgress = !reducedMotion() && CSS.supports("animation-timeline", "scroll(root)");
+    let scrolled: boolean | undefined;
+    let topVisible: boolean | undefined;
+    let lastProgress = "";
     let queued = 0;
-    let parallax: (Tracked & { strength: number })[] = [];
     let rails: Tracked[] = [];
     let steps: Tracked[] = [];
     let spy: { link: HTMLAnchorElement; top: number }[] = [];
@@ -42,19 +46,6 @@ export function ScrollRuntime() {
     };
 
     const measure = () => {
-      parallax = still
-        ? []
-        : [...document.querySelectorAll<HTMLElement>("[data-parallax]")].map(
-            (el) => {
-              const rect = el.getBoundingClientRect();
-              return {
-                el,
-                top: rect.top + window.scrollY,
-                height: rect.height,
-                strength: Number(el.dataset.parallax) || 0.1,
-              };
-            },
-          );
       /* A rail fills across its whole step grid, not across its own 2px height,
          so the line tracks reading progress through the section. */
       rails = collect("[data-rail]").map((rail) => {
@@ -90,20 +81,19 @@ export function ScrollRuntime() {
       queued = 0;
       const vh = window.innerHeight;
       const y = window.scrollY || 0;
-      root.style.setProperty(
-        "--pm-progress",
-        clamp(y / Math.max(1, docHeight - vh)).toFixed(4),
-      );
-      if (y > 6) root.setAttribute("data-scrolled", "");
-      else root.removeAttribute("data-scrolled");
-
-      for (const item of parallax) {
-        const distance = item.top + item.height / 2 - (y + vh / 2);
-        item.el.style.setProperty(
-          "--pm-shift",
-          `${clamp(distance * -item.strength, -160, 160).toFixed(2)}px`,
-        );
+      if (!nativeProgress && progress) {
+        const value = clamp(y / Math.max(1, docHeight - vh)).toFixed(4);
+        if (value !== lastProgress) {
+          progress.style.setProperty("--pm-progress", value);
+          lastProgress = value;
+        }
       }
+      const nextScrolled = y > 6;
+      if (nextScrolled !== scrolled) {
+        root.toggleAttribute("data-scrolled", nextScrolled);
+        scrolled = nextScrolled;
+      }
+
       for (const rail of rails) {
         rail.el.style.setProperty(
           "--pm-value",
@@ -136,10 +126,10 @@ export function ScrollRuntime() {
         }
       }
 
-      const top = document.querySelector<HTMLElement>(".pm-top");
-      if (top) {
-        if (y > vh * 0.9) top.setAttribute("data-visible", "");
-        else top.removeAttribute("data-visible");
+      const nextTopVisible = y > vh * 0.9;
+      if (top && nextTopVisible !== topVisible) {
+        top.toggleAttribute("data-visible", nextTopVisible);
+        topVisible = nextTopVisible;
       }
     };
 
@@ -178,7 +168,7 @@ export function ScrollRuntime() {
       settle.forEach(window.clearTimeout);
       shy.disconnect();
       if (queued) cancelAnimationFrame(queued);
-      root.style.removeProperty("--pm-progress");
+      progress?.style.removeProperty("--pm-progress");
       root.removeAttribute("data-scrolled");
     };
   }, [pathname]);
