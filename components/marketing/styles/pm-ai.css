@@ -1,0 +1,123 @@
+.pm-ai-page .hero {
+  padding-bottom: 54px;
+}
+.ai-capabilities {
+  padding-top: 62px;
+}
+.ai-card-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 22px;
+}
+.ai-capability-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+  transition: border-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease);
+}
+.ai-capability-card:hover {
+  border-color: var(--teal);
+  box-shadow: var(--shadow-2);
+}
+.ai-capability-card:focus-visible,
+.ai-detail:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 5px;
+}
+.ai-capability-card img,
+.ai-illustration img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+.ai-card-caption {
+  display: flex;
+  flex: 1;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 22px 18px;
+}
+.ai-card-caption h3 {
+  font-size: 17px;
+  line-height: 1.9;
+}
+.ai-card-caption svg {
+  flex-shrink: 0;
+  color: var(--teal-dark);
+  margin-top: 7px;
+}
+.ai-product-name {
+  white-space: nowrap;
+}
+.ai-image-note,
+.ai-illustration figcaption {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.9;
+  margin-top: 14px;
+}
+.ai-detail {
+  /* The shared html scroll-padding already reserves space for the sticky header. */
+  scroll-margin-block-start: 18px;
+}
+.ai-detail-copy {
+  min-width: 0;
+  margin-bottom: 0;
+}
+.ai-detail-copy p {
+  max-width: 60ch;
+}
+.ai-illustration {
+  min-width: 0;
+  margin: 0;
+}
+.ai-illustration img {
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+}
+.ai-clinical-role .section-heading {
+  margin-bottom: 0;
+}
+@media (max-width: 1100px) {
+  .ai-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 767px) {
+  .pm-ai-page .hero {
+    padding-bottom: 38px;
+  }
+  .ai-capabilities {
+    padding-top: 40px;
+  }
+  .ai-detail .split-grid {
+    gap: 28px;
+  }
+  .ai-detail.reverse .split-grid > div,
+  .ai-detail.reverse .split-grid > figure {
+    order: initial;
+  }
+}
+@media (max-width: 600px) {
+  .ai-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .ai-card-caption {
+    padding: 16px 12px;
+    gap: 6px;
+  }
+  .ai-card-caption h3 {
+    font-size: 15px;
+  }
+  .ai-card-caption svg {
+    width: 16px;
+  }
+}

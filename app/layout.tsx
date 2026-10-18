@@ -4,6 +4,7 @@ import "@/components/marketing/styles/tokens.css";
 import "@/components/marketing/styles/site.css";
 import "@/components/marketing/styles/audiences.css";
 import "@/components/marketing/styles/enhance.css";
+import "@/components/marketing/styles/pm-ai.css";
 
 export const metadata: Metadata = {
   title: "Pico Monitoring | پایش درمان ارتودنسی",

@@ -5,6 +5,7 @@ export const solutions = [
   { label: "PM Dashboard", to: "/dashboard", note: "محیط تیم درمان", icon: "eye" },
   { label: "PM App", to: "/app", note: "مسیر ارتباط بیمار", icon: "phone" },
   { label: "PM Kids", to: "/kids", note: "تجربه کودکان و خانواده‌ها", icon: "message" },
+  { label: "PM AI", to: "/pm-ai", note: "هوش مصنوعی در خدمت پایش", icon: "target" },
 ];
 
 export const navigation = [

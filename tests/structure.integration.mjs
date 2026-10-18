@@ -8,7 +8,7 @@ const pages=await read("pages"),articles=await read("articles"),assets=await rea
 const strip=html=>html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,"");
 const text=html=>html.replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim();
 const expectedNav=["راهکارهای ما","برای شما","شواهد و پژوهش‌ها","امنیت و حریم خصوصی"];
-const expectedSolutions=["/scanbox","/dashboard","/app","/kids"];
+const expectedSolutions=["/scanbox","/dashboard","/app","/kids","/pm-ai"];
 let checks=0;
 for(const route of [...pages.map(p=>p.slug),...articles.map(a=>`/articles/${a.slug}`)]) {
   const response=await fetch(base+route); assert.equal(response.status,200,route);
@@ -27,8 +27,8 @@ for(const route of [...pages.map(p=>p.slug),...articles.map(a=>`/articles/${a.sl
   for(const [label,part] of [["desktop",desktopGroup],["mobile",mobile],["footer",footer]]) {
     assert.ok(part,route+":"+label);
     const links=[...part.matchAll(/href="([^"]+)"/g)].map(m=>m[1]);
-    assert.deepEqual(links.slice(0,4),expectedSolutions,route+":"+label+" solutions order");
-    if(label!=="mobile") assert.equal(links.length,4,route+": only four solutions");
+    assert.deepEqual(links.slice(0,5),expectedSolutions,route+":"+label+" solutions order");
+    if(label!=="mobile") assert.equal(links.length,5,route+": five solutions");
   }
   for(const heading of html.matchAll(/<h[1-3]\b[^>]*>([\s\S]*?)<\/h[1-3]>/g)) {
     assert.doesNotMatch(text(heading[1]),/^[0-9۰-۹]{2}\s*[—–.-]/,route+": unnumbered heading");

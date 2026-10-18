@@ -12,6 +12,7 @@ import { AudiencePage, SpecialistDirectory } from "./pages/Audiences";
 import { Product } from "./pages/Product";
 import { ArticleDetail } from "./pages/Articles";
 import { SolutionPage } from "./pages/Solutions";
+import { PmAiPage } from "./pages/PmAi";
 import { PrivacyPage } from "./pages/Privacy";
 import { EvidencePage } from "./pages/Evidence";
 import { Contact } from "./pages/Contact";
@@ -36,6 +37,7 @@ function PageContent({ pathname }: { pathname: string }) {
   if (pathname === "/faq") return <><Hero page={page} /><FAQBlock filter title="از کجا شروع کنیم؟" /></>;
   if (pathname === "/privacy") return <PrivacyPage page={page}/>;
   if (["/dashboard", "/app", "/kids"].includes(pathname)) return <SolutionPage page={page}/>;
+  if (pathname === "/pm-ai") return <PmAiPage page={page} />;
   return <Product page={page} />;
 }
 

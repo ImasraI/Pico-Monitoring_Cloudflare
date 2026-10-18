@@ -505,5 +505,85 @@
     "src": "",
     "status": "Concept mockup, replace with approved screenshot",
     "alt": "تصویر مفهومی اطلاعات درمان و دسترسی مسئولانه؛ نشان‌دهنده استاندارد یا تأییدیه امنیتی نیست"
+  },
+  {
+    "id": "PM-AI-IMAGE-STANDARDIZATION-01",
+    "page": [
+      "/pm-ai"
+    ],
+    "section": "پردازش و استانداردسازی تصاویر",
+    "purpose": "پردازش و استانداردسازی تصاویر",
+    "composition": "Conceptual AI-generated editorial illustration; no real patient data or product interface",
+    "ratio": "3:2",
+    "dimensions": "1200 × 800",
+    "type": "AI-generated conceptual illustration",
+    "mustProvide": false,
+    "src": "/assets/pm-ai/image-standardization.webp",
+    "status": "Temporary AI-generated conceptual image, directly replaceable",
+    "alt": "تصویر مفهومی قوس دندانی با قاب‌ها و خطوط هم‌ترازی تصویر"
+  },
+  {
+    "id": "PM-AI-INTRAORAL-ANALYSIS-01",
+    "page": [
+      "/pm-ai"
+    ],
+    "section": "تحلیل تصاویر داخل دهان",
+    "purpose": "تحلیل تصاویر داخل دهان",
+    "composition": "Conceptual AI-generated editorial illustration; no real patient data or product interface",
+    "ratio": "3:2",
+    "dimensions": "1200 × 800",
+    "type": "AI-generated conceptual illustration",
+    "mustProvide": false,
+    "src": "/assets/pm-ai/intraoral-analysis.webp",
+    "status": "Temporary AI-generated conceptual image, directly replaceable",
+    "alt": "تصویر مفهومی دندان‌ها، الاینر شفاف و یک لایه بررسی تصویر"
+  },
+  {
+    "id": "PM-AI-CASE-PRIORITIZATION-01",
+    "page": [
+      "/pm-ai"
+    ],
+    "section": "اولویت‌بندی پرونده‌ها و پیگیری بیماران",
+    "purpose": "اولویت‌بندی پرونده‌ها و پیگیری بیماران",
+    "composition": "Conceptual AI-generated editorial illustration; no real patient data or product interface",
+    "ratio": "3:2",
+    "dimensions": "1200 × 800",
+    "type": "AI-generated conceptual illustration",
+    "mustProvide": false,
+    "src": "/assets/pm-ai/case-prioritization.webp",
+    "status": "Temporary AI-generated conceptual image, directly replaceable",
+    "alt": "تصویر مفهومی پرونده‌های دندانی با تقدم بصری برای مرور"
+  },
+  {
+    "id": "PM-AI-TREATMENT-ADHERENCE-01",
+    "page": [
+      "/pm-ai"
+    ],
+    "section": "تحلیل پایبندی بیمار به برنامه درمان",
+    "purpose": "تحلیل پایبندی بیمار به برنامه درمان",
+    "composition": "Conceptual AI-generated editorial illustration; no real patient data or product interface",
+    "ratio": "3:2",
+    "dimensions": "1200 × 800",
+    "type": "AI-generated conceptual illustration",
+    "mustProvide": false,
+    "src": "/assets/pm-ai/treatment-adherence.webp",
+    "status": "Temporary AI-generated conceptual image, directly replaceable",
+    "alt": "تصویر مفهومی مسیر زمانی متصل برای ثبت منظم تصویر و پیگیری درمان"
+  },
+  {
+    "id": "PM-AI-PATIENT-PERSONALIZATION-01",
+    "page": [
+      "/pm-ai"
+    ],
+    "section": "شخصی‌سازی تجربه بیمار و PM Kids",
+    "purpose": "شخصی‌سازی تجربه بیمار و PM Kids",
+    "composition": "Conceptual AI-generated editorial illustration; no real patient data or product interface",
+    "ratio": "3:2",
+    "dimensions": "1200 × 800",
+    "type": "AI-generated conceptual illustration",
+    "mustProvide": false,
+    "src": "/assets/pm-ai/patient-personalization.webp",
+    "status": "Temporary AI-generated conceptual image, directly replaceable",
+    "alt": "تصویرسازی مفهومی همراهی نوجوان و والد هنگام استفاده از تلفن همراه"
   }
 ]
