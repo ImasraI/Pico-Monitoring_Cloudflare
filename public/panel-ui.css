@@ -1,0 +1,38 @@
+/* Shared visual language for doctor, patient and administration workspaces. */
+:root{--panel-accent:#137e83;--panel-ink:#173b48;--panel-border:#dce9eb;--panel-shadow:0 8px 30px #163c4908}
+.panel-icon{display:inline-block;width:22px;height:22px;flex:0 0 auto;vertical-align:middle;pointer-events:none}
+.ico{display:inline-flex;align-items:center;justify-content:center}.ico .panel-icon{width:21px;height:21px}
+.scene-label .panel-icon{width:17px;height:17px}
+.patient-rail nav button,.bottom-nav button{align-items:center}
+.patient-rail nav button{gap:13px;min-height:48px;transition:background .18s,color .18s}
+.patient-rail nav button.active{box-shadow:inset -3px 0 #16868a;background:#e6f4f1;color:#125e66}
+.patient-rail .brand{padding-block:8px 22px;border-bottom:1px solid var(--panel-border)}
+.patient-rail nav{margin-top:22px}.patient-logout{border:1px solid #eddcda;background:#fff7f5;border-radius:12px;padding:12px;color:#9b514a}
+.bottom-nav button{gap:4px}.bottom-nav button.active .panel-icon{stroke-width:2.2}
+.patient-scan-symbol>.panel-icon{width:42px;height:42px}.patient-scan-symbol span .panel-icon{width:17px;height:17px}
+.roadmap-teaser-icon .panel-icon{width:30px;height:30px}
+.patient-app .patient-top{background:radial-gradient(ellipse at top left,#2d6b72,transparent 65%),linear-gradient(120deg,#163b48,#122b38);box-shadow:0 12px 30px #153f4812}
+.patient-app .patient-top .eyebrow{color:#b3d6d5}.patient-top-actions{gap:14px}
+.patient-app .panel,.patient-profile-card,.patient-metrics,.reward-card{border:1px solid var(--panel-border);box-shadow:var(--panel-shadow)}
+.patient-app .panel{border-radius:20px}.patient-app .panel h2,.view-title h2{font-size:1.05rem;line-height:1.8}
+.patient-metrics{padding:24px;border-radius:20px;background:white;margin-block:20px}.patient-metrics h2{margin:0 0 16px;font-size:1rem}
+.patient-metrics>div{padding:13px 0;border-bottom:1px solid #edf2f3}.patient-metrics>div:last-child{border-bottom:0}
+.patient-grid{align-items:start}.patient-grid>.panel{height:100%;margin:0}.patient-app .empty{padding:28px 16px;line-height:2;color:#758a94}
+.patient-app .scan-callout,.patient-app .roadmap-teaser{border:1px solid var(--panel-border);box-shadow:var(--panel-shadow);border-radius:20px}
+.patient-app .roadmap-teaser{background:linear-gradient(120deg,#ecf7f4,#fff);min-height:150px}
+.patient-app .patient-profile-card{background:#fff}.patient-profile-card p{letter-spacing:.3px}
+.primary{background:linear-gradient(120deg,#17868b,#126771);box-shadow:0 5px 14px #16787e18}
+.primary,.outline,.ghost,.link-btn{transition:background .18s,box-shadow .18s,border-color .18s}
+.outline:hover{background:#edf7f6;border-color:#8ebfbd}.link-btn:hover{color:#126970;text-decoration:underline;text-underline-offset:4px}
+.form-grid input:not([type=checkbox]):not([type=radio]),.form-grid select,.form-grid textarea{border-radius:11px;border-color:#d5e3e6;background:#fbfdfd}
+.form-grid input:focus,.form-grid select:focus,.form-grid textarea:focus{outline:2px solid #16868a;outline-offset:2px}
+.modal,.admin-shell dialog{border:1px solid #dce9eb}.modal-head{background:#f8fbfb;border-radius:18px 18px 0 0}
+.upload-field,.record-upload-slot{border-radius:16px;background:#f9fcfc;border-color:#d3e5e5}.upload-field:focus-within{outline:2px solid #16868a;outline-offset:2px}
+.detail-center-tabs button.active{box-shadow:0 4px 12px #d9a14922}.detail-center-tabs button{transition:background .15s,color .15s}
+.admin-shell .sidebar{background:linear-gradient(175deg,#123d47,#102e3b)}.admin-shell .sidebar nav button{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;border-radius:12px}
+.admin-shell .sidebar nav button.selected{background:#ffffff19;box-shadow:inset -3px 0 #8bd5c9}.admin-shell .summary article,.admin-shell .doctor-card{border-radius:18px;box-shadow:var(--panel-shadow)}
+.admin-shell .summary article:first-child{background:linear-gradient(125deg,#163c48,#22656d)}.admin-shell .summary b{font-variant-numeric:tabular-nums}
+.admin-shell .topbar{padding-bottom:24px;border-bottom:1px solid var(--panel-border);margin-bottom:28px}.admin-shell .filters{padding:18px;background:#fff;border:1px solid var(--panel-border);border-radius:16px}
+@media(min-width:1100px){.patient-app .patient-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.patient-metrics h2{grid-column:1/-1}.patient-metrics>div{display:flex;flex-direction:column;gap:8px;border:0;border-inline-start:1px solid #e5edef;padding:8px 18px}.patient-metrics strong{font-size:1.4rem}.patient-metrics span{font-size:.8rem;color:#718790}}
+@media(max-width:760px){.patient-app .patient-top{border-radius:0 0 26px 26px}.patient-app .patient-grid{gap:16px}.patient-app .patient-metrics{padding:18px}.bottom-nav .panel-icon{width:22px;height:22px}.bottom-nav button{min-height:52px}.patient-app .panel{border-radius:16px}.admin-shell .filters{padding:12px}.patient-top-actions .panel-icon{width:21px;height:21px}}
+@media(prefers-reduced-motion:reduce){.patient-rail nav button,.primary,.outline,.ghost,.link-btn,.detail-center-tabs button{transition:none}}
