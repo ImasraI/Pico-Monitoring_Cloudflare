@@ -585,5 +585,69 @@
     "src": "/assets/pm-ai/patient-personalization.webp",
     "status": "Temporary AI-generated conceptual image, directly replaceable",
     "alt": "تصویرسازی مفهومی همراهی نوجوان و والد هنگام استفاده از تلفن همراه"
+  },
+  {
+    "id": "PM-PRIVACY-HERO-01",
+    "page": [
+      "/privacy"
+    ],
+    "section": "privacy-hero-concept",
+    "purpose": "Temporary conceptual privacy illustration",
+    "composition": "Generated editorial illustration, no real patient records or certification claims",
+    "ratio": "16:9",
+    "dimensions": "1200 × 675",
+    "type": "AI-generated conceptual illustration",
+    "mustProvide": false,
+    "src": "/assets/privacy/privacy-hero-concept.webp",
+    "status": "Temporary AI-generated illustration; replaceable independently",
+    "alt": "تصویر مفهومی مراقبت از اطلاعات دندانی با یک سپر شفاف؛ نشان‌دهنده گواهی امنیتی نیست"
+  },
+  {
+    "id": "PM-PRIVACY-PROCESSING-01",
+    "page": [
+      "/privacy"
+    ],
+    "section": "privacy-image-processing-concept",
+    "purpose": "Temporary conceptual privacy illustration",
+    "composition": "Generated editorial illustration, no real patient records or certification claims",
+    "ratio": "16:9",
+    "dimensions": "1200 × 675",
+    "type": "AI-generated conceptual illustration",
+    "mustProvide": false,
+    "src": "/assets/privacy/privacy-image-processing-concept.webp",
+    "status": "Temporary AI-generated illustration; replaceable independently",
+    "alt": "تصویر مفهومی ارتباط ثبت تصویر با تلفن، آماده‌سازی تصویر دندان و بررسی متخصص"
+  },
+  {
+    "id": "PM-PRIVACY-FAMILY-01",
+    "page": [
+      "/privacy"
+    ],
+    "section": "privacy-family-concept",
+    "purpose": "Temporary conceptual privacy illustration",
+    "composition": "Generated editorial illustration, no real patient records or certification claims",
+    "ratio": "3:2",
+    "dimensions": "1200 × 800",
+    "type": "AI-generated conceptual illustration",
+    "mustProvide": false,
+    "src": "/assets/privacy/privacy-family-concept.webp",
+    "status": "Temporary AI-generated illustration; replaceable independently",
+    "alt": "تصویرسازی مفهومی همراهی والد با نوجوان هنگام استفاده از تلفن برای مراقبت ارتودنسی"
+  },
+  {
+    "id": "PM-PRIVACY-LIFECYCLE-01",
+    "page": [
+      "/privacy"
+    ],
+    "section": "privacy-data-lifecycle-concept",
+    "purpose": "Temporary conceptual privacy illustration",
+    "composition": "Generated editorial illustration, no real patient records or certification claims",
+    "ratio": "16:9",
+    "dimensions": "1200 × 675",
+    "type": "AI-generated conceptual illustration",
+    "mustProvide": false,
+    "src": "/assets/privacy/privacy-data-lifecycle-concept.webp",
+    "status": "Temporary AI-generated illustration; replaceable independently",
+    "alt": "تصویر مفهومی ورود اطلاعات، مدیریت در دوره خدمات و رسیدن به پایان دوره نگهداری"
   }
 ]

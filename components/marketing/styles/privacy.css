@@ -1,0 +1,68 @@
+.privacy-page .hero-copy > p + p { margin-top: 18px; }
+.privacy-page .privacy-image { margin: 0; min-width: 0; }
+.privacy-page .privacy-image img {
+  display: block; width: 100%; height: auto; object-fit: cover;
+  border: 1px solid var(--line); border-radius: var(--radius);
+}
+.privacy-page .privacy-image figcaption { color: var(--muted); font-size: 12px; line-height: 1.9; margin-top: 14px; }
+.privacy-page .privacy-section { border-bottom: 1px solid var(--line-soft); }
+.privacy-page .privacy-editorial-grid {
+  list-style: none; padding: 0; margin: 0; display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 70px;
+}
+.privacy-page .privacy-editorial-grid > li {
+  display: flex; align-items: flex-start; gap: 18px; padding-block: 28px;
+  border-top: 1px solid var(--line-soft); min-width: 0;
+}
+.privacy-page .privacy-editorial-grid svg { flex-shrink: 0; margin-top: 5px; color: var(--teal-dark); }
+.privacy-page h3 + p { margin-top: 12px; }
+.privacy-page .privacy-section-note { max-width: 85ch; margin-top: 36px; }
+.privacy-page .privacy-timeline { list-style: none; margin: 0; padding: 0; }
+.privacy-page .privacy-use-path {
+  --privacy-flow-gap: 40px; display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--privacy-flow-gap);
+}
+.privacy-page .privacy-use-path > li { position: relative; min-width: 0; }
+.privacy-page .privacy-process-node {
+  position: relative; display: grid; place-items: center;
+  width: 48px; height: 48px; border: 1px solid var(--line-strong);
+  border-radius: 50%; background: var(--white); color: var(--teal-dark); margin: 0 auto 26px;
+}
+.privacy-page .privacy-use-path > li:not(:last-child)::after {
+  content: ""; position: absolute; top: 24px;
+  inset-inline-start: calc(50% + 24px); width: calc(100% + var(--privacy-flow-gap) - 48px);
+  height: 1px; background: var(--line-strong);
+}
+.privacy-page .privacy-editorial-text { max-width: 780px; margin-inline: auto; }
+.privacy-page .privacy-editorial-text > p + p,
+.privacy-page .privacy-copy > p + p { margin-top: 22px; }
+.privacy-page .privacy-retention-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 70px; align-items: center; }
+.privacy-page .privacy-retention-path { border-inline-start: 1px solid var(--line-strong); margin-inline-start: 7px; }
+.privacy-page .privacy-retention-path > li { position: relative; padding-inline-start: 30px; padding-bottom: 30px; }
+.privacy-page .privacy-retention-path > li:last-child { padding-bottom: 0; }
+.privacy-page .privacy-retention-path > li::before {
+  content: ""; position: absolute; inset-inline-start: -7px; top: 10px;
+  width: 13px; height: 13px; background: var(--teal-dark); border-radius: 50%; box-shadow: 0 0 0 5px var(--white);
+}
+.privacy-page .privacy-copy { min-width: 0; }
+.privacy-page .privacy-research-copy > p + p { border-top: 1px solid var(--line-soft); padding-top: 26px; margin-top: 26px; }
+.privacy-page .privacy-contact .section-heading p { max-width: none; }
+@media (max-width: 1050px) {
+  .privacy-page .privacy-editorial-grid { column-gap: 40px; }
+  .privacy-page .privacy-retention-grid { gap: 40px; }
+  .privacy-page .privacy-use-path { --privacy-flow-gap: 28px; }
+}
+@media (max-width: 767px) {
+  .privacy-page .privacy-editorial-grid,
+  .privacy-page .privacy-retention-grid,
+  .privacy-page .privacy-use-path { grid-template-columns: minmax(0, 1fr); }
+  .privacy-page .privacy-use-path { gap: 0; }
+  .privacy-page .privacy-use-path > li { padding-inline-start: 68px; padding-bottom: 32px; }
+  .privacy-page .privacy-use-path > li:last-child { padding-bottom: 0; }
+  .privacy-page .privacy-process-node { position: absolute; inset-inline-start: 0; top: 0; margin: 0; }
+  .privacy-page .privacy-use-path > li:not(:last-child)::after { top: 48px; inset-inline-start: 24px; width: 1px; height: calc(100% - 48px); }
+  .privacy-page .reverse .split-grid > div,
+  .privacy-page .reverse .split-grid > figure { order: initial; }
+  .privacy-page .privacy-retention-grid,
+  .privacy-page .split-grid { gap: 32px; }
+}
