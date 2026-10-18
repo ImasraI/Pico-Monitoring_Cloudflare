@@ -12,3 +12,24 @@
 @media(max-width:760px){.shell,.patient-main{background:#f4f8f8}.topbar,.patient-top{padding-bottom:14px}.metrics{gap:10px}.panel{padding:16px}.tabs{overflow-x:auto}.modal{max-height:90dvh;overflow:auto}.section-head{flex-wrap:wrap}.bottom-nav{box-shadow:0 8px 32px #153d461c}}
 
 .login-password-help{font-size:12px;color:#687e83;line-height:1.9;margin:12px 0 0}.password-settings{margin-top:18px}.password-settings .form-grid{margin-top:16px}.password-settings [data-password-error][hidden]{display:none!important}
+/* Keep the compact patient shell on phones; restore workspace navigation on desktop. */
+@media (min-width: 761px) {
+  #patient-app { background: #f4f8f8; }
+  #patient-app .patient-rail { display: flex; z-index: 45; overflow-y: auto; }
+  #patient-app .patient-logout { margin-top: auto; flex-shrink: 0; }
+  #patient-app .patient-main { width: auto; max-width: none; min-width: 0; margin: 0 215px 0 0; padding: 28px clamp(20px, 3vw, 56px) 48px; box-shadow: none; }
+  #patient-app .bottom-nav { display: none; }
+  #patient-app .patient-top { min-height: 110px; padding: 22px 28px; border-radius: 20px; clip-path: none; }
+  #patient-app #patient-content { max-width: 1320px; margin-inline: auto; padding: 24px 0 0; }
+  #patient-app .patient-profile-card { flex-direction: row; text-align: right; gap: 18px; }
+  #patient-app .patient-profile-avatar { flex: 0 0 70px; }
+  #patient-app .patient-profile-card h2 { margin-top: 0; }
+  #patient-app .patient-profile-card button { margin-top: 0; }
+  #patient-app #patient-personal-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #patient-app .record-upload-grid, #patient-app .record-file-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  #patient-app .patient-welcome { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
+  #patient-app .patient-welcome .treatment-card { order: 0; }
+  #patient-app .patient-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
