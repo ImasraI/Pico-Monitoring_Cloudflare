@@ -40,6 +40,6 @@
 /* An empty notification list must never imply unread activity. */
 #doctor-notifications:not(.unread)>span,#patient-notifications:not(.unread)>span{display:none}
 #doctor-notifications.unread>span,#patient-notifications.unread>span{display:block;box-shadow:0 0 0 3px #173e48}
-.reward-card .reward-mark{width:80px;height:80px;flex:0 0 80px;border-radius:24px;background:radial-gradient(circle at 25% 20%,#fff 0,transparent 75%),#edf6f5;border:1px solid #dfedeb;box-shadow:inset 0 1px 0 #fff,0 8px 20px #17424b08;color:var(--reward-accent)}
+.reward-card .reward-mark{width:80px;height:80px;flex:0 0 80px;border-radius:24px;background:#55c7b2;border:1px solid #55c7b2;box-shadow:0 8px 20px #17424b08;color:#fff}
 .reward-emblem{width:72px;height:72px;display:block;filter:drop-shadow(0 3px 3px #163e4810)}
 @media(max-width:600px){.reward-card .reward-mark{width:68px;height:68px;flex-basis:68px;border-radius:20px}.reward-emblem{width:62px;height:62px}}
