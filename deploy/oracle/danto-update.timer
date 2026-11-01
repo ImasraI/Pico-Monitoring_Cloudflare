@@ -1,0 +1,11 @@
+[Unit]
+Description=Check GitHub for DANTO backend updates every five minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=5min
+RandomizedDelaySec=20
+Unit=danto-update.service
+
+[Install]
+WantedBy=timers.target

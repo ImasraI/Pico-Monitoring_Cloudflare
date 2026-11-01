@@ -1,0 +1,11 @@
+[Unit]
+Description=Build and update DANTO from GitHub main
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/danto-auto-update
+TimeoutStartSec=600
+Nice=10
+UMask=0077
