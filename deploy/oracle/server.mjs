@@ -28,7 +28,7 @@ const server = createServer(async (req, res) => {
   if (active >= 8) { res.writeHead(503, { 'Retry-After': '5' }); res.end('Busy; retry shortly'); return; }
   active++;
   try {
-    if (req.url === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end('{"ok":true}'); return; }
+    if (req.url === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end('{"ok":true,"portalVersion":1}'); return; }
     if (!local && !authenticated(req.headers['x-danto-proxy-secret'])) { res.writeHead(403); res.end('Forbidden'); return; }
     const origin = local ? `http://127.0.0.1:${process.env.PORT || 3000}` : process.env.PUBLIC_ORIGIN;
     const url = new URL(req.url, origin);

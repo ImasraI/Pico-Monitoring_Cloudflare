@@ -1,6 +1,7 @@
 import { env } from "cloudflare:workers";
 import { phoneNumber } from "./mobile";
 import { d1Files } from "./file-storage";
+import { IntakeError, readIntake, saveIntake } from "./intake";
 import { AdminError, adminGet, adminPost, checkDoctorAccess, doctorPermissions, type ManagedAccount } from "./admin";
 import { RewardError, windowStart, getStep, ensureReady, score, awardBonuses, summary as rewardSummary, action as rewardAction } from "./rewards";
 
@@ -142,6 +143,7 @@ export async function GET(request: Request) { try {
   if (op?.startsWith("admin.")) return await adminGet(db(), user, op, url);
   if (!user) return fail("لطفاً وارد حساب شوید", 401);
   if (op === "me") return json({ user: publicUser(user) });
+  if (op === "portal.capabilities") return json({ version: 1, intake: true, replies: true, urgentScans: true });
   if (op === "patients") { if (user.role !== "doctor") return fail("دسترسی مجاز نیست", 403); const patients = await all("SELECT u.id,u.name,u.email,u.username,u.created_at,p.phone,p.personal_completed_at,p.activated_at,p.treatment_type,p.aligner_count,p.next_scan_at,p.next_visit_at,(SELECT f.id FROM patient_files f WHERE f.patient_id=u.id AND f.category='face' AND f.mime LIKE 'image/%' ORDER BY f.created_at DESC LIMIT 1) AS face_file_id,(SELECT f.id FROM patient_files f WHERE f.patient_id=u.id AND f.category='oral' AND f.mime LIKE 'image/%' ORDER BY f.created_at DESC LIMIT 1) AS oral_file_id FROM users u LEFT JOIN patient_profiles p ON p.user_id=u.id WHERE u.role='patient' AND u.doctor_id=? AND u.deleted_at IS NULL ORDER BY u.created_at DESC", user.id); return json({ patients }); }
   if (op === "notifications") { const rows = await all("SELECT id,kind,title,body,created_at,read_at FROM notifications WHERE user_id=? ORDER BY created_at DESC LIMIT 50", user.id); return json({ notifications: rows }); }
   if (op === "settings") { const row = await sql("SELECT messages,scans,roadmap FROM notification_settings WHERE user_id=?", user.id); return json({ settings: row ?? { messages: 1, scans: 1, roadmap: 1 } }); }
@@ -149,6 +151,7 @@ export async function GET(request: Request) { try {
   if (op === "patient.file") { const fileId = url.searchParams.get("fileId") ?? ""; const file = await sql<{ object_key: string; mime: string; name: string }>("SELECT f.object_key,f.mime,f.name FROM patient_files f JOIN users p ON p.id=f.patient_id WHERE f.id=? AND p.deleted_at IS NULL AND ((p.doctor_id=? AND f.doctor_id=?) OR (f.patient_id=? AND f.category IN ('oral','face','opg','cbct','faceScan','dentalScan')))", fileId, user.id, user.id, user.id); if (!file) return fail("فایل پیدا نشد", 404); const obj = await bucket().get(file.object_key); if (!obj) return fail("فایل در دسترس نیست", 404); const safeName = file.name.replace(/[\r\n"\\]/g, "_"); return new Response(obj.body, { headers: { "Content-Type": file.mime, "Content-Disposition": `${file.mime.startsWith("image/") || file.mime === "application/pdf" ? "inline" : "attachment"}; filename*=UTF-8''${encodeURIComponent(safeName)}`, "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff" } }); }
   const patientId = url.searchParams.get("patientId") ?? ""; const patient = await requirePatient(user, patientId); if (!patient) return fail("پرونده پیدا نشد", 404);
   if (op === "patient") return json({ patient: publicUser(patient) });
+  if (op === "patient.intake") return json(await readIntake(db(), patientId));
   if (op === "patient.schedule") { const schedule = await sql("SELECT treatment_type,aligner_count,next_scan_at,next_visit_at FROM patient_profiles WHERE user_id=?", patientId); return json({ schedule }); }
   if (op === "patient.record" || op === "patient.personal") {
     if (op === "patient.record" && user.role !== "doctor") return fail("دسترسی مجاز نیست", 403);
@@ -156,13 +159,13 @@ export async function GET(request: Request) { try {
     const files = await all("SELECT id,category,name,size,mime,description,created_at,uploaded_by FROM patient_files WHERE patient_id=?" + (user.role === "patient" ? " AND category IN ('oral','face','opg','cbct','faceScan','dentalScan')" : "") + " ORDER BY created_at DESC", patientId);
     return json({ profile, files });
   }
-  if (op === "messages") { const rows = await all("SELECT id,sender_id,kind,body,created_at,read_at FROM messages WHERE patient_id=? ORDER BY created_at ASC LIMIT 200", patientId); return json({ messages: rows }); }
+  if (op === "messages") { const rows = await all("SELECT m.id,m.sender_id,m.kind,m.body,m.created_at,m.read_at,m.reply_to_id,m.scan_id,m.subject,r.body AS reply_body,r.sender_id AS reply_sender_id FROM (SELECT * FROM messages WHERE patient_id=? ORDER BY created_at DESC,id DESC LIMIT 200) m LEFT JOIN messages r ON r.id=m.reply_to_id AND r.patient_id=m.patient_id ORDER BY m.created_at,m.id", patientId); return json({ messages: rows }); }
   if (op === "notes") { if (user.role !== "doctor") return fail("دسترسی مجاز نیست", 403); return json({ notes: await all("SELECT id,body,created_at FROM patient_notes WHERE patient_id=? AND doctor_id=? ORDER BY created_at DESC", patientId, user.id) }); }
   if (op === "rewards") return json(await rewardSummary(db(),patientId));
   if (op === "steps") { const rows = await all("SELECT id,title,detail,due_at,completed_at,points_awarded,position,event_type,series_id,aligner_no,opens_at,paused_at,first_attempt_at,reward_points,on_time FROM steps WHERE patient_id=? ORDER BY due_at,position,id", patientId); return json({ steps: rows }); }
   if (op === "scans") { const rows = await all("SELECT s.id,s.created_at,s.status,s.doctor_note,s.step_id,s.review_result,i.id AS image_id,i.view FROM scans s LEFT JOIN scan_images i ON i.scan_id=s.id WHERE s.patient_id=? ORDER BY s.created_at DESC LIMIT 150", patientId); const groups = new Map<string, { id: string; created_at: number; status: string; doctor_note: string | null; step_id: string | null; review_result: string; images: Array<{ id: string; view: string }> }>(); for (const r of rows as DbRow[]) { const id = String(r.id); if (!groups.has(id)) groups.set(id, { id, created_at: Number(r.created_at), status: String(r.status), doctor_note: r.doctor_note ? String(r.doctor_note) : null, step_id:r.step_id?String(r.step_id):null, review_result:String(r.review_result), images: [] }); if (r.image_id) groups.get(id)!.images.push({ id: String(r.image_id), view: String(r.view) }); } return json({ scans: [...groups.values()] }); }
   return fail("درخواست ناشناخته است", 404);
-} catch (error) { if (error instanceof AdminError) return fail(error.message,error.status); console.error("DANTO_GET", error); return fail("دریافت اطلاعات ممکن نشد. دوباره تلاش کنید.", 500); } }
+} catch (error) { if (error instanceof AdminError || error instanceof IntakeError) return fail(error.message,error.status); console.error("DANTO_GET", error); return fail("دریافت اطلاعات ممکن نشد. دوباره تلاش کنید.", 500); } }
 
 export async function POST(request: Request) { try {
   const remote = await oracleProxy(request); if (remote) return remote;
@@ -201,6 +204,7 @@ export async function POST(request: Request) { try {
   if (op === "settings") { const settings = body.settings as Record<string, unknown> | undefined; if (!settings || ["messages", "scans", "roadmap"].some(k => typeof settings[k] !== "boolean")) return fail("تنظیمات معتبر نیست"); await exec("UPDATE notification_settings SET messages=?,scans=?,roadmap=? WHERE user_id=?", settings.messages ? 1 : 0, settings.scans ? 1 : 0, settings.roadmap ? 1 : 0, user.id); return json({ ok: true }); }
   if (op === "notifications.read") { await exec("UPDATE notifications SET read_at=? WHERE user_id=? AND read_at IS NULL", Date.now(), user.id); return json({ ok: true }); }
   const patientId = typeof body.patientId === "string" ? body.patientId : ""; const patient = await requirePatient(user, patientId); if (!patient) return fail("پرونده پیدا نشد", 404);
+  if (op === "patient.intake") return json(await saveIntake(db(), patientId, body));
   if (typeof op === "string" && op.startsWith("rewards.")) return json(await rewardAction(db(),op,body,patientId,patient.doctor_id!,user.role === "doctor"));
   if (op === "plan.pause") {
     if (user.role!=="doctor") return fail("دسترسی مجاز نیست",403);
@@ -269,8 +273,10 @@ export async function POST(request: Request) { try {
     if (user.role === "doctor" && body.kind === "urgent") return fail("ارسال پیام فوری فقط برای بیمار فعال است");
     const text = typeof body.text === "string" ? body.text.trim() : ""; const kind = body.kind === "urgent" ? "urgent" : "normal";
     if (!text || text.length > 2000) return fail("متن پیام باید بین ۱ تا ۲۰۰۰ نویسه باشد");
+    const replyToId = typeof body.replyToId === "string" ? body.replyToId : null;
+    if (replyToId && !await sql("SELECT id FROM messages WHERE id=? AND patient_id=?", replyToId, patientId)) return fail("پیام مرجع در این گفت‌وگو پیدا نشد", 404);
     const id = crypto.randomUUID(), now = Date.now();
-    await exec("INSERT INTO messages (id,doctor_id,patient_id,sender_id,kind,body,created_at,read_at) VALUES (?,?,?,?,?,?,?,NULL)", id, patient.doctor_id ?? user.id, patientId, user.id, kind, text, now);
+    await exec("INSERT INTO messages (id,doctor_id,patient_id,sender_id,kind,body,created_at,read_at,reply_to_id) VALUES (?,?,?,?,?,?,?,NULL,?)", id, patient.doctor_id ?? user.id, patientId, user.id, kind, text, now, replyToId);
     const recipient = user.role === "doctor" ? patientId : patient.doctor_id!;
     await notification(recipient, "messages", kind === "urgent" ? "پیام فوری" : "پیام جدید", `${user.name}: ${text.slice(0, 90)}`);
     return json({ message: { id, sender_id: user.id, kind, body: text, created_at: now } }, 201);
@@ -301,7 +307,7 @@ export async function POST(request: Request) { try {
     await notification(patientId,"scans",decision==="recapture"?"عکس مجدد لازم است":"اسکن تأیید شد",note||"پزشک تصاویر شما را تأیید کرد");return json({ok:true});
   }
   return fail("درخواست ناشناخته است", 404);
-} catch (error) { if(error instanceof RewardError || error instanceof AdminError)return fail(error.message,error.status); if(String(error).includes("doctor_patient_limit"))return fail("سقف تعداد بیماران این پزشک تکمیل شده است. با ادمین تماس بگیرید.",409); if(String(error).includes("doctor_deleted"))return fail("حساب پزشک حذف شده است؛ ابتدا آن را بازیابی کنید",409); console.error("DANTO_POST", error); return fail("ثبت اطلاعات ممکن نشد. دوباره تلاش کنید.", 500); } }
+} catch (error) { if(error instanceof RewardError || error instanceof AdminError || error instanceof IntakeError)return fail(error.message,error.status); if(String(error).includes("doctor_patient_limit"))return fail("سقف تعداد بیماران این پزشک تکمیل شده است. با ادمین تماس بگیرید.",409); if(String(error).includes("doctor_deleted"))return fail("حساب پزشک حذف شده است؛ ابتدا آن را بازیابی کنید",409); console.error("DANTO_POST", error); return fail("ثبت اطلاعات ممکن نشد. دوباره تلاش کنید.", 500); } }
 
 async function uploadPatientFiles(patientId: string, form: FormData) {
   const items = await collectPatientFiles(form);
@@ -334,6 +340,10 @@ async function postPatientFiles(request: Request, form: FormData) {
 }
 
 async function postScan(request: Request, form: FormData) { const user = await currentUser(request); if (!user || user.role !== "patient") return fail("فقط بیمار می‌تواند اسکن ارسال کند", 403); const length = Number(request.headers.get("content-length") || 0); if (length > 31_000_000) return fail("حجم تصاویر بیش از حد مجاز است", 413); if (form.get("op") !== "scan.create") return fail("درخواست نامعتبر است"); const views = ["front", "right", "left"] as const; const files = views.map(v => form.get(v)); const accepted = files.map((v, i) => ({ file: v, view: views[i] })).filter((x): x is { file: File; view: typeof views[number] } => x.file instanceof File && (x.file.name !== "" || x.file.size > 0)); if (!accepted.length) return fail("حداقل یک تصویر لازم است"); for (const { file } of accepted) { if (file.size < 100 || file.size > 10_000_000 || !["image/jpeg", "image/png", "image/webp"].includes(file.type)) return fail("فقط عکس JPG، PNG یا WebP تا ۱۰ مگابایت مجاز است"); const header = new Uint8Array(await file.slice(0, 12).arrayBuffer()); const valid = file.type === "image/png" ? header[0] === 137 && header[1] === 80 && header[2] === 78 && header[3] === 71 : file.type === "image/jpeg" ? header[0] === 255 && header[1] === 216 : header[0] === 82 && header[1] === 73 && header[2] === 70 && header[3] === 70 && header[8] === 87 && header[9] === 69; if (!valid) return fail("محتوای تصویر معتبر نیست"); }
+  const urgentSubject = field(form,"urgentSubject",300);
+  if (urgentSubject && urgentSubject.length < 3) return fail("موضوع گزارش فوری را دست‌کم در سه نویسه بنویسید");
+  if (urgentSubject && form.get("stepId")) return fail("گزارش فوری را مستقل از مرحله برنامه ارسال کنید");
+  const urgentMessageId = urgentSubject ? crypto.randomUUID() : null;
   const stepId=field(form,"stepId",100),now=Date.now(),step=stepId?await getStep(db(),user.id,stepId):null;
   if(step){if(step.event_type!=="scan")return fail("مرحله انتخاب‌شده از نوع اسکن نیست");await ensureReady(db(),user.id,step,now);if(await sql("SELECT id FROM scans WHERE step_id=? AND patient_id=? AND status='new'",stepId,user.id))return fail("اسکن این مرحله در انتظار بررسی پزشک است",409);}
   const award=step?await score(db(),user.id,step,now):null;
@@ -343,8 +353,10 @@ async function postScan(request: Request, form: FormData) { const user = await c
     const insert=step?db().prepare("INSERT INTO scans (id,patient_id,doctor_id,created_at,status,doctor_note,step_id,review_result) SELECT ?,?,?,?,'new',NULL,?,'pending' FROM steps WHERE id=? AND patient_id=? AND event_type='scan' AND completed_at IS NULL AND paused_at IS NULL AND COALESCE(opens_at,?)<=? AND NOT EXISTS (SELECT 1 FROM scans WHERE step_id=? AND status='new')").bind(scanId,user.id,user.doctor_id!,now,stepId,stepId,user.id,windowStart(step.due_at),now,stepId):db().prepare("INSERT INTO scans (id,patient_id,doctor_id,created_at,status,doctor_note,step_id,review_result) VALUES (?,?,?,?,'new',NULL,NULL,'pending')").bind(scanId,user.id,user.doctor_id!,now);
     const statements=[insert,...imageRows.map(r=>db().prepare("INSERT INTO scan_images (id,scan_id,patient_id,object_key,mime,view,created_at) SELECT ?,?,?,?,?,?,? WHERE EXISTS (SELECT 1 FROM scans WHERE id=?)").bind(r.id,scanId,user.id,r.key,r.mime,r.view,now,scanId))];
     if(step)statements.push(db().prepare("UPDATE steps SET first_attempt_at=?,attempt_points=?,on_time=? WHERE id=? AND patient_id=? AND first_attempt_at IS NULL AND EXISTS (SELECT 1 FROM scans WHERE id=?)").bind(now,award!.points,award!.timely?1:0,stepId,user.id,scanId));
+    if(urgentMessageId) statements.push(db().prepare("INSERT INTO messages (id,doctor_id,patient_id,sender_id,kind,body,created_at,read_at,scan_id,subject) SELECT ?,?,?,?,'urgent',?,?,NULL,?,? WHERE EXISTS (SELECT 1 FROM scans WHERE id=?)").bind(urgentMessageId,user.doctor_id!,user.id,user.id,urgentSubject,now,scanId,urgentSubject,scanId));
     const result=await db().batch(statements);
     if(!result[0].meta.changes){await Promise.allSettled(imageRows.map(r=>bucket().delete(r.key)));return fail("اسکن مرحله قبلاً ارسال شده یا مرحله فعال نیست",409);}
   }catch(error){await Promise.allSettled(imageRows.map(r=>bucket().delete(r.key)));throw error;}
+  if(urgentMessageId) await notification(user.doctor_id!,"messages","گزارش فوری همراه تصویر",`${user.name}: ${urgentSubject.slice(0,90)}`);
   await notification(user.doctor_id!,"scans","اسکن جدید",`${user.name} تصویر تازه ارسال کرد`);return json({scan:{id:scanId,created_at:now,status:"new",step_id:stepId||null,review_result:"pending",images:imageRows.map(r=>({id:r.id,view:r.view}))}},201);
 }
