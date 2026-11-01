@@ -25,7 +25,7 @@ window.PicoPortal = (() => {
     if (changed && record) { const next=schema.sections.findIndex(s=>s.items.some(q=>record.missing.includes(q.id)));section=Math.max(0,next);review=Boolean(record.submittedAt); }
   }
   function intakeCard() {
-    return `<section class="portal-intake-card"><div><span class="portal-eyebrow">پرونده سلامت من</span><h2>قدم‌به‌قدم، پرونده‌ات را کامل کن</h2><p>${record ? `${num(record.answered)} از ${num(record.total)} پاسخ ثبت شده${record.submittedAt ? ' · ارسال‌شده برای پزشک' : ' · پیش‌نویس'}` : 'پاسخ‌ها را ذخیره کنید و هر زمان خواستید ادامه دهید.'}</p>${record ? `<progress value="${record.answered}" max="${record.total}" aria-label="پیشرفت پرونده"></progress>` : ''}</div>${button('intake', record?.submittedAt ? 'مرور و ویرایش پرونده' : 'تکمیل پرسشنامه', '', 'primary')}</section>`;
+    return `<section class="portal-intake-card"><div><span class="portal-eyebrow">پرونده سلامت من</span><h2>قدم‌به‌قدم، پرونده‌ات را کامل کن</h2><p>${record ? `${num(record.answered)} از ${num(record.total)} پاسخ ثبت شده${record.submittedAt ? ' · ارسال‌شده برای پزشک' : ' · پیش‌نویس'}` : caps.intake ? 'پاسخ‌ها را ذخیره کنید و هر زمان خواستید ادامه دهید.' : 'پرسشنامه تکمیلی هنوز فعال نشده است.'}</p>${record ? `<progress value="${record.answered}" max="${record.total}" aria-label="پیشرفت پرونده"></progress>` : ''}</div>${button('intake', record?.submittedAt ? 'مرور و ویرایش پرونده' : 'تکمیل پرسشنامه', '', 'primary')}</section>`;
   }
   function home() {
     return `<div class="portal-shortcuts">${button('education','<span>'+icon('education')+'</span><b>آموزش و مراقبت</b><small>راهنماهای درمان</small>')}${button('store','<span>'+icon('store')+'</span><b>فروشگاه</b><small>لوازم مراقبت</small>')}${button('urgent','<span>'+icon('urgent')+'</span><b>گزارش فوری با تصویر</b><small>ارسال برای پزشک</small>')}</div>`;
@@ -57,7 +57,7 @@ window.PicoPortal = (() => {
     }
     return String(value);
   }
-  function unavailable() { return '<section class="panel"><h2>در انتظار به‌روزرسانی پرونده</h2><p>برای ذخیره این پرسشنامه، نسخه جدید سرور باید فعال شود. اطلاعات قبلی پرونده همچنان در «حساب من» در دسترس است.</p></section>'; }
+  function unavailable() { return '<section class="panel"><h2>پرسشنامه تکمیلی هنوز فعال نشده است</h2><p>اطلاعات تماس و مدارک قبلی همچنان در «حساب من» در دسترس هستند.</p></section>'; }
   function intakeHtml() {
     if (!caps.intake) return unavailable();
     if (!record) return '<p role="status">در حال دریافت پرونده…</p>';
@@ -170,7 +170,7 @@ window.PicoPortal = (() => {
       else if(action==='cancel-reply'){reply=null;await rerender();}
       else if(action==='jump-message'){const target=document.getElementById('message-'+el.dataset.id);if(target){target.scrollIntoView({block:'center',behavior:'smooth'});target.classList.add('portal-highlight');setTimeout(()=>target.classList.remove('portal-highlight'),1800);}else h.toast('پیام مرجع در فهرست اخیر موجود نیست.');}
       else if(action==='linked-scan'){const scan=h.state.scans.find(s=>s.id===el.dataset.id);if(scan)h.modal('تصاویر گزارش فوری',`<div class="scan-thumbs">${scan.images.map(i=>`<a href="${h.imageUrl(i.id)}" target="_blank" rel="noopener"><img src="${h.imageUrl(i.id)}" alt="تصویر گزارش"></a>`).join('')}</div>`);else h.toast('این اسکن در فهرست اخیر موجود نیست.');}
-      else if(action==='urgent'){if(!caps.urgentScans)h.modal('گزارش فوری','<p>گزارش تصویری پس از به‌روزرسانی سرور فعال می‌شود. می‌توانید از بخش پیام‌ها با پزشک تماس بگیرید.</p>');else h.modal('گزارش فوری همراه تصویر','<form id="portal-urgent-form"><label for="urgent-subject">موضوع و شرح مشکل</label><textarea id="urgent-subject" minlength="3" maxlength="300" required placeholder="مشکل را کوتاه توضیح دهید"></textarea><p class="muted">در مرحله بعد، تصویر را انتخاب می‌کنید. گزارش پس از ارسال موفق تصویر ثبت می‌شود. این سامانه جایگزین خدمات اورژانس نیست.</p><button class="primary">ادامه و انتخاب تصویر</button></form>');}
+      else if(action==='urgent'){if(!caps.urgentScans)h.modal('گزارش فوری','<p>گزارش تصویری هنوز فعال نشده است. می‌توانید از بخش پیام‌ها با پزشک تماس بگیرید.</p>');else h.modal('گزارش فوری همراه تصویر','<form id="portal-urgent-form"><label for="urgent-subject">موضوع و شرح مشکل</label><textarea id="urgent-subject" minlength="3" maxlength="300" required placeholder="مشکل را کوتاه توضیح دهید"></textarea><p class="muted">در مرحله بعد، تصویر را انتخاب می‌کنید. گزارش پس از ارسال موفق تصویر ثبت می‌شود. این سامانه جایگزین خدمات اورژانس نیست.</p><button class="primary">ادامه و انتخاب تصویر</button></form>');}
       else if(action==='cancel-urgent'){urgent='';await h.renderPatient();}
       else if(action==='lesson')lesson(el.dataset.id);
       else if(action==='lesson-prev'||action==='lesson-next')lesson(el.dataset.id,itemIndex+(action==='lesson-next'?1:-1));
