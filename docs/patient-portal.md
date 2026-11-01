@@ -24,3 +24,7 @@ Search, content-type/topic filters, slide navigation, store category/sort filter
 ## Verification
 
 Run `node --test tests/portal-migration.test.mjs`. For API verification, run `node tests/portal.integration.mjs` against a localhost backend with `DANTO_TEST_URL`, `DANTO_TEST_ADMIN_PHONE`, and `DANTO_TEST_ADMIN_PASSWORD` set privately in the session. The suite uses synthetic local accounts only.
+
+## Production verification — 2026-11-01
+
+Both repositories contain the same portal release. Cloudflare Workers Builds completed successfully. The Oracle timer delivered the same backend files as the tested local build, migration `0009_patient_portal.sql` is applied, public `/healthz` reports `portalVersion: 1`, and authenticated requests through the website return all three portal capabilities as enabled. Direct backend API access still returns HTTP 403 without the server-side proxy credential. The owner verification session was signed out; no new production test accounts were created.
